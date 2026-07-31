@@ -10,33 +10,206 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AgentlarRouteImport } from './routes/agentlar'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as BildirishnomalarRouteImport } from './routes/bildirishnomalar'
+import { Route as IjaraRouteImport } from './routes/ijara'
+import { Route as JoylashRouteImport } from './routes/joylash'
+import { Route as MeningElonlarimRouteImport } from './routes/mening-elonlarim'
+import { Route as ProfilRouteImport } from './routes/profil'
+import { Route as SevimlilarRouteImport } from './routes/sevimlilar'
+import { Route as SotuvRouteImport } from './routes/sotuv'
+import { Route as ElonIdRouteImport } from './routes/elon.$id'
+import { Route as SuhbatlarIndexRouteImport } from './routes/suhbatlar.index'
+import { Route as SuhbatlarIdRouteImport } from './routes/suhbatlar.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgentlarRoute = AgentlarRouteImport.update({
+  id: '/agentlar',
+  path: '/agentlar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BildirishnomalarRoute = BildirishnomalarRouteImport.update({
+  id: '/bildirishnomalar',
+  path: '/bildirishnomalar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IjaraRoute = IjaraRouteImport.update({
+  id: '/ijara',
+  path: '/ijara',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JoylashRoute = JoylashRouteImport.update({
+  id: '/joylash',
+  path: '/joylash',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MeningElonlarimRoute = MeningElonlarimRouteImport.update({
+  id: '/mening-elonlarim',
+  path: '/mening-elonlarim',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfilRoute = ProfilRouteImport.update({
+  id: '/profil',
+  path: '/profil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SevimlilarRoute = SevimlilarRouteImport.update({
+  id: '/sevimlilar',
+  path: '/sevimlilar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SotuvRoute = SotuvRouteImport.update({
+  id: '/sotuv',
+  path: '/sotuv',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ElonIdRoute = ElonIdRouteImport.update({
+  id: '/elon/$id',
+  path: '/elon/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SuhbatlarIndexRoute = SuhbatlarIndexRouteImport.update({
+  id: '/suhbatlar/',
+  path: '/suhbatlar/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SuhbatlarIdRoute = SuhbatlarIdRouteImport.update({
+  id: '/suhbatlar/$id',
+  path: '/suhbatlar/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/agentlar': typeof AgentlarRoute
+  '/auth': typeof AuthRoute
+  '/bildirishnomalar': typeof BildirishnomalarRoute
+  '/ijara': typeof IjaraRoute
+  '/joylash': typeof JoylashRoute
+  '/mening-elonlarim': typeof MeningElonlarimRoute
+  '/profil': typeof ProfilRoute
+  '/sevimlilar': typeof SevimlilarRoute
+  '/sotuv': typeof SotuvRoute
+  '/elon/$id': typeof ElonIdRoute
+  '/suhbatlar/$id': typeof SuhbatlarIdRoute
+  '/suhbatlar/': typeof SuhbatlarIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/agentlar': typeof AgentlarRoute
+  '/auth': typeof AuthRoute
+  '/bildirishnomalar': typeof BildirishnomalarRoute
+  '/ijara': typeof IjaraRoute
+  '/joylash': typeof JoylashRoute
+  '/mening-elonlarim': typeof MeningElonlarimRoute
+  '/profil': typeof ProfilRoute
+  '/sevimlilar': typeof SevimlilarRoute
+  '/sotuv': typeof SotuvRoute
+  '/elon/$id': typeof ElonIdRoute
+  '/suhbatlar/$id': typeof SuhbatlarIdRoute
+  '/suhbatlar': typeof SuhbatlarIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/agentlar': typeof AgentlarRoute
+  '/auth': typeof AuthRoute
+  '/bildirishnomalar': typeof BildirishnomalarRoute
+  '/ijara': typeof IjaraRoute
+  '/joylash': typeof JoylashRoute
+  '/mening-elonlarim': typeof MeningElonlarimRoute
+  '/profil': typeof ProfilRoute
+  '/sevimlilar': typeof SevimlilarRoute
+  '/sotuv': typeof SotuvRoute
+  '/elon/$id': typeof ElonIdRoute
+  '/suhbatlar/$id': typeof SuhbatlarIdRoute
+  '/suhbatlar/': typeof SuhbatlarIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/agentlar'
+    | '/auth'
+    | '/bildirishnomalar'
+    | '/ijara'
+    | '/joylash'
+    | '/mening-elonlarim'
+    | '/profil'
+    | '/sevimlilar'
+    | '/sotuv'
+    | '/elon/$id'
+    | '/suhbatlar/$id'
+    | '/suhbatlar/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/admin'
+    | '/agentlar'
+    | '/auth'
+    | '/bildirishnomalar'
+    | '/ijara'
+    | '/joylash'
+    | '/mening-elonlarim'
+    | '/profil'
+    | '/sevimlilar'
+    | '/sotuv'
+    | '/elon/$id'
+    | '/suhbatlar/$id'
+    | '/suhbatlar'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/agentlar'
+    | '/auth'
+    | '/bildirishnomalar'
+    | '/ijara'
+    | '/joylash'
+    | '/mening-elonlarim'
+    | '/profil'
+    | '/sevimlilar'
+    | '/sotuv'
+    | '/elon/$id'
+    | '/suhbatlar/$id'
+    | '/suhbatlar/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
+  AgentlarRoute: typeof AgentlarRoute
+  AuthRoute: typeof AuthRoute
+  BildirishnomalarRoute: typeof BildirishnomalarRoute
+  IjaraRoute: typeof IjaraRoute
+  JoylashRoute: typeof JoylashRoute
+  MeningElonlarimRoute: typeof MeningElonlarimRoute
+  ProfilRoute: typeof ProfilRoute
+  SevimlilarRoute: typeof SevimlilarRoute
+  SotuvRoute: typeof SotuvRoute
+  ElonIdRoute: typeof ElonIdRoute
+  SuhbatlarIdRoute: typeof SuhbatlarIdRoute
+  SuhbatlarIndexRoute: typeof SuhbatlarIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +221,115 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agentlar': {
+      id: '/agentlar'
+      path: '/agentlar'
+      fullPath: '/agentlar'
+      preLoaderRoute: typeof AgentlarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bildirishnomalar': {
+      id: '/bildirishnomalar'
+      path: '/bildirishnomalar'
+      fullPath: '/bildirishnomalar'
+      preLoaderRoute: typeof BildirishnomalarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ijara': {
+      id: '/ijara'
+      path: '/ijara'
+      fullPath: '/ijara'
+      preLoaderRoute: typeof IjaraRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/joylash': {
+      id: '/joylash'
+      path: '/joylash'
+      fullPath: '/joylash'
+      preLoaderRoute: typeof JoylashRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mening-elonlarim': {
+      id: '/mening-elonlarim'
+      path: '/mening-elonlarim'
+      fullPath: '/mening-elonlarim'
+      preLoaderRoute: typeof MeningElonlarimRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profil': {
+      id: '/profil'
+      path: '/profil'
+      fullPath: '/profil'
+      preLoaderRoute: typeof ProfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sevimlilar': {
+      id: '/sevimlilar'
+      path: '/sevimlilar'
+      fullPath: '/sevimlilar'
+      preLoaderRoute: typeof SevimlilarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sotuv': {
+      id: '/sotuv'
+      path: '/sotuv'
+      fullPath: '/sotuv'
+      preLoaderRoute: typeof SotuvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/elon/$id': {
+      id: '/elon/$id'
+      path: '/elon/$id'
+      fullPath: '/elon/$id'
+      preLoaderRoute: typeof ElonIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/suhbatlar/': {
+      id: '/suhbatlar/'
+      path: '/suhbatlar'
+      fullPath: '/suhbatlar/'
+      preLoaderRoute: typeof SuhbatlarIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/suhbatlar/$id': {
+      id: '/suhbatlar/$id'
+      path: '/suhbatlar/$id'
+      fullPath: '/suhbatlar/$id'
+      preLoaderRoute: typeof SuhbatlarIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
+  AgentlarRoute: AgentlarRoute,
+  AuthRoute: AuthRoute,
+  BildirishnomalarRoute: BildirishnomalarRoute,
+  IjaraRoute: IjaraRoute,
+  JoylashRoute: JoylashRoute,
+  MeningElonlarimRoute: MeningElonlarimRoute,
+  ProfilRoute: ProfilRoute,
+  SevimlilarRoute: SevimlilarRoute,
+  SotuvRoute: SotuvRoute,
+  ElonIdRoute: ElonIdRoute,
+  SuhbatlarIdRoute: SuhbatlarIdRoute,
+  SuhbatlarIndexRoute: SuhbatlarIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
