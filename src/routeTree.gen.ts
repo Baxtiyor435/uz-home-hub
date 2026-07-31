@@ -10,33 +10,141 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AgentlarRouteImport } from './routes/agentlar'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as IjaraRouteImport } from './routes/ijara'
+import { Route as JoylashRouteImport } from './routes/joylash'
+import { Route as MeningElonlarimRouteImport } from './routes/mening-elonlarim'
+import { Route as SevimlilarRouteImport } from './routes/sevimlilar'
+import { Route as SotuvRouteImport } from './routes/sotuv'
+import { Route as ElonIdRouteImport } from './routes/elon.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AgentlarRoute = AgentlarRouteImport.update({
+  id: '/agentlar',
+  path: '/agentlar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IjaraRoute = IjaraRouteImport.update({
+  id: '/ijara',
+  path: '/ijara',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JoylashRoute = JoylashRouteImport.update({
+  id: '/joylash',
+  path: '/joylash',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MeningElonlarimRoute = MeningElonlarimRouteImport.update({
+  id: '/mening-elonlarim',
+  path: '/mening-elonlarim',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SevimlilarRoute = SevimlilarRouteImport.update({
+  id: '/sevimlilar',
+  path: '/sevimlilar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SotuvRoute = SotuvRouteImport.update({
+  id: '/sotuv',
+  path: '/sotuv',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ElonIdRoute = ElonIdRouteImport.update({
+  id: '/elon/$id',
+  path: '/elon/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/agentlar': typeof AgentlarRoute
+  '/auth': typeof AuthRoute
+  '/ijara': typeof IjaraRoute
+  '/joylash': typeof JoylashRoute
+  '/mening-elonlarim': typeof MeningElonlarimRoute
+  '/sevimlilar': typeof SevimlilarRoute
+  '/sotuv': typeof SotuvRoute
+  '/elon/$id': typeof ElonIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/agentlar': typeof AgentlarRoute
+  '/auth': typeof AuthRoute
+  '/ijara': typeof IjaraRoute
+  '/joylash': typeof JoylashRoute
+  '/mening-elonlarim': typeof MeningElonlarimRoute
+  '/sevimlilar': typeof SevimlilarRoute
+  '/sotuv': typeof SotuvRoute
+  '/elon/$id': typeof ElonIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/agentlar': typeof AgentlarRoute
+  '/auth': typeof AuthRoute
+  '/ijara': typeof IjaraRoute
+  '/joylash': typeof JoylashRoute
+  '/mening-elonlarim': typeof MeningElonlarimRoute
+  '/sevimlilar': typeof SevimlilarRoute
+  '/sotuv': typeof SotuvRoute
+  '/elon/$id': typeof ElonIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/agentlar'
+    | '/auth'
+    | '/ijara'
+    | '/joylash'
+    | '/mening-elonlarim'
+    | '/sevimlilar'
+    | '/sotuv'
+    | '/elon/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/agentlar'
+    | '/auth'
+    | '/ijara'
+    | '/joylash'
+    | '/mening-elonlarim'
+    | '/sevimlilar'
+    | '/sotuv'
+    | '/elon/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/agentlar'
+    | '/auth'
+    | '/ijara'
+    | '/joylash'
+    | '/mening-elonlarim'
+    | '/sevimlilar'
+    | '/sotuv'
+    | '/elon/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AgentlarRoute: typeof AgentlarRoute
+  AuthRoute: typeof AuthRoute
+  IjaraRoute: typeof IjaraRoute
+  JoylashRoute: typeof JoylashRoute
+  MeningElonlarimRoute: typeof MeningElonlarimRoute
+  SevimlilarRoute: typeof SevimlilarRoute
+  SotuvRoute: typeof SotuvRoute
+  ElonIdRoute: typeof ElonIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +156,75 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/agentlar': {
+      id: '/agentlar'
+      path: '/agentlar'
+      fullPath: '/agentlar'
+      preLoaderRoute: typeof AgentlarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ijara': {
+      id: '/ijara'
+      path: '/ijara'
+      fullPath: '/ijara'
+      preLoaderRoute: typeof IjaraRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/joylash': {
+      id: '/joylash'
+      path: '/joylash'
+      fullPath: '/joylash'
+      preLoaderRoute: typeof JoylashRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mening-elonlarim': {
+      id: '/mening-elonlarim'
+      path: '/mening-elonlarim'
+      fullPath: '/mening-elonlarim'
+      preLoaderRoute: typeof MeningElonlarimRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sevimlilar': {
+      id: '/sevimlilar'
+      path: '/sevimlilar'
+      fullPath: '/sevimlilar'
+      preLoaderRoute: typeof SevimlilarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sotuv': {
+      id: '/sotuv'
+      path: '/sotuv'
+      fullPath: '/sotuv'
+      preLoaderRoute: typeof SotuvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/elon/$id': {
+      id: '/elon/$id'
+      path: '/elon/$id'
+      fullPath: '/elon/$id'
+      preLoaderRoute: typeof ElonIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AgentlarRoute: AgentlarRoute,
+  AuthRoute: AuthRoute,
+  IjaraRoute: IjaraRoute,
+  JoylashRoute: JoylashRoute,
+  MeningElonlarimRoute: MeningElonlarimRoute,
+  SevimlilarRoute: SevimlilarRoute,
+  SotuvRoute: SotuvRoute,
+  ElonIdRoute: ElonIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
