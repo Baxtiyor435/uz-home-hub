@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AgentlarRouteImport } from './routes/agentlar'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as BildirishnomalarRouteImport } from './routes/bildirishnomalar'
 import { Route as IjaraRouteImport } from './routes/ijara'
 import { Route as JoylashRouteImport } from './routes/joylash'
 import { Route as MeningElonlarimRouteImport } from './routes/mening-elonlarim'
@@ -35,6 +36,11 @@ const AgentlarRoute = AgentlarRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BildirishnomalarRoute = BildirishnomalarRouteImport.update({
+  id: '/bildirishnomalar',
+  path: '/bildirishnomalar',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IjaraRoute = IjaraRouteImport.update({
@@ -87,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/agentlar': typeof AgentlarRoute
   '/auth': typeof AuthRoute
+  '/bildirishnomalar': typeof BildirishnomalarRoute
   '/ijara': typeof IjaraRoute
   '/joylash': typeof JoylashRoute
   '/mening-elonlarim': typeof MeningElonlarimRoute
@@ -101,6 +108,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agentlar': typeof AgentlarRoute
   '/auth': typeof AuthRoute
+  '/bildirishnomalar': typeof BildirishnomalarRoute
   '/ijara': typeof IjaraRoute
   '/joylash': typeof JoylashRoute
   '/mening-elonlarim': typeof MeningElonlarimRoute
@@ -116,6 +124,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/agentlar': typeof AgentlarRoute
   '/auth': typeof AuthRoute
+  '/bildirishnomalar': typeof BildirishnomalarRoute
   '/ijara': typeof IjaraRoute
   '/joylash': typeof JoylashRoute
   '/mening-elonlarim': typeof MeningElonlarimRoute
@@ -132,6 +141,7 @@ export interface FileRouteTypes {
     | '/'
     | '/agentlar'
     | '/auth'
+    | '/bildirishnomalar'
     | '/ijara'
     | '/joylash'
     | '/mening-elonlarim'
@@ -146,6 +156,7 @@ export interface FileRouteTypes {
     | '/'
     | '/agentlar'
     | '/auth'
+    | '/bildirishnomalar'
     | '/ijara'
     | '/joylash'
     | '/mening-elonlarim'
@@ -160,6 +171,7 @@ export interface FileRouteTypes {
     | '/'
     | '/agentlar'
     | '/auth'
+    | '/bildirishnomalar'
     | '/ijara'
     | '/joylash'
     | '/mening-elonlarim'
@@ -175,6 +187,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AgentlarRoute: typeof AgentlarRoute
   AuthRoute: typeof AuthRoute
+  BildirishnomalarRoute: typeof BildirishnomalarRoute
   IjaraRoute: typeof IjaraRoute
   JoylashRoute: typeof JoylashRoute
   MeningElonlarimRoute: typeof MeningElonlarimRoute
@@ -207,6 +220,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bildirishnomalar': {
+      id: '/bildirishnomalar'
+      path: '/bildirishnomalar'
+      fullPath: '/bildirishnomalar'
+      preLoaderRoute: typeof BildirishnomalarRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ijara': {
@@ -279,6 +299,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AgentlarRoute: AgentlarRoute,
   AuthRoute: AuthRoute,
+  BildirishnomalarRoute: BildirishnomalarRoute,
   IjaraRoute: IjaraRoute,
   JoylashRoute: JoylashRoute,
   MeningElonlarimRoute: MeningElonlarimRoute,
