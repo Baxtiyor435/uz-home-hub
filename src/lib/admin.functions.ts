@@ -3,9 +3,11 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-async function assertStaff(supabase: {
-  rpc: (fn: string, args: Record<string, unknown>) => Promise<{ data: unknown }>;
-}, userId: string) {
+type StaffCheckClient = {
+  rpc: (fn: "is_staff", args: { _user_id: string }) => PromiseLike<{ data: boolean | null }>;
+};
+
+async function assertStaff(supabase: StaffCheckClient, userId: string) {
   const { data } = await supabase.rpc("is_staff", { _user_id: userId });
   if (data !== true) throw new Error("Ruxsat yo'q");
 }
