@@ -19,6 +19,7 @@ import { Route as ProfilRouteImport } from './routes/profil'
 import { Route as SevimlilarRouteImport } from './routes/sevimlilar'
 import { Route as SotuvRouteImport } from './routes/sotuv'
 import { Route as ElonIdRouteImport } from './routes/elon.$id'
+import { Route as SuhbatlarIndexRouteImport } from './routes/suhbatlar.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -70,6 +71,11 @@ const ElonIdRoute = ElonIdRouteImport.update({
   path: '/elon/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SuhbatlarIndexRoute = SuhbatlarIndexRouteImport.update({
+  id: '/suhbatlar/',
+  path: '/suhbatlar/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -82,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/sevimlilar': typeof SevimlilarRoute
   '/sotuv': typeof SotuvRoute
   '/elon/$id': typeof ElonIdRoute
+  '/suhbatlar/': typeof SuhbatlarIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByTo {
   '/sevimlilar': typeof SevimlilarRoute
   '/sotuv': typeof SotuvRoute
   '/elon/$id': typeof ElonIdRoute
+  '/suhbatlar': typeof SuhbatlarIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -107,6 +115,7 @@ export interface FileRoutesById {
   '/sevimlilar': typeof SevimlilarRoute
   '/sotuv': typeof SotuvRoute
   '/elon/$id': typeof ElonIdRoute
+  '/suhbatlar/': typeof SuhbatlarIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
     | '/sevimlilar'
     | '/sotuv'
     | '/elon/$id'
+    | '/suhbatlar/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -133,6 +143,7 @@ export interface FileRouteTypes {
     | '/sevimlilar'
     | '/sotuv'
     | '/elon/$id'
+    | '/suhbatlar'
   id:
     | '__root__'
     | '/'
@@ -145,6 +156,7 @@ export interface FileRouteTypes {
     | '/sevimlilar'
     | '/sotuv'
     | '/elon/$id'
+    | '/suhbatlar/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -158,6 +170,7 @@ export interface RootRouteChildren {
   SevimlilarRoute: typeof SevimlilarRoute
   SotuvRoute: typeof SotuvRoute
   ElonIdRoute: typeof ElonIdRoute
+  SuhbatlarIndexRoute: typeof SuhbatlarIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -232,6 +245,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ElonIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/suhbatlar/': {
+      id: '/suhbatlar/'
+      path: '/suhbatlar'
+      fullPath: '/suhbatlar/'
+      preLoaderRoute: typeof SuhbatlarIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -246,6 +266,7 @@ const rootRouteChildren: RootRouteChildren = {
   SevimlilarRoute: SevimlilarRoute,
   SotuvRoute: SotuvRoute,
   ElonIdRoute: ElonIdRoute,
+  SuhbatlarIndexRoute: SuhbatlarIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
