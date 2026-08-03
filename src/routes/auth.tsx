@@ -58,7 +58,7 @@ function AuthPage() {
       }
       setStep("code");
       setCountdown(result.resendAfter);
-      toast.success("Tasdiqlash kodi SMS orqali yuborildi");
+      toast.success("Demo rejimi: 123456 kodini kiriting");
     },
     onError: (error: Error) => toast.error(error.message),
   });
