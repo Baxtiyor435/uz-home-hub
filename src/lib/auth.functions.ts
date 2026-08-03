@@ -27,7 +27,15 @@ export const sendOtp = createServerFn({ method: "POST" })
     if (!phone) return { ok: false, message: "Telefon raqami noto'g'ri kiritilgan" };
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { generateOtpCode, hashOtpCode, sendSms, otpConfig } = await import("@/lib/otp.server");
+    const { generateOtpCode, hashOtpCode, sendSms, otpConfig, DEMO_OTP_CODE } = await import(
+      "@/lib/otp.server"
+    );
+
+    // Demo rejimi: SMS o'rniga doimiy kod bilan kirish.
+    if (DEMO_OTP_CODE) {
+      return { ok: true, resendAfter: 0 };
+    }
+
 
     const { data: recent } = await supabaseAdmin
       .from("otp_codes")
