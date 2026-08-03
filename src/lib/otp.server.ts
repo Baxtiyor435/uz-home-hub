@@ -13,6 +13,12 @@ export const otpConfig = {
   resendSeconds: OTP_RESEND_SECONDS,
 };
 
+/**
+ * Temporary demo access: any phone number can sign in with this code while
+ * Eskiz SMS moderation is pending. Remove once real SMS delivery is live.
+ */
+export const DEMO_OTP_CODE = "123456";
+
 export function generateOtpCode(): string {
   const buffer = new Uint32Array(1);
   crypto.getRandomValues(buffer);

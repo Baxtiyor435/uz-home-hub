@@ -27,7 +27,15 @@ export const sendOtp = createServerFn({ method: "POST" })
     if (!phone) return { ok: false, message: "Telefon raqami noto'g'ri kiritilgan" };
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { generateOtpCode, hashOtpCode, sendSms, otpConfig } = await import("@/lib/otp.server");
+    const { generateOtpCode, hashOtpCode, sendSms, otpConfig, DEMO_OTP_CODE } = await import(
+      "@/lib/otp.server"
+    );
+
+    // Demo rejimi: SMS o'rniga doimiy kod bilan kirish.
+    if (DEMO_OTP_CODE) {
+      return { ok: true, resendAfter: 0 };
+    }
+
 
     const { data: recent } = await supabaseAdmin
       .from("otp_codes")
@@ -81,42 +89,46 @@ export const verifyOtp = createServerFn({ method: "POST" })
     if (!phone) return { ok: false, message: "Telefon raqami noto'g'ri kiritilgan" };
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { hashOtpCode, generateStrongPassword, phoneToEmail, otpConfig } = await import(
-      "@/lib/otp.server"
-    );
+    const { hashOtpCode, generateStrongPassword, phoneToEmail, otpConfig, DEMO_OTP_CODE } =
+      await import("@/lib/otp.server");
     const { createClient } = await import("@supabase/supabase-js");
 
-    const { data: record } = await supabaseAdmin
-      .from("otp_codes")
-      .select("id, code_hash, attempts, consumed_at, expires_at")
-      .eq("phone", phone)
-      .is("consumed_at", null)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    const isDemoCode = data.code === DEMO_OTP_CODE;
 
-    if (!record) return { ok: false, message: "Kod topilmadi. Yangi kod so'rang" };
-    if (new Date(record.expires_at).getTime() < Date.now()) {
-      return { ok: false, message: "Kod muddati tugagan. Yangi kod so'rang" };
-    }
-    if (record.attempts >= otpConfig.maxAttempts) {
-      return { ok: false, message: "Urinishlar soni tugadi. Yangi kod so'rang" };
-    }
+    if (!isDemoCode) {
+      const { data: record } = await supabaseAdmin
+        .from("otp_codes")
+        .select("id, code_hash, attempts, consumed_at, expires_at")
+        .eq("phone", phone)
+        .is("consumed_at", null)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
 
-    const pepper = process.env["SUPABASE_SERVICE_ROLE_KEY"] ?? "ubu";
-    const codeHash = await hashOtpCode(phone, data.code, pepper);
-    if (codeHash !== record.code_hash) {
+      if (!record) return { ok: false, message: "Kod topilmadi. Yangi kod so'rang" };
+      if (new Date(record.expires_at).getTime() < Date.now()) {
+        return { ok: false, message: "Kod muddati tugagan. Yangi kod so'rang" };
+      }
+      if (record.attempts >= otpConfig.maxAttempts) {
+        return { ok: false, message: "Urinishlar soni tugadi. Yangi kod so'rang" };
+      }
+
+      const pepper = process.env["SUPABASE_SERVICE_ROLE_KEY"] ?? "ubu";
+      const codeHash = await hashOtpCode(phone, data.code, pepper);
+      if (codeHash !== record.code_hash) {
+        await supabaseAdmin
+          .from("otp_codes")
+          .update({ attempts: record.attempts + 1 })
+          .eq("id", record.id);
+        return { ok: false, message: "Kod noto'g'ri. Qaytadan kiriting" };
+      }
+
       await supabaseAdmin
         .from("otp_codes")
-        .update({ attempts: record.attempts + 1 })
+        .update({ consumed_at: new Date().toISOString() })
         .eq("id", record.id);
-      return { ok: false, message: "Kod noto'g'ri. Qaytadan kiriting" };
     }
 
-    await supabaseAdmin
-      .from("otp_codes")
-      .update({ consumed_at: new Date().toISOString() })
-      .eq("id", record.id);
 
     const email = phoneToEmail(phone);
     const password = generateStrongPassword();
