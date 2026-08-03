@@ -152,7 +152,12 @@ function AuthPage() {
               <p className="text-muted-foreground mt-1 text-sm">
                 {phone} raqamiga yuborilgan 6 xonali kodni kiriting.
               </p>
+              <p className="bg-muted text-muted-foreground mt-3 rounded-md px-3 py-2 text-xs">
+                Demo rejimi: SMS hozircha yuborilmaydi. Kirish uchun{" "}
+                <span className="text-foreground font-semibold">123456</span> kodini kiriting.
+              </p>
             </div>
+
 
             <div className="flex justify-center">
               <InputOTP maxLength={6} value={code} onChange={setCode}>
