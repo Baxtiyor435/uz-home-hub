@@ -39,13 +39,13 @@ function HomePage() {
 
   return (
     <PageShell>
-      <section className="brand-gradient text-primary-foreground">
+      <section className="luxe-gradient border-b border-gold/20 text-foreground">
         <div className="mx-auto max-w-6xl px-4 py-16 text-center sm:py-24">
-          <p className="text-primary-foreground/80 text-sm font-medium">{APP_SLOGAN}</p>
+          <p className="text-foreground/70 text-sm font-medium">{APP_SLOGAN}</p>
           <h1 className="font-display mt-3 text-3xl leading-tight font-extrabold sm:text-5xl">
-            Ishonchli uy-joyni <br className="hidden sm:block" /> UBU orqali toping
+            Ishonchli uy-joyni <br className="hidden sm:block" /> <span className="text-gold">UBU</span> orqali toping
           </h1>
-          <p className="text-primary-foreground/80 mx-auto mt-4 max-w-xl text-sm sm:text-base">
+          <p className="text-foreground/70 mx-auto mt-4 max-w-xl text-sm sm:text-base">
             Barcha e'lonlar administrator tomonidan tekshiriladi. Sotuv e'lonlarini faqat
             tasdiqlangan agentlar joylashtiradi.
           </p>
@@ -61,7 +61,7 @@ function HomePage() {
               placeholder="Tuman yoki kalit so'z"
               maxLength={80}
               aria-label="Qidiruv"
-              className="bg-background text-foreground"
+              className="bg-input text-foreground"
             />
             <Button asChild variant="secondary" type="button">
               <Link to="/sotuv">
@@ -72,7 +72,7 @@ function HomePage() {
           </form>
 
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Button asChild size="lg" variant="secondary">
+            <Button asChild size="lg">
               <Link to="/sotuv">
                 <Building2 className="mr-2 h-4 w-4" />
                 Sotuvdagilar
