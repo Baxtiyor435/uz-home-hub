@@ -31,9 +31,27 @@ export const Route = createFileRoute("/profil")({
 });
 
 function ProfilePage() {
-  const { user, profile, roles, isAgent, isPremium, loading, refresh } = useAuth();
+  const { user, profile, roles, isAgent, isStaff, isSuperAdmin, isPremium, loading, refresh } =
+    useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [adminCode, setAdminCode] = useState("");
+  const [superCode, setSuperCode] = useState("");
+
+  const redeem = useMutation({
+    mutationFn: (code: string) => redeemStaffCode({ data: { code } }),
+    onSuccess: (result) => {
+      refresh();
+      setAdminCode("");
+      setSuperCode("");
+      toast.success(
+        result.role === "super_admin" ? "Super admin huquqi berildi" : "Admin huquqi berildi",
+      );
+      navigate({ to: result.role === "super_admin" ? "/super-admin" : "/admin" });
+    },
+    onError: () => toast.error("Kod noto'g'ri"),
+  });
+
 
   const { data: application } = useQuery({
     queryKey: ["agent-application", user?.id],
