@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { LogOut, Star } from "lucide-react";
+import { Crown, LogOut, ShieldCheck, Star } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { PageShell } from "@/components/PageShell";
@@ -11,8 +12,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { formatDate, formatPhone } from "@/lib/format";
-import { ROLE_LABELS } from "@/lib/uz";
+import { formatDate, formatPhone, formatPrice } from "@/lib/format";
+import { redeemStaffCode } from "@/lib/staff.functions";
+import { DEFAULT_PREMIUM_PRICE, ROLE_LABELS } from "@/lib/uz";
+
 
 export const Route = createFileRoute("/profil")({
   head: () => ({

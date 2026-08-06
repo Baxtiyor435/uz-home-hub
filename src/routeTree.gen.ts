@@ -17,6 +17,7 @@ import { Route as BildirishnomalarRouteImport } from './routes/bildirishnomalar'
 import { Route as IjaraRouteImport } from './routes/ijara'
 import { Route as JoylashRouteImport } from './routes/joylash'
 import { Route as MeningElonlarimRouteImport } from './routes/mening-elonlarim'
+import { Route as ObunaRouteImport } from './routes/obuna'
 import { Route as ProfilRouteImport } from './routes/profil'
 import { Route as SevimlilarRouteImport } from './routes/sevimlilar'
 import { Route as SotuvRouteImport } from './routes/sotuv'
@@ -65,6 +66,11 @@ const MeningElonlarimRoute = MeningElonlarimRouteImport.update({
   path: '/mening-elonlarim',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ObunaRoute = ObunaRouteImport.update({
+  id: '/obuna',
+  path: '/obuna',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfilRoute = ProfilRouteImport.update({
   id: '/profil',
   path: '/profil',
@@ -110,6 +116,7 @@ export interface FileRoutesByFullPath {
   '/ijara': typeof IjaraRoute
   '/joylash': typeof JoylashRoute
   '/mening-elonlarim': typeof MeningElonlarimRoute
+  '/obuna': typeof ObunaRoute
   '/profil': typeof ProfilRoute
   '/sevimlilar': typeof SevimlilarRoute
   '/sotuv': typeof SotuvRoute
@@ -127,6 +134,7 @@ export interface FileRoutesByTo {
   '/ijara': typeof IjaraRoute
   '/joylash': typeof JoylashRoute
   '/mening-elonlarim': typeof MeningElonlarimRoute
+  '/obuna': typeof ObunaRoute
   '/profil': typeof ProfilRoute
   '/sevimlilar': typeof SevimlilarRoute
   '/sotuv': typeof SotuvRoute
@@ -145,6 +153,7 @@ export interface FileRoutesById {
   '/ijara': typeof IjaraRoute
   '/joylash': typeof JoylashRoute
   '/mening-elonlarim': typeof MeningElonlarimRoute
+  '/obuna': typeof ObunaRoute
   '/profil': typeof ProfilRoute
   '/sevimlilar': typeof SevimlilarRoute
   '/sotuv': typeof SotuvRoute
@@ -164,6 +173,7 @@ export interface FileRouteTypes {
     | '/ijara'
     | '/joylash'
     | '/mening-elonlarim'
+    | '/obuna'
     | '/profil'
     | '/sevimlilar'
     | '/sotuv'
@@ -181,6 +191,7 @@ export interface FileRouteTypes {
     | '/ijara'
     | '/joylash'
     | '/mening-elonlarim'
+    | '/obuna'
     | '/profil'
     | '/sevimlilar'
     | '/sotuv'
@@ -198,6 +209,7 @@ export interface FileRouteTypes {
     | '/ijara'
     | '/joylash'
     | '/mening-elonlarim'
+    | '/obuna'
     | '/profil'
     | '/sevimlilar'
     | '/sotuv'
@@ -216,6 +228,7 @@ export interface RootRouteChildren {
   IjaraRoute: typeof IjaraRoute
   JoylashRoute: typeof JoylashRoute
   MeningElonlarimRoute: typeof MeningElonlarimRoute
+  ObunaRoute: typeof ObunaRoute
   ProfilRoute: typeof ProfilRoute
   SevimlilarRoute: typeof SevimlilarRoute
   SotuvRoute: typeof SotuvRoute
@@ -283,6 +296,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MeningElonlarimRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/obuna': {
+      id: '/obuna'
+      path: '/obuna'
+      fullPath: '/obuna'
+      preLoaderRoute: typeof ObunaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/profil': {
       id: '/profil'
       path: '/profil'
@@ -344,6 +364,7 @@ const rootRouteChildren: RootRouteChildren = {
   IjaraRoute: IjaraRoute,
   JoylashRoute: JoylashRoute,
   MeningElonlarimRoute: MeningElonlarimRoute,
+  ObunaRoute: ObunaRoute,
   ProfilRoute: ProfilRoute,
   SevimlilarRoute: SevimlilarRoute,
   SotuvRoute: SotuvRoute,
