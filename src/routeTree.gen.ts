@@ -17,9 +17,11 @@ import { Route as BildirishnomalarRouteImport } from './routes/bildirishnomalar'
 import { Route as IjaraRouteImport } from './routes/ijara'
 import { Route as JoylashRouteImport } from './routes/joylash'
 import { Route as MeningElonlarimRouteImport } from './routes/mening-elonlarim'
+import { Route as ObunaRouteImport } from './routes/obuna'
 import { Route as ProfilRouteImport } from './routes/profil'
 import { Route as SevimlilarRouteImport } from './routes/sevimlilar'
 import { Route as SotuvRouteImport } from './routes/sotuv'
+import { Route as SuperAdminRouteImport } from './routes/super-admin'
 import { Route as ElonIdRouteImport } from './routes/elon.$id'
 import { Route as SuhbatlarIndexRouteImport } from './routes/suhbatlar.index'
 import { Route as SuhbatlarIdRouteImport } from './routes/suhbatlar.$id'
@@ -64,6 +66,11 @@ const MeningElonlarimRoute = MeningElonlarimRouteImport.update({
   path: '/mening-elonlarim',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ObunaRoute = ObunaRouteImport.update({
+  id: '/obuna',
+  path: '/obuna',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfilRoute = ProfilRouteImport.update({
   id: '/profil',
   path: '/profil',
@@ -77,6 +84,11 @@ const SevimlilarRoute = SevimlilarRouteImport.update({
 const SotuvRoute = SotuvRouteImport.update({
   id: '/sotuv',
   path: '/sotuv',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SuperAdminRoute = SuperAdminRouteImport.update({
+  id: '/super-admin',
+  path: '/super-admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ElonIdRoute = ElonIdRouteImport.update({
@@ -104,9 +116,11 @@ export interface FileRoutesByFullPath {
   '/ijara': typeof IjaraRoute
   '/joylash': typeof JoylashRoute
   '/mening-elonlarim': typeof MeningElonlarimRoute
+  '/obuna': typeof ObunaRoute
   '/profil': typeof ProfilRoute
   '/sevimlilar': typeof SevimlilarRoute
   '/sotuv': typeof SotuvRoute
+  '/super-admin': typeof SuperAdminRoute
   '/elon/$id': typeof ElonIdRoute
   '/suhbatlar/$id': typeof SuhbatlarIdRoute
   '/suhbatlar/': typeof SuhbatlarIndexRoute
@@ -120,9 +134,11 @@ export interface FileRoutesByTo {
   '/ijara': typeof IjaraRoute
   '/joylash': typeof JoylashRoute
   '/mening-elonlarim': typeof MeningElonlarimRoute
+  '/obuna': typeof ObunaRoute
   '/profil': typeof ProfilRoute
   '/sevimlilar': typeof SevimlilarRoute
   '/sotuv': typeof SotuvRoute
+  '/super-admin': typeof SuperAdminRoute
   '/elon/$id': typeof ElonIdRoute
   '/suhbatlar/$id': typeof SuhbatlarIdRoute
   '/suhbatlar': typeof SuhbatlarIndexRoute
@@ -137,9 +153,11 @@ export interface FileRoutesById {
   '/ijara': typeof IjaraRoute
   '/joylash': typeof JoylashRoute
   '/mening-elonlarim': typeof MeningElonlarimRoute
+  '/obuna': typeof ObunaRoute
   '/profil': typeof ProfilRoute
   '/sevimlilar': typeof SevimlilarRoute
   '/sotuv': typeof SotuvRoute
+  '/super-admin': typeof SuperAdminRoute
   '/elon/$id': typeof ElonIdRoute
   '/suhbatlar/$id': typeof SuhbatlarIdRoute
   '/suhbatlar/': typeof SuhbatlarIndexRoute
@@ -155,9 +173,11 @@ export interface FileRouteTypes {
     | '/ijara'
     | '/joylash'
     | '/mening-elonlarim'
+    | '/obuna'
     | '/profil'
     | '/sevimlilar'
     | '/sotuv'
+    | '/super-admin'
     | '/elon/$id'
     | '/suhbatlar/$id'
     | '/suhbatlar/'
@@ -171,9 +191,11 @@ export interface FileRouteTypes {
     | '/ijara'
     | '/joylash'
     | '/mening-elonlarim'
+    | '/obuna'
     | '/profil'
     | '/sevimlilar'
     | '/sotuv'
+    | '/super-admin'
     | '/elon/$id'
     | '/suhbatlar/$id'
     | '/suhbatlar'
@@ -187,9 +209,11 @@ export interface FileRouteTypes {
     | '/ijara'
     | '/joylash'
     | '/mening-elonlarim'
+    | '/obuna'
     | '/profil'
     | '/sevimlilar'
     | '/sotuv'
+    | '/super-admin'
     | '/elon/$id'
     | '/suhbatlar/$id'
     | '/suhbatlar/'
@@ -204,9 +228,11 @@ export interface RootRouteChildren {
   IjaraRoute: typeof IjaraRoute
   JoylashRoute: typeof JoylashRoute
   MeningElonlarimRoute: typeof MeningElonlarimRoute
+  ObunaRoute: typeof ObunaRoute
   ProfilRoute: typeof ProfilRoute
   SevimlilarRoute: typeof SevimlilarRoute
   SotuvRoute: typeof SotuvRoute
+  SuperAdminRoute: typeof SuperAdminRoute
   ElonIdRoute: typeof ElonIdRoute
   SuhbatlarIdRoute: typeof SuhbatlarIdRoute
   SuhbatlarIndexRoute: typeof SuhbatlarIndexRoute
@@ -270,6 +296,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MeningElonlarimRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/obuna': {
+      id: '/obuna'
+      path: '/obuna'
+      fullPath: '/obuna'
+      preLoaderRoute: typeof ObunaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/profil': {
       id: '/profil'
       path: '/profil'
@@ -289,6 +322,13 @@ declare module '@tanstack/react-router' {
       path: '/sotuv'
       fullPath: '/sotuv'
       preLoaderRoute: typeof SotuvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/super-admin': {
+      id: '/super-admin'
+      path: '/super-admin'
+      fullPath: '/super-admin'
+      preLoaderRoute: typeof SuperAdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/elon/$id': {
@@ -324,9 +364,11 @@ const rootRouteChildren: RootRouteChildren = {
   IjaraRoute: IjaraRoute,
   JoylashRoute: JoylashRoute,
   MeningElonlarimRoute: MeningElonlarimRoute,
+  ObunaRoute: ObunaRoute,
   ProfilRoute: ProfilRoute,
   SevimlilarRoute: SevimlilarRoute,
   SotuvRoute: SotuvRoute,
+  SuperAdminRoute: SuperAdminRoute,
   ElonIdRoute: ElonIdRoute,
   SuhbatlarIdRoute: SuhbatlarIdRoute,
   SuhbatlarIndexRoute: SuhbatlarIndexRoute,

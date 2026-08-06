@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { LogOut, Star } from "lucide-react";
+import { Crown, LogOut, ShieldCheck, Star } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { PageShell } from "@/components/PageShell";
@@ -11,8 +12,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { formatDate, formatPhone } from "@/lib/format";
-import { ROLE_LABELS } from "@/lib/uz";
+import { formatDate, formatPhone, formatPrice } from "@/lib/format";
+import { redeemStaffCode } from "@/lib/staff.functions";
+import { DEFAULT_PREMIUM_PRICE, ROLE_LABELS } from "@/lib/uz";
+
 
 export const Route = createFileRoute("/profil")({
   head: () => ({
@@ -28,9 +31,27 @@ export const Route = createFileRoute("/profil")({
 });
 
 function ProfilePage() {
-  const { user, profile, roles, isAgent, isPremium, loading, refresh } = useAuth();
+  const { user, profile, roles, isAgent, isStaff, isSuperAdmin, isPremium, loading, refresh } =
+    useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [adminCode, setAdminCode] = useState("");
+  const [superCode, setSuperCode] = useState("");
+
+  const redeem = useMutation({
+    mutationFn: (code: string) => redeemStaffCode({ data: { code } }),
+    onSuccess: (result) => {
+      refresh();
+      setAdminCode("");
+      setSuperCode("");
+      toast.success(
+        result.role === "super_admin" ? "Super admin huquqi berildi" : "Admin huquqi berildi",
+      );
+      navigate({ to: result.role === "super_admin" ? "/super-admin" : "/admin" });
+    },
+    onError: () => toast.error("Kod noto'g'ri"),
+  });
+
 
   const { data: application } = useQuery({
     queryKey: ["agent-application", user?.id],
@@ -163,6 +184,92 @@ function ProfilePage() {
             </Button>
           </form>
         </section>
+
+        <section className="surface-card p-5">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className="font-display flex items-center gap-2 text-lg font-semibold">
+                <Crown className="text-primary h-5 w-5" aria-hidden="true" />
+                Premium obuna
+              </h2>
+              <p className="text-muted-foreground mt-1 text-sm">
+                {isPremium && profile?.premium_until
+                  ? `Obunangiz ${formatDate(profile.premium_until)} gacha faol.`
+                  : `Oyiga ${formatPrice(DEFAULT_PREMIUM_PRICE, "UZS")} — kontaktlar cheksiz, e'lonlar yuqorida.`}
+              </p>
+            </div>
+          </div>
+          <Button asChild className="mt-4">
+            <Link to="/obuna">{isPremium ? "Obunani boshqarish" : "Obuna sotib olish"}</Link>
+          </Button>
+        </section>
+
+        <section className="surface-card p-5">
+          <h2 className="font-display flex items-center gap-2 text-lg font-semibold">
+            <ShieldCheck className="text-primary h-5 w-5" aria-hidden="true" />
+            Admin panelga o'tish
+          </h2>
+          {isStaff ? (
+            <Button asChild className="mt-4">
+              <Link to="/admin">Admin panelni ochish</Link>
+            </Button>
+          ) : (
+            <form
+              className="mt-4 flex flex-wrap gap-2"
+              onSubmit={(event) => {
+                event.preventDefault();
+                redeem.mutate(adminCode.trim());
+              }}
+            >
+              <Input
+                aria-label="Admin kirish kodi"
+                placeholder="Admin kodi"
+                className="max-w-xs"
+                value={adminCode}
+                onChange={(event) => setAdminCode(event.target.value)}
+              />
+              <Button type="submit" disabled={redeem.isPending || !adminCode.trim()}>
+                Kirish
+              </Button>
+            </form>
+          )}
+
+          <div className="border-border/60 mt-6 border-t pt-5">
+            <h3 className="font-display flex items-center gap-2 text-base font-semibold">
+              <Crown className="text-primary h-4 w-4" aria-hidden="true" />
+              Super admin panelga o'tish
+            </h3>
+            {isSuperAdmin ? (
+              <Button asChild variant="outline" className="mt-4">
+                <Link to="/super-admin">Super admin panelni ochish</Link>
+              </Button>
+            ) : (
+              <form
+                className="mt-4 flex flex-wrap gap-2"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  redeem.mutate(superCode.trim());
+                }}
+              >
+                <Input
+                  aria-label="Super admin kirish kodi"
+                  placeholder="Super admin kodi"
+                  className="max-w-xs"
+                  value={superCode}
+                  onChange={(event) => setSuperCode(event.target.value)}
+                />
+                <Button
+                  type="submit"
+                  variant="outline"
+                  disabled={redeem.isPending || !superCode.trim()}
+                >
+                  Kirish
+                </Button>
+              </form>
+            )}
+          </div>
+        </section>
+
 
         <section className="surface-card p-5">
           <h2 className="font-display mb-2 text-lg font-semibold">Agentlik maqomi</h2>
