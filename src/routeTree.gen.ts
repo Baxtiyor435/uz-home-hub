@@ -20,6 +20,7 @@ import { Route as MeningElonlarimRouteImport } from './routes/mening-elonlarim'
 import { Route as ProfilRouteImport } from './routes/profil'
 import { Route as SevimlilarRouteImport } from './routes/sevimlilar'
 import { Route as SotuvRouteImport } from './routes/sotuv'
+import { Route as SuperAdminRouteImport } from './routes/super-admin'
 import { Route as ElonIdRouteImport } from './routes/elon.$id'
 import { Route as SuhbatlarIndexRouteImport } from './routes/suhbatlar.index'
 import { Route as SuhbatlarIdRouteImport } from './routes/suhbatlar.$id'
@@ -79,6 +80,11 @@ const SotuvRoute = SotuvRouteImport.update({
   path: '/sotuv',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SuperAdminRoute = SuperAdminRouteImport.update({
+  id: '/super-admin',
+  path: '/super-admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ElonIdRoute = ElonIdRouteImport.update({
   id: '/elon/$id',
   path: '/elon/$id',
@@ -107,6 +113,7 @@ export interface FileRoutesByFullPath {
   '/profil': typeof ProfilRoute
   '/sevimlilar': typeof SevimlilarRoute
   '/sotuv': typeof SotuvRoute
+  '/super-admin': typeof SuperAdminRoute
   '/elon/$id': typeof ElonIdRoute
   '/suhbatlar/$id': typeof SuhbatlarIdRoute
   '/suhbatlar/': typeof SuhbatlarIndexRoute
@@ -123,6 +130,7 @@ export interface FileRoutesByTo {
   '/profil': typeof ProfilRoute
   '/sevimlilar': typeof SevimlilarRoute
   '/sotuv': typeof SotuvRoute
+  '/super-admin': typeof SuperAdminRoute
   '/elon/$id': typeof ElonIdRoute
   '/suhbatlar/$id': typeof SuhbatlarIdRoute
   '/suhbatlar': typeof SuhbatlarIndexRoute
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/profil': typeof ProfilRoute
   '/sevimlilar': typeof SevimlilarRoute
   '/sotuv': typeof SotuvRoute
+  '/super-admin': typeof SuperAdminRoute
   '/elon/$id': typeof ElonIdRoute
   '/suhbatlar/$id': typeof SuhbatlarIdRoute
   '/suhbatlar/': typeof SuhbatlarIndexRoute
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
     | '/profil'
     | '/sevimlilar'
     | '/sotuv'
+    | '/super-admin'
     | '/elon/$id'
     | '/suhbatlar/$id'
     | '/suhbatlar/'
@@ -174,6 +184,7 @@ export interface FileRouteTypes {
     | '/profil'
     | '/sevimlilar'
     | '/sotuv'
+    | '/super-admin'
     | '/elon/$id'
     | '/suhbatlar/$id'
     | '/suhbatlar'
@@ -190,6 +201,7 @@ export interface FileRouteTypes {
     | '/profil'
     | '/sevimlilar'
     | '/sotuv'
+    | '/super-admin'
     | '/elon/$id'
     | '/suhbatlar/$id'
     | '/suhbatlar/'
@@ -207,6 +219,7 @@ export interface RootRouteChildren {
   ProfilRoute: typeof ProfilRoute
   SevimlilarRoute: typeof SevimlilarRoute
   SotuvRoute: typeof SotuvRoute
+  SuperAdminRoute: typeof SuperAdminRoute
   ElonIdRoute: typeof ElonIdRoute
   SuhbatlarIdRoute: typeof SuhbatlarIdRoute
   SuhbatlarIndexRoute: typeof SuhbatlarIndexRoute
@@ -291,6 +304,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SotuvRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/super-admin': {
+      id: '/super-admin'
+      path: '/super-admin'
+      fullPath: '/super-admin'
+      preLoaderRoute: typeof SuperAdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/elon/$id': {
       id: '/elon/$id'
       path: '/elon/$id'
@@ -327,6 +347,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfilRoute: ProfilRoute,
   SevimlilarRoute: SevimlilarRoute,
   SotuvRoute: SotuvRoute,
+  SuperAdminRoute: SuperAdminRoute,
   ElonIdRoute: ElonIdRoute,
   SuhbatlarIdRoute: SuhbatlarIdRoute,
   SuhbatlarIndexRoute: SuhbatlarIndexRoute,
@@ -334,13 +355,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
