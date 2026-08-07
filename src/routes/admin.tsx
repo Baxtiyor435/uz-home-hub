@@ -11,7 +11,12 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { moderateAgentApplication, moderateListing } from "@/lib/admin.functions";
+import {
+  listPendingPayments,
+  moderateAgentApplication,
+  moderateListing,
+  reviewPremiumPayment,
+} from "@/lib/admin.functions";
 import { formatDate, formatPrice } from "@/lib/format";
 import { PROPERTY_BUCKET } from "@/lib/storage";
 import { DEAL_TYPE_LABELS } from "@/lib/uz";
