@@ -66,6 +66,23 @@ function AdminPage() {
     },
   });
 
+  const { data: pendingPayments } = useQuery({
+    queryKey: ["admin", "payments"],
+    enabled: isStaff,
+    queryFn: () => listPendingPayments({ data: undefined }),
+  });
+
+  const paymentAction = useMutation({
+    mutationFn: (input: { paymentId: string; approve: boolean; reason?: string }) =>
+      reviewPremiumPayment({ data: input }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "payments"] });
+      toast.success("To'lov holati yangilandi");
+    },
+    onError: () => toast.error("Amalni bajarib bo'lmadi"),
+  });
+
+
   const listingAction = useMutation({
     mutationFn: (input: { propertyId: string; approve: boolean; reason?: string }) =>
       moderateListing({ data: input }),
