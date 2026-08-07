@@ -10,9 +10,18 @@ export const PREMIUM_PLANS = [
   { id: "yearly", months: 12, label: "1 yillik", price: DEFAULT_PREMIUM_PRICE * 12 - 30000 },
 ] as const;
 
-const planSchema = z.object({ planId: z.enum(["monthly", "quarterly", "yearly"]) });
+/** Card the user transfers the payment to before admin confirmation. */
+export const PAYMENT_CARD = {
+  number: "8600 1234 5678 9012",
+  holder: "UBU REAL ESTATE",
+};
 
-/** Creates a pending premium subscription order for the signed-in user. */
+const planSchema = z.object({
+  planId: z.enum(["monthly", "quarterly", "yearly"]),
+  note: z.string().trim().max(300).optional(),
+});
+
+/** Creates a pending premium payment request that an admin must confirm. */
 export const createPremiumOrder = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => planSchema.parse(input))
@@ -20,14 +29,25 @@ export const createPremiumOrder = createServerFn({ method: "POST" })
     const plan = PREMIUM_PLANS.find((item) => item.id === data.planId)!;
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
+    const { data: existing } = await supabaseAdmin
+      .from("payments")
+      .select("id")
+      .eq("user_id", context.userId)
+      .eq("purpose", "premium")
+      .eq("status", "pending")
+      .maybeSingle();
+    if (existing) throw new Error("Sizda tekshiruv kutayotgan to'lov bor");
+
     const { data: payment, error } = await supabaseAdmin
       .from("payments")
       .insert({
         user_id: context.userId,
         purpose: "premium",
         amount: plan.price,
+        months: plan.months,
+        payer_note: data.note ?? null,
         currency: "UZS",
-        provider: "click",
+        provider: "manual",
         status: "pending",
       })
       .select("id")
@@ -36,8 +56,8 @@ export const createPremiumOrder = createServerFn({ method: "POST" })
 
     await supabaseAdmin.from("notifications").insert({
       user_id: context.userId,
-      title: "Premium buyurtma qabul qilindi",
-      body: `${plan.label} obuna uchun to'lov kutilmoqda. Click ulangach to'lovni yakunlaysiz.`,
+      title: "To'lov so'rovi yuborildi",
+      body: `${plan.label} obuna uchun to'lovingiz admin tekshiruviga yuborildi.`,
       link: "/obuna",
     });
 
@@ -50,7 +70,7 @@ export const listMyPremiumOrders = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     const { data, error } = await context.supabase
       .from("payments")
-      .select("id, amount, currency, status, created_at")
+      .select("id, amount, currency, status, months, payer_note, reject_reason, created_at")
       .eq("purpose", "premium")
       .order("created_at", { ascending: false })
       .limit(10);

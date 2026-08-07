@@ -301,10 +301,15 @@ export type Database = {
           created_at: string
           currency: string
           id: string
+          months: number
+          payer_note: string | null
           property_id: string | null
           provider: string
           provider_transaction_id: string | null
           purpose: Database["public"]["Enums"]["payment_purpose"]
+          reject_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
           status: Database["public"]["Enums"]["payment_status"]
           updated_at: string
           user_id: string
@@ -314,10 +319,15 @@ export type Database = {
           created_at?: string
           currency?: string
           id?: string
+          months?: number
+          payer_note?: string | null
           property_id?: string | null
           provider?: string
           provider_transaction_id?: string | null
           purpose: Database["public"]["Enums"]["payment_purpose"]
+          reject_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           status?: Database["public"]["Enums"]["payment_status"]
           updated_at?: string
           user_id: string
@@ -327,10 +337,15 @@ export type Database = {
           created_at?: string
           currency?: string
           id?: string
+          months?: number
+          payer_note?: string | null
           property_id?: string | null
           provider?: string
           provider_transaction_id?: string | null
           purpose?: Database["public"]["Enums"]["payment_purpose"]
+          reject_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           status?: Database["public"]["Enums"]["payment_status"]
           updated_at?: string
           user_id?: string

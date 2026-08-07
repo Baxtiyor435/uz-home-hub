@@ -1,13 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Check, Crown } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { PageShell } from "@/components/PageShell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
-import { PREMIUM_PLANS, createPremiumOrder, listMyPremiumOrders } from "@/lib/billing.functions";
+import {
+  PAYMENT_CARD,
+  PREMIUM_PLANS,
+  createPremiumOrder,
+  listMyPremiumOrders,
+} from "@/lib/billing.functions";
 import { formatDate, formatPrice } from "@/lib/format";
 
 export const Route = createFileRoute("/obuna")({
@@ -42,6 +49,7 @@ const BENEFITS = [
 function SubscriptionPage() {
   const { user, isPremium, profile } = useAuth();
   const queryClient = useQueryClient();
+  const [note, setNote] = useState("");
 
   const { data: orders } = useQuery({
     queryKey: ["premium-orders", user?.id],
@@ -49,14 +57,17 @@ function SubscriptionPage() {
     queryFn: () => listMyPremiumOrders({ data: undefined }),
   });
 
+  const hasPending = (orders ?? []).some((row) => row.status === "pending");
+
   const order = useMutation({
     mutationFn: (planId: "monthly" | "quarterly" | "yearly") =>
-      createPremiumOrder({ data: { planId } }),
+      createPremiumOrder({ data: { planId, note: note.trim() || undefined } }),
     onSuccess: () => {
+      setNote("");
       queryClient.invalidateQueries({ queryKey: ["premium-orders", user?.id] });
-      toast.success("Buyurtma qabul qilindi. To'lov havolasi tayyor bo'lgach xabar beramiz.");
+      toast.success("To'lov admin tekshiruviga yuborildi. Tasdiqlangach obuna faollashadi.");
     },
-    onError: () => toast.error("Buyurtmani yaratib bo'lmadi"),
+    onError: (error: Error) => toast.error(error.message || "Buyurtmani yaratib bo'lmadi"),
   });
 
   return (
@@ -83,6 +94,29 @@ function SubscriptionPage() {
           ))}
         </ul>
 
+        <section className="surface-card mt-6 p-6">
+          <h2 className="font-display text-lg font-semibold">To'lov tartibi</h2>
+          <ol className="text-muted-foreground mt-3 list-decimal space-y-1 pl-5 text-sm">
+            <li>
+              Quyidagi kartaga tarif summasini o'tkazing:{" "}
+              <span className="text-foreground font-semibold">{PAYMENT_CARD.number}</span> (
+              {PAYMENT_CARD.holder})
+            </li>
+            <li>To'lov chek raqami yoki to'lagan karta raqamingizni izohga yozing.</li>
+            <li>Tarifni tanlab "To'lovni yuborish" tugmasini bosing.</li>
+            <li>Admin tekshirib tasdiqlagach obunangiz avtomatik faollashadi.</li>
+          </ol>
+          {user && (
+            <Input
+              value={note}
+              onChange={(event) => setNote(event.target.value)}
+              placeholder="Chek raqami / to'lagan karta (ixtiyoriy)"
+              className="mt-4"
+              maxLength={300}
+            />
+          )}
+        </section>
+
         <div className="mt-8 grid gap-4 sm:grid-cols-3">
           {PREMIUM_PLANS.map((plan) => (
             <article key={plan.id} className="surface-card flex flex-col p-6 text-center">
@@ -95,10 +129,10 @@ function SubscriptionPage() {
                 {user ? (
                   <Button
                     className="w-full"
-                    disabled={order.isPending}
+                    disabled={order.isPending || hasPending}
                     onClick={() => order.mutate(plan.id)}
                   >
-                    Sotib olish
+                    {hasPending ? "Tekshiruvda" : "To'lovni yuborish"}
                   </Button>
                 ) : (
                   <Button asChild className="w-full">
@@ -110,34 +144,42 @@ function SubscriptionPage() {
           ))}
         </div>
 
-        <p className="text-muted-foreground mt-6 text-center text-xs">
-          To'lov Click orqali amalga oshiriladi. Click ulanishi yakunlanmaguncha buyurtmangiz
-          "kutilmoqda" holatida saqlanadi.
-        </p>
+        {hasPending && (
+          <p className="text-muted-foreground mt-6 text-center text-xs">
+            To'lovingiz admin tekshiruvida. Tasdiqlangach bildirishnoma keladi va obuna faollashadi.
+          </p>
+        )}
 
         {(orders?.length ?? 0) > 0 && (
           <section className="mt-10">
             <h2 className="font-display mb-3 text-lg font-semibold">Buyurtmalarim</h2>
             <div className="space-y-2">
               {orders!.map((row) => (
-                <div
-                  key={row.id}
-                  className="surface-card flex items-center justify-between gap-3 p-4 text-sm"
-                >
-                  <span>{formatPrice(row.amount, row.currency)}</span>
-                  <span className="text-muted-foreground text-xs">{formatDate(row.created_at)}</span>
-                  <Badge variant="secondary">
-                    {row.status === "paid"
-                      ? "To'langan"
-                      : row.status === "pending"
-                        ? "Kutilmoqda"
-                        : "Bekor qilingan"}
-                  </Badge>
+                <div key={row.id} className="surface-card p-4 text-sm">
+                  <div className="flex items-center justify-between gap-3">
+                    <span>
+                      {formatPrice(row.amount, row.currency)} · {row.months} oy
+                    </span>
+                    <span className="text-muted-foreground text-xs">
+                      {formatDate(row.created_at)}
+                    </span>
+                    <Badge variant="secondary">
+                      {row.status === "paid"
+                        ? "Tasdiqlangan"
+                        : row.status === "pending"
+                          ? "Tekshiruvda"
+                          : "Rad etilgan"}
+                    </Badge>
+                  </div>
+                  {row.reject_reason && (
+                    <p className="text-muted-foreground mt-2 text-xs">Sabab: {row.reject_reason}</p>
+                  )}
                 </div>
               ))}
             </div>
           </section>
         )}
+
       </div>
     </PageShell>
   );
