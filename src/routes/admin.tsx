@@ -134,6 +134,9 @@ function AdminPage() {
             <TabsTrigger value="applications">
               Agent arizalari ({pendingApplications?.length ?? 0})
             </TabsTrigger>
+            <TabsTrigger value="payments">
+              To'lovlar ({pendingPayments?.length ?? 0})
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="listings" className="mt-4 space-y-3">
