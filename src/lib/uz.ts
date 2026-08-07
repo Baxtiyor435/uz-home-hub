@@ -69,7 +69,7 @@ export const FEATURE_OPTIONS = [
 
 /** Default prices; live values are read from platform settings. */
 export const DEFAULT_UNLOCK_PRICE = 11990;
-export const DEFAULT_PREMIUM_PRICE = 11999;
+export const DEFAULT_PREMIUM_PRICE = 11990;
 
 export const CHAT_INTRO_MESSAGE =
   "Assalomu alaykum. Men ushbu uyga qiziqib qoldim. Iltimos, batafsil ma'lumot bera olasizmi?";
