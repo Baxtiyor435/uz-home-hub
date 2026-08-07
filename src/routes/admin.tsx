@@ -241,6 +241,57 @@ function AdminPage() {
               ))
             )}
           </TabsContent>
+
+          <TabsContent value="payments" className="mt-4 space-y-3">
+            {(pendingPayments?.length ?? 0) === 0 ? (
+              <EmptyState title="Tekshirish kutayotgan to'lov yo'q" />
+            ) : (
+              pendingPayments!.map((payment) => (
+                <article key={payment.id} className="surface-card p-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <h2 className="text-sm font-semibold">
+                      {payment.full_name ?? "Foydalanuvchi"} · {payment.phone ?? "—"}
+                    </h2>
+                    <Badge variant="outline">{payment.months} oy</Badge>
+                  </div>
+                  <p className="text-primary mt-1 text-sm font-semibold">
+                    {formatPrice(payment.amount, payment.currency)}
+                  </p>
+                  <p className="text-muted-foreground text-xs">{formatDate(payment.created_at)}</p>
+                  {payment.payer_note && (
+                    <p className="text-muted-foreground mt-2 text-sm">Izoh: {payment.payer_note}</p>
+                  )}
+                  <div className="mt-3 flex gap-2">
+                    <Button
+                      size="sm"
+                      disabled={paymentAction.isPending}
+                      onClick={() => paymentAction.mutate({ paymentId: payment.id, approve: true })}
+                    >
+                      <Check className="mr-1 h-4 w-4" />
+                      Tasdiqlash
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={paymentAction.isPending}
+                      onClick={() => {
+                        const reason = window.prompt("Rad etish sababi:") ?? "";
+                        if (!reason.trim()) return;
+                        paymentAction.mutate({
+                          paymentId: payment.id,
+                          approve: false,
+                          reason: reason.trim(),
+                        });
+                      }}
+                    >
+                      <X className="mr-1 h-4 w-4" />
+                      Rad etish
+                    </Button>
+                  </div>
+                </article>
+              ))
+            )}
+          </TabsContent>
         </Tabs>
       </div>
     </PageShell>
