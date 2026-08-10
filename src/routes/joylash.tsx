@@ -121,6 +121,7 @@ function CreateListingPage() {
           total_floors: totalFloorsRaw ? Number(totalFloorsRaw) : null,
           images,
           features,
+          status: "approved",
         })
         .select("id")
         .single();
@@ -129,7 +130,7 @@ function CreateListingPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["my-properties", user?.id] });
-      toast.success("E'lon moderatsiyaga yuborildi");
+      toast.success("E'lon e'lon qilindi");
       navigate({ to: "/mening-elonlarim" });
     },
     onError: (error: Error) => {
