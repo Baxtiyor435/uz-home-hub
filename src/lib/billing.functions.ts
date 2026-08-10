@@ -21,22 +21,13 @@ const planSchema = z.object({
   note: z.string().trim().max(300).optional(),
 });
 
-/** Creates a pending premium payment request that an admin must confirm. */
+/** Creates a premium order and activates the subscription immediately. */
 export const createPremiumOrder = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => planSchema.parse(input))
   .handler(async ({ data, context }) => {
     const plan = PREMIUM_PLANS.find((item) => item.id === data.planId)!;
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
-    const { data: existing } = await supabaseAdmin
-      .from("payments")
-      .select("id")
-      .eq("user_id", context.userId)
-      .eq("purpose", "premium")
-      .eq("status", "pending")
-      .maybeSingle();
-    if (existing) throw new Error("Sizda tekshiruv kutayotgan to'lov bor");
 
     const { data: payment, error } = await supabaseAdmin
       .from("payments")
@@ -48,16 +39,31 @@ export const createPremiumOrder = createServerFn({ method: "POST" })
         payer_note: data.note ?? null,
         currency: "UZS",
         provider: "manual",
-        status: "pending",
+        status: "paid",
+        reviewed_at: new Date().toISOString(),
       })
       .select("id")
       .single();
     if (error) throw new Error("Buyurtmani yaratib bo'lmadi");
 
+    const { data: profile } = await supabaseAdmin
+      .from("profiles")
+      .select("premium_until")
+      .eq("id", context.userId)
+      .single();
+    const current = profile?.premium_until ? new Date(profile.premium_until) : null;
+    const base = current && current.getTime() > Date.now() ? current : new Date();
+    const until = new Date(base);
+    until.setMonth(until.getMonth() + plan.months);
+    await supabaseAdmin
+      .from("profiles")
+      .update({ premium_until: until.toISOString() })
+      .eq("id", context.userId);
+
     await supabaseAdmin.from("notifications").insert({
       user_id: context.userId,
-      title: "To'lov so'rovi yuborildi",
-      body: `${plan.label} obuna uchun to'lovingiz admin tekshiruviga yuborildi.`,
+      title: "Premium obuna faollashdi",
+      body: `${plan.label} obuna darhol faollashtirildi.`,
       link: "/obuna",
     });
 
