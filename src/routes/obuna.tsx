@@ -47,7 +47,7 @@ const BENEFITS = [
 ];
 
 function SubscriptionPage() {
-  const { user, isPremium, profile } = useAuth();
+  const { user, isPremium, profile, refresh } = useAuth();
   const queryClient = useQueryClient();
   const [note, setNote] = useState("");
 
