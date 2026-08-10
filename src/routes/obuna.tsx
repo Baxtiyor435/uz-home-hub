@@ -65,7 +65,8 @@ function SubscriptionPage() {
     onSuccess: () => {
       setNote("");
       queryClient.invalidateQueries({ queryKey: ["premium-orders", user?.id] });
-      toast.success("To'lov admin tekshiruviga yuborildi. Tasdiqlangach obuna faollashadi.");
+      refresh();
+      toast.success("Obunangiz faollashtirildi!");
     },
     onError: (error: Error) => toast.error(error.message || "Buyurtmani yaratib bo'lmadi"),
   });
@@ -103,8 +104,8 @@ function SubscriptionPage() {
               {PAYMENT_CARD.holder})
             </li>
             <li>To'lov chek raqami yoki to'lagan karta raqamingizni izohga yozing.</li>
-            <li>Tarifni tanlab "To'lovni yuborish" tugmasini bosing.</li>
-            <li>Admin tekshirib tasdiqlagach obunangiz avtomatik faollashadi.</li>
+            <li>Tarifni tanlab "Obunani faollashtirish" tugmasini bosing.</li>
+            <li>Obunangiz darhol faollashadi.</li>
           </ol>
           {user && (
             <Input
@@ -132,7 +133,7 @@ function SubscriptionPage() {
                     disabled={order.isPending || hasPending}
                     onClick={() => order.mutate(plan.id)}
                   >
-                    {hasPending ? "Tekshiruvda" : "To'lovni yuborish"}
+                    {hasPending ? "Tekshiruvda" : "Obunani faollashtirish"}
                   </Button>
                 ) : (
                   <Button asChild className="w-full">
