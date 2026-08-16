@@ -97,12 +97,16 @@ export const signInWithPassword = createServerFn({ method: "POST" })
 
     const { data: existingProfile } = await supabaseAdmin
       .from("profiles")
-      .select("id, is_blocked")
+      .select("id, is_blocked, device_id")
       .eq("phone", phone)
       .maybeSingle();
 
     if (existingProfile?.is_blocked) {
       return { ok: false, message: "Hisobingiz bloklangan. Administratorga murojaat qiling" };
+    }
+
+    if (existingProfile?.device_id && existingProfile.device_id !== data.deviceId) {
+      return { ok: false, message: DEVICE_MISMATCH_MESSAGE };
     }
 
     const authClient = createAuthClient();
@@ -116,9 +120,17 @@ export const signInWithPassword = createServerFn({ method: "POST" })
       return { ok: false, message: "Telefon raqam yoki parol noto'g'ri" };
     }
 
+    if (!existingProfile?.device_id) {
+      await supabaseAdmin
+        .from("profiles")
+        .update({ device_id: data.deviceId, device_bound_at: new Date().toISOString() })
+        .eq("id", signIn.session.user.id);
+    }
+
     return {
       ok: true,
       accessToken: signIn.session.access_token,
       refreshToken: signIn.session.refresh_token,
     };
+
   });
