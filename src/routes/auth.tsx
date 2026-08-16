@@ -130,6 +130,11 @@ function AuthPage() {
             />
           </div>
 
+          <p className="text-muted-foreground rounded-md border border-dashed p-2 text-xs">
+            Diqqat: bitta hisob faqat bitta qurilmaga bog'lanadi. Boshqa telefon yoki kompyuterdan
+            kirish uchun administratorga murojaat qiling.
+          </p>
+
           <Button type="submit" className="w-full" disabled={authMutation.isPending}>
             {authMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {mode === "login" ? "Kirish" : "Ro'yxatdan o'tish"}

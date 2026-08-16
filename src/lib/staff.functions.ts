@@ -55,7 +55,7 @@ export const listPlatformUsers = createServerFn({ method: "POST" })
 
     const { data: profiles, error } = await supabaseAdmin
       .from("profiles")
-      .select("id, full_name, phone, is_blocked, is_verified_agent, premium_until, created_at")
+      .select("id, full_name, phone, is_blocked, is_verified_agent, premium_until, created_at, device_id")
       .order("created_at", { ascending: false })
       .limit(200);
     if (error) throw new Error("Foydalanuvchilarni olib bo'lmadi");
@@ -115,5 +115,29 @@ export const setUserBlocked = createServerFn({ method: "POST" })
     await assertSuperAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     await supabaseAdmin.from("profiles").update({ is_blocked: data.blocked }).eq("id", data.userId);
+    return { ok: true };
+  });
+
+const deviceResetSchema = z.object({ userId: z.string().uuid() });
+
+/** Clears the device binding so the user can sign in from a new device (super admin only). */
+export const resetUserDevice = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => deviceResetSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    await assertSuperAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin
+      .from("profiles")
+      .update({ device_id: null, device_bound_at: null })
+      .eq("id", data.userId);
+
+    await supabaseAdmin.from("audit_logs").insert({
+      actor_id: context.userId,
+      action: "device_reset",
+      entity_type: "profile",
+      entity_id: data.userId,
+    });
+
     return { ok: true };
   });
