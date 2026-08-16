@@ -67,12 +67,15 @@ export const signUpWithPassword = createServerFn({ method: "POST" })
       return { ok: false, message: "Tizimga kirishda xatolik yuz berdi" };
     }
 
-    if (data.fullName) {
-      await supabaseAdmin
-        .from("profiles")
-        .update({ full_name: data.fullName, phone })
-        .eq("id", signIn.session.user.id);
-    }
+    await supabaseAdmin
+      .from("profiles")
+      .update({
+        ...(data.fullName ? { full_name: data.fullName, phone } : {}),
+        device_id: data.deviceId,
+        device_bound_at: new Date().toISOString(),
+      })
+      .eq("id", signIn.session.user.id);
+
 
     return {
       ok: true,
