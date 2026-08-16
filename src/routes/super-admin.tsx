@@ -9,7 +9,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { formatDate, formatPhone } from "@/lib/format";
-import { listPlatformUsers, setUserBlocked, setUserRole } from "@/lib/staff.functions";
+import {
+  listPlatformUsers,
+  resetUserDevice,
+  setUserBlocked,
+  setUserRole,
+} from "@/lib/staff.functions";
 import { ROLE_LABELS, type AppRole } from "@/lib/uz";
 
 export const Route = createFileRoute("/super-admin")({
@@ -56,6 +61,15 @@ function SuperAdminPage() {
       toast.success("Holat yangilandi");
     },
     onError: () => toast.error("Amalni bajarib bo'lmadi"),
+  });
+
+  const deviceAction = useMutation({
+    mutationFn: (input: { userId: string }) => resetUserDevice({ data: input }),
+    onSuccess: () => {
+      invalidate();
+      toast.success("Qurilma bog'lanishi bekor qilindi");
+    },
+    onError: () => toast.error("Qurilmani tiklab bo'lmadi"),
   });
 
   if (!loading && !isSuperAdmin) {
@@ -118,8 +132,18 @@ function SuperAdminPage() {
                         </Badge>
                       ))}
                       {row.is_blocked && <Badge variant="outline">Bloklangan</Badge>}
+                      {row.device_id && <Badge variant="outline">Qurilmaga bog'langan</Badge>}
                     </div>
                   </div>
+                  <div className="flex flex-wrap gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={deviceAction.isPending || !row.device_id}
+                    onClick={() => deviceAction.mutate({ userId: row.id })}
+                  >
+                    Qurilmani tiklash
+                  </Button>
                   <Button
                     size="sm"
                     variant="outline"
@@ -128,6 +152,7 @@ function SuperAdminPage() {
                   >
                     {row.is_blocked ? "Blokdan chiqarish" : "Bloklash"}
                   </Button>
+                  </div>
                 </div>
 
                 <div className="mt-3 flex flex-wrap gap-2">

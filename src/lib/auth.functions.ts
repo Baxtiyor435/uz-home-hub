@@ -6,6 +6,7 @@ import { normalizePhone } from "@/lib/format";
 const signInSchema = z.object({
   phone: z.string().min(9, "Telefon raqamini kiriting"),
   password: z.string().min(6, "Parol kamida 6 belgidan iborat bo'lishi kerak").max(72),
+  deviceId: z.string().trim().min(6).max(100),
 });
 
 const signUpSchema = signInSchema.extend({
@@ -15,6 +16,10 @@ const signUpSchema = signInSchema.extend({
 export type AuthResult =
   | { ok: true; accessToken: string; refreshToken: string }
   | { ok: false; message: string };
+
+const DEVICE_MISMATCH_MESSAGE =
+  "Bu hisob boshqa qurilmaga bog'langan. Bitta hisob faqat bitta qurilmada ishlaydi. Administratorga murojaat qiling.";
+
 
 /** Ro'yxatdan o'tish: telefon raqam + parol bilan yangi hisob yaratadi. */
 export const signUpWithPassword = createServerFn({ method: "POST" })
@@ -62,12 +67,15 @@ export const signUpWithPassword = createServerFn({ method: "POST" })
       return { ok: false, message: "Tizimga kirishda xatolik yuz berdi" };
     }
 
-    if (data.fullName) {
-      await supabaseAdmin
-        .from("profiles")
-        .update({ full_name: data.fullName, phone })
-        .eq("id", signIn.session.user.id);
-    }
+    await supabaseAdmin
+      .from("profiles")
+      .update({
+        ...(data.fullName ? { full_name: data.fullName, phone } : {}),
+        device_id: data.deviceId,
+        device_bound_at: new Date().toISOString(),
+      })
+      .eq("id", signIn.session.user.id);
+
 
     return {
       ok: true,
@@ -89,12 +97,16 @@ export const signInWithPassword = createServerFn({ method: "POST" })
 
     const { data: existingProfile } = await supabaseAdmin
       .from("profiles")
-      .select("id, is_blocked")
+      .select("id, is_blocked, device_id")
       .eq("phone", phone)
       .maybeSingle();
 
     if (existingProfile?.is_blocked) {
       return { ok: false, message: "Hisobingiz bloklangan. Administratorga murojaat qiling" };
+    }
+
+    if (existingProfile?.device_id && existingProfile.device_id !== data.deviceId) {
+      return { ok: false, message: DEVICE_MISMATCH_MESSAGE };
     }
 
     const authClient = createAuthClient();
@@ -108,9 +120,17 @@ export const signInWithPassword = createServerFn({ method: "POST" })
       return { ok: false, message: "Telefon raqam yoki parol noto'g'ri" };
     }
 
+    if (!existingProfile?.device_id) {
+      await supabaseAdmin
+        .from("profiles")
+        .update({ device_id: data.deviceId, device_bound_at: new Date().toISOString() })
+        .eq("id", signIn.session.user.id);
+    }
+
     return {
       ok: true,
       accessToken: signIn.session.access_token,
       refreshToken: signIn.session.refresh_token,
     };
+
   });

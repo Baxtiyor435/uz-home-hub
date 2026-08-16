@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { signInWithPassword, signUpWithPassword } from "@/lib/auth.functions";
+import { getDeviceId } from "@/lib/device";
 import { normalizePhone } from "@/lib/format";
 import { APP_SLOGAN } from "@/lib/uz";
 
@@ -38,9 +39,13 @@ function AuthPage() {
       const normalized = normalizePhone(phone);
       if (!normalized) throw new Error("Telefon raqamini to'liq kiriting");
       if (password.length < 6) throw new Error("Parol kamida 6 belgidan iborat bo'lsin");
+      const deviceId = getDeviceId();
+      if (!deviceId) throw new Error("Qurilmani aniqlab bo'lmadi. Brauzer sozlamalarini tekshiring");
       return mode === "login"
-        ? signInWithPassword({ data: { phone: normalized, password } })
-        : signUpWithPassword({ data: { phone: normalized, password, fullName: fullName.trim() } });
+        ? signInWithPassword({ data: { phone: normalized, password, deviceId } })
+        : signUpWithPassword({
+            data: { phone: normalized, password, fullName: fullName.trim(), deviceId },
+          });
     },
     onSuccess: async (result) => {
       if (!result.ok) {
@@ -124,6 +129,11 @@ function AuthPage() {
               required
             />
           </div>
+
+          <p className="text-muted-foreground rounded-md border border-dashed p-2 text-xs">
+            Diqqat: bitta hisob faqat bitta qurilmaga bog'lanadi. Boshqa telefon yoki kompyuterdan
+            kirish uchun administratorga murojaat qiling.
+          </p>
 
           <Button type="submit" className="w-full" disabled={authMutation.isPending}>
             {authMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
