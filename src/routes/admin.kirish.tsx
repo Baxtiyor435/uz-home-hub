@@ -44,9 +44,9 @@ function AdminLoginPage() {
     try {
       const result = await grantAdminWithCode({ data: { code: code.trim() } });
       if (result.ok) {
-        toast.success("Admin huquqi faollashdi");
-        await router.invalidate();
-        router.navigate({ to: "/admin" });
+        toast.success("Admin huquqi faollashdi. Iltimos, kuting...");
+        refresh();
+        // The useEffect watching isStaff will redirect to /admin once the role refetches.
       }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Kod noto'g'ri");
