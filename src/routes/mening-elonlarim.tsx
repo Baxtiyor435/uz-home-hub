@@ -3,12 +3,14 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { CardSkeletonGrid, EmptyState } from "@/components/EmptyState";
 import { PageShell } from "@/components/PageShell";
+import { PromoteDialog } from "@/components/PromoteDialog";
 import { StorageImage } from "@/components/StorageImage";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { formatDate, formatPrice } from "@/lib/format";
-import { fetchMyProperties } from "@/lib/properties";
+import { useLang } from "@/lib/i18n";
+import { fetchMyProperties, isPromoted } from "@/lib/properties";
 import { PROPERTY_BUCKET } from "@/lib/storage";
 import { DEAL_TYPE_LABELS, LISTING_STATUS_LABELS } from "@/lib/uz";
 
@@ -27,6 +29,7 @@ export const Route = createFileRoute("/mening-elonlarim")({
 
 function MyListingsPage() {
   const { user, loading } = useAuth();
+  const { t } = useLang();
 
   const { data, isLoading } = useQuery({
     queryKey: ["my-properties", user?.id],
@@ -82,6 +85,9 @@ function MyListingsPage() {
                       {LISTING_STATUS_LABELS[property.status]}
                     </Badge>
                     <Badge variant="outline">{DEAL_TYPE_LABELS[property.deal_type]}</Badge>
+                    {isPromoted(property) && (
+                      <Badge className="bg-primary text-primary-foreground">{t("card.top")}</Badge>
+                    )}
                   </div>
                   <h2 className="mt-1 line-clamp-1 text-sm font-semibold">{property.title}</h2>
                   <p className="text-primary text-sm font-semibold">
@@ -90,6 +96,11 @@ function MyListingsPage() {
                   <p className="text-muted-foreground text-xs">
                     {formatDate(property.created_at)} · {property.views_count} ko'rish
                   </p>
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    {property.status === "approved" && (
+                      <PromoteDialog propertyId={property.id} userId={user?.id} />
+                    )}
+                  </div>
                   {property.status === "approved" && (
                     <Link
                       to="/elon/$id"
