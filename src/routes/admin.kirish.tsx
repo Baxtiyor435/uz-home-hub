@@ -21,7 +21,7 @@ export const Route = createFileRoute("/admin/kirish")({
 });
 
 function AdminLoginPage() {
-  const { user, isStaff, loading } = useAuth();
+  const { user, isStaff, loading, refresh } = useAuth();
   const router = useRouter();
   const [code, setCode] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
