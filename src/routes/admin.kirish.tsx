@@ -25,6 +25,11 @@ function AdminLoginPage() {
   const router = useRouter();
   const [code, setCode] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
   useEffect(() => {
     if (!loading && isStaff) {
@@ -50,7 +55,8 @@ function AdminLoginPage() {
     }
   }
 
-  if (!user) {
+  // After hydration, if the user is definitely not logged in, prompt them to sign in.
+  if (hydrated && !loading && !user) {
     return (
       <PageShell>
         <div className="mx-auto max-w-md px-4 py-16 text-center">
