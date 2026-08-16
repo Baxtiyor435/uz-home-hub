@@ -6,6 +6,7 @@ import { normalizePhone } from "@/lib/format";
 const signInSchema = z.object({
   phone: z.string().min(9, "Telefon raqamini kiriting"),
   password: z.string().min(6, "Parol kamida 6 belgidan iborat bo'lishi kerak").max(72),
+  deviceId: z.string().trim().min(6).max(100),
 });
 
 const signUpSchema = signInSchema.extend({
@@ -15,6 +16,10 @@ const signUpSchema = signInSchema.extend({
 export type AuthResult =
   | { ok: true; accessToken: string; refreshToken: string }
   | { ok: false; message: string };
+
+const DEVICE_MISMATCH_MESSAGE =
+  "Bu hisob boshqa qurilmaga bog'langan. Bitta hisob faqat bitta qurilmada ishlaydi. Administratorga murojaat qiling.";
+
 
 /** Ro'yxatdan o'tish: telefon raqam + parol bilan yangi hisob yaratadi. */
 export const signUpWithPassword = createServerFn({ method: "POST" })
