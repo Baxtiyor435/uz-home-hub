@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "@/hooks/useAuth";
+import { LanguageProvider } from "@/lib/i18n";
 import { SubscriptionGate } from "@/components/SubscriptionGate";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -139,12 +140,14 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
+        <LanguageProvider>
         <AuthSync />
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <SubscriptionGate>
           <Outlet />
         </SubscriptionGate>
         <Toaster position="top-center" richColors />
+        </LanguageProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
