@@ -116,8 +116,14 @@ function AdminDashboardPage() {
     onError: () => toast.error("Amalni bajarib bo'lmadi"),
   });
 
-  if (!loading && !isStaff) {
-    return <Navigate to="/admin/kirish" />;
+  // During SSR and before auth state is resolved, render a loading shell to avoid
+  // leaking the admin UI to anonymous clients and to prevent hydration mismatches.
+  if (!hydrated || !isStaff) {
+    return (
+      <PageShell>
+        <div className="mx-auto max-w-4xl px-4 py-16 text-center">Yuklanmoqda...</div>
+      </PageShell>
+    );
   }
 
   return (
