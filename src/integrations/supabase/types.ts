@@ -385,6 +385,8 @@ export type Database = {
           bio: string | null
           created_at: string
           deals_count: number
+          device_bound_at: string | null
+          device_id: string | null
           full_name: string | null
           id: string
           is_blocked: boolean
@@ -401,6 +403,8 @@ export type Database = {
           bio?: string | null
           created_at?: string
           deals_count?: number
+          device_bound_at?: string | null
+          device_id?: string | null
           full_name?: string | null
           id: string
           is_blocked?: boolean
@@ -417,6 +421,8 @@ export type Database = {
           bio?: string | null
           created_at?: string
           deals_count?: number
+          device_bound_at?: string | null
+          device_id?: string | null
           full_name?: string | null
           id?: string
           is_blocked?: boolean
