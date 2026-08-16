@@ -21,6 +21,7 @@ export type PropertyRow = {
   features: string[];
   status: ListingStatus;
   views_count: number;
+  promoted_until: string | null;
   created_at: string;
 };
 
@@ -36,7 +37,12 @@ export type PropertyFilters = {
 };
 
 const LIST_COLUMNS =
-  "id, owner_id, title, description, deal_type, kind, price, currency, region, district, address, rooms, area, floor, total_floors, images, features, status, views_count, created_at";
+  "id, owner_id, title, description, deal_type, kind, price, currency, region, district, address, rooms, area, floor, total_floors, images, features, status, views_count, promoted_until, created_at";
+
+/** True while a listing's paid TOP placement is still valid. */
+export function isPromoted(property: Pick<PropertyRow, "promoted_until">, now = Date.now()): boolean {
+  return !!property.promoted_until && new Date(property.promoted_until).getTime() > now;
+}
 
 /** Public catalogue query — only approved listings are visible. */
 export async function fetchProperties(filters: PropertyFilters): Promise<PropertyRow[]> {
@@ -61,7 +67,10 @@ export async function fetchProperties(filters: PropertyFilters): Promise<Propert
 
   const { data, error } = await query.limit(60);
   if (error) throw error;
-  return (data ?? []) as PropertyRow[];
+  const rows = (data ?? []) as PropertyRow[];
+  // Paid "TOP" listings always come first, keeping the chosen sort inside each group.
+  const now = Date.now();
+  return rows.sort((a, b) => Number(isPromoted(b, now)) - Number(isPromoted(a, now)));
 }
 
 export async function fetchPropertyById(id: string): Promise<PropertyRow | null> {
