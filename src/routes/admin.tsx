@@ -104,21 +104,7 @@ function AdminPage() {
   });
 
   if (!loading && !isStaff) {
-    return (
-      <PageShell>
-        <div className="mx-auto max-w-md px-4 py-16">
-          <EmptyState
-            title="Ruxsat yo'q"
-            description="Bu sahifa faqat administratorlar uchun."
-            action={
-              <Button asChild size="sm">
-                <Link to="/">Bosh sahifa</Link>
-              </Button>
-            }
-          />
-        </div>
-      </PageShell>
-    );
+    return <Navigate to="/admin/kirish" />;
   }
 
   return (
