@@ -14,7 +14,8 @@ import {
 } from "@/components/ui/dialog";
 import { formatPrice } from "@/lib/format";
 import { useLang } from "@/lib/i18n";
-import { TOP_PLANS, promoteProperty, type TopPlanId } from "@/lib/promotion.functions";
+import { TOP_PLANS, type TopPlanId } from "@/lib/promotion";
+import { promoteProperty } from "@/lib/promotion.functions";
 
 export function PromoteDialog({ propertyId, userId }: { propertyId: string; userId?: string }) {
   const { t } = useLang();
