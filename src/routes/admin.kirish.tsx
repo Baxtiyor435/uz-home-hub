@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, Link, Navigate, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { toast } from "sonner";
 
 import { PageShell } from "@/components/PageShell";
@@ -26,10 +26,11 @@ function AdminLoginPage() {
   const [code, setCode] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Already staff — go straight to admin panel.
-  if (!loading && isStaff) {
-    return <Navigate to="/admin" />;
-  }
+  useEffect(() => {
+    if (!loading && isStaff) {
+      router.navigate({ to: "/admin" });
+    }
+  }, [loading, isStaff, router]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -47,14 +48,6 @@ function AdminLoginPage() {
     } finally {
       setIsSubmitting(false);
     }
-  }
-
-  if (loading) {
-    return (
-      <PageShell>
-        <div className="mx-auto max-w-md px-4 py-16 text-center">Yuklanmoqda...</div>
-      </PageShell>
-    );
   }
 
   if (!user) {
