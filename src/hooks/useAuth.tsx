@@ -3,6 +3,7 @@ import type { Session, User } from "@supabase/supabase-js";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
+import { getDeviceId } from "@/lib/device";
 import type { AppRole } from "@/lib/uz";
 
 type Profile = {
@@ -18,6 +19,7 @@ type Profile = {
   is_verified_agent: boolean;
   is_blocked: boolean;
   premium_until: string | null;
+  device_id: string | null;
 };
 
 type AuthContextValue = {
@@ -70,7 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { data, error } = await supabase
         .from("profiles")
         .select(
-          "id, phone, full_name, avatar_url, agency_name, bio, rating, reviews_count, deals_count, is_verified_agent, is_blocked, premium_until",
+          "id, phone, full_name, avatar_url, agency_name, bio, rating, reviews_count, deals_count, is_verified_agent, is_blocked, premium_until, device_id",
         )
         .eq("id", userId!)
         .maybeSingle();
@@ -88,6 +90,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return (data ?? []).map((row) => row.role as AppRole);
     },
   });
+
+  // Bitta hisob — bitta qurilma: boshqa qurilmada ochilgan sessiya darhol yopiladi.
+  useEffect(() => {
+    if (!profile?.device_id) return;
+    const deviceId = getDeviceId();
+    if (!deviceId || deviceId === profile.device_id) return;
+    void supabase.auth.signOut().then(() => {
+      queryClient.clear();
+      if (typeof window !== "undefined") window.location.replace("/auth?device=blocked");
+    });
+  }, [profile?.device_id, queryClient]);
 
   const roleList = roles ?? [];
   const isStaff = roleList.includes("admin") || roleList.includes("super_admin");
