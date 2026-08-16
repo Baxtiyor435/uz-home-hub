@@ -37,7 +37,19 @@ export const Route = createFileRoute("/admin/")({
 
 function AdminDashboardPage() {
   const { isStaff, loading } = useAuth();
+  const router = useRouter();
   const queryClient = useQueryClient();
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!loading && !isStaff) {
+      router.navigate({ to: "/admin/kirish" });
+    }
+  }, [loading, isStaff, router]);
 
   const { data: pendingListings } = useQuery({
     queryKey: ["admin", "listings"],
