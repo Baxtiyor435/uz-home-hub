@@ -447,6 +447,7 @@ export type Database = {
           longitude: number | null
           owner_id: string
           price: number
+          promoted_until: string | null
           region: string
           reject_reason: string | null
           reviewed_at: string | null
@@ -475,6 +476,7 @@ export type Database = {
           longitude?: number | null
           owner_id: string
           price: number
+          promoted_until?: string | null
           region: string
           reject_reason?: string | null
           reviewed_at?: string | null
@@ -503,6 +505,7 @@ export type Database = {
           longitude?: number | null
           owner_id?: string
           price?: number
+          promoted_until?: string | null
           region?: string
           reject_reason?: string | null
           reviewed_at?: string | null
@@ -639,7 +642,7 @@ export type Database = {
       booking_status: "pending" | "confirmed" | "canceled" | "completed"
       deal_type: "sale" | "rent"
       listing_status: "pending" | "approved" | "rejected" | "archived"
-      payment_purpose: "unlock" | "premium"
+      payment_purpose: "unlock" | "premium" | "promotion"
       payment_status: "pending" | "paid" | "failed" | "canceled"
       property_kind: "apartment" | "house" | "commercial" | "land"
     }
@@ -774,7 +777,7 @@ export const Constants = {
       booking_status: ["pending", "confirmed", "canceled", "completed"],
       deal_type: ["sale", "rent"],
       listing_status: ["pending", "approved", "rejected", "archived"],
-      payment_purpose: ["unlock", "premium"],
+      payment_purpose: ["unlock", "premium", "promotion"],
       payment_status: ["pending", "paid", "failed", "canceled"],
       property_kind: ["apartment", "house", "commercial", "land"],
     },

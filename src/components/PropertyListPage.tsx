@@ -11,8 +11,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { PROPERTY_KIND_I18N, useLang } from "@/lib/i18n";
 import { fetchProperties, type PropertyFilters } from "@/lib/properties";
-import { PROPERTY_KIND_LABELS, REGIONS, type DealType } from "@/lib/uz";
+import { REGIONS, type DealType } from "@/lib/uz";
 
 export function PropertyListPage({
   dealType,
@@ -23,6 +24,7 @@ export function PropertyListPage({
   title: string;
   subtitle: string;
 }) {
+  const { lang, t } = useLang();
   const [filters, setFilters] = useState<PropertyFilters>({ dealType, sort: "new" });
 
   const { data, isLoading, isError } = useQuery({
@@ -43,19 +45,19 @@ export function PropertyListPage({
 
       <div className="surface-card mb-6 grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-4">
         <Input
-          placeholder="Qidiruv: sarlavha yoki tuman"
+          placeholder={t("list.search")}
           value={filters.search ?? ""}
           onChange={(event) => update({ search: event.target.value })}
           maxLength={80}
-          aria-label="Qidiruv"
+          aria-label={t("list.searchLabel")}
         />
 
         <Select value={filters.region ?? "all"} onValueChange={(value) => update({ region: value })}>
-          <SelectTrigger aria-label="Hudud">
-            <SelectValue placeholder="Hudud" />
+          <SelectTrigger aria-label={t("list.region")}>
+            <SelectValue placeholder={t("list.region")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Barcha hududlar</SelectItem>
+            <SelectItem value="all">{t("list.allRegions")}</SelectItem>
             {REGIONS.map((region) => (
               <SelectItem key={region} value={region}>
                 {region}
@@ -68,14 +70,14 @@ export function PropertyListPage({
           value={filters.kind ?? "all"}
           onValueChange={(value) => update({ kind: value as NonNullable<PropertyFilters["kind"]> })}
         >
-          <SelectTrigger aria-label="Turi">
-            <SelectValue placeholder="Turi" />
+          <SelectTrigger aria-label={t("list.kind")}>
+            <SelectValue placeholder={t("list.kind")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Barcha turlari</SelectItem>
-            {Object.entries(PROPERTY_KIND_LABELS).map(([value, label]) => (
+            <SelectItem value="all">{t("list.allKinds")}</SelectItem>
+            {Object.entries(PROPERTY_KIND_I18N).map(([value, labels]) => (
               <SelectItem key={value} value={value}>
-                {label}
+                {labels[lang]}
               </SelectItem>
             ))}
           </SelectContent>
@@ -85,13 +87,13 @@ export function PropertyListPage({
           value={filters.sort ?? "new"}
           onValueChange={(value) => update({ sort: value as NonNullable<PropertyFilters["sort"]> })}
         >
-          <SelectTrigger aria-label="Saralash">
-            <SelectValue placeholder="Saralash" />
+          <SelectTrigger aria-label={t("list.sort")}>
+            <SelectValue placeholder={t("list.sort")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="new">Avval yangilari</SelectItem>
-            <SelectItem value="price_asc">Narx: arzondan</SelectItem>
-            <SelectItem value="price_desc">Narx: qimmatdan</SelectItem>
+            <SelectItem value="new">{t("list.sortNew")}</SelectItem>
+            <SelectItem value="price_asc">{t("list.sortAsc")}</SelectItem>
+            <SelectItem value="price_desc">{t("list.sortDesc")}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -100,13 +102,13 @@ export function PropertyListPage({
         <CardSkeletonGrid />
       ) : isError ? (
         <EmptyState
-          title="E'lonlarni yuklab bo'lmadi"
-          description="Internet aloqasini tekshirib, sahifani yangilang."
+          title={t("list.errorTitle")}
+          description={t("list.errorText")}
         />
       ) : (data?.length ?? 0) === 0 ? (
         <EmptyState
-          title="E'lonlar topilmadi"
-          description="Filtrlarni o'zgartirib ko'ring yoki keyinroq qayta tekshiring."
+          title={t("list.emptyTitle")}
+          description={t("list.emptyText")}
         />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

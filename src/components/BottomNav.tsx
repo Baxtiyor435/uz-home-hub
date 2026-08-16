@@ -1,23 +1,25 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Building2, Heart, Home, KeyRound, User } from "lucide-react";
 
+import { useLang } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 const items = [
-  { to: "/", label: "Bosh sahifa", icon: Home },
-  { to: "/sotuv", label: "Sotuv", icon: Building2 },
-  { to: "/ijara", label: "Ijara", icon: KeyRound },
-  { to: "/sevimlilar", label: "Sevimlilar", icon: Heart },
-  { to: "/profil", label: "Profil", icon: User },
+  { to: "/", key: "nav.home", icon: Home },
+  { to: "/sotuv", key: "nav.sale", icon: Building2 },
+  { to: "/ijara", key: "nav.rent", icon: KeyRound },
+  { to: "/sevimlilar", key: "nav.favorites", icon: Heart },
+  { to: "/profil", key: "nav.profile", icon: User },
 ] as const;
 
 export function BottomNav() {
+  const { t } = useLang();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
 
   return (
     <nav
       className="bg-card/95 fixed inset-x-0 bottom-0 z-40 border-t backdrop-blur md:hidden"
-      aria-label="Asosiy menyu"
+      aria-label={t("nav.main")}
     >
       <ul className="mx-auto flex max-w-lg items-stretch">
         {items.map((item) => {
@@ -33,7 +35,7 @@ export function BottomNav() {
                 )}
               >
                 <Icon className="h-5 w-5" aria-hidden="true" />
-                {item.label}
+                {t(item.key)}
               </Link>
             </li>
           );
