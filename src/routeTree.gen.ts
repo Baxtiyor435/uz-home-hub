@@ -22,6 +22,7 @@ import { Route as ProfilRouteImport } from './routes/profil'
 import { Route as SevimlilarRouteImport } from './routes/sevimlilar'
 import { Route as SotuvRouteImport } from './routes/sotuv'
 import { Route as SuperAdminRouteImport } from './routes/super-admin'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminKirishRouteImport } from './routes/admin.kirish'
 import { Route as ElonIdRouteImport } from './routes/elon.$id'
 import { Route as SuhbatlarIndexRouteImport } from './routes/suhbatlar.index'
@@ -92,6 +93,11 @@ const SuperAdminRoute = SuperAdminRouteImport.update({
   path: '/super-admin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminKirishRoute = AdminKirishRouteImport.update({
   id: '/kirish',
   path: '/kirish',
@@ -130,11 +136,11 @@ export interface FileRoutesByFullPath {
   '/admin/kirish': typeof AdminKirishRoute
   '/elon/$id': typeof ElonIdRoute
   '/suhbatlar/$id': typeof SuhbatlarIdRoute
+  '/admin/': typeof AdminIndexRoute
   '/suhbatlar/': typeof SuhbatlarIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
   '/agentlar': typeof AgentlarRoute
   '/auth': typeof AuthRoute
   '/bildirishnomalar': typeof BildirishnomalarRoute
@@ -149,6 +155,7 @@ export interface FileRoutesByTo {
   '/admin/kirish': typeof AdminKirishRoute
   '/elon/$id': typeof ElonIdRoute
   '/suhbatlar/$id': typeof SuhbatlarIdRoute
+  '/admin': typeof AdminIndexRoute
   '/suhbatlar': typeof SuhbatlarIndexRoute
 }
 export interface FileRoutesById {
@@ -169,6 +176,7 @@ export interface FileRoutesById {
   '/admin/kirish': typeof AdminKirishRoute
   '/elon/$id': typeof ElonIdRoute
   '/suhbatlar/$id': typeof SuhbatlarIdRoute
+  '/admin/': typeof AdminIndexRoute
   '/suhbatlar/': typeof SuhbatlarIndexRoute
 }
 export interface FileRouteTypes {
@@ -190,11 +198,11 @@ export interface FileRouteTypes {
     | '/admin/kirish'
     | '/elon/$id'
     | '/suhbatlar/$id'
+    | '/admin/'
     | '/suhbatlar/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/admin'
     | '/agentlar'
     | '/auth'
     | '/bildirishnomalar'
@@ -209,6 +217,7 @@ export interface FileRouteTypes {
     | '/admin/kirish'
     | '/elon/$id'
     | '/suhbatlar/$id'
+    | '/admin'
     | '/suhbatlar'
   id:
     | '__root__'
@@ -228,6 +237,7 @@ export interface FileRouteTypes {
     | '/admin/kirish'
     | '/elon/$id'
     | '/suhbatlar/$id'
+    | '/admin/'
     | '/suhbatlar/'
   fileRoutesById: FileRoutesById
 }
@@ -343,6 +353,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SuperAdminRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/kirish': {
       id: '/admin/kirish'
       path: '/kirish'
@@ -376,10 +393,12 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminKirishRoute: typeof AdminKirishRoute
+  AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminKirishRoute: AdminKirishRoute,
+  AdminIndexRoute: AdminIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
