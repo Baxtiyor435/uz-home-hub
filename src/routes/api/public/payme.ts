@@ -113,20 +113,20 @@ async function handleRpc(id: unknown, method: string, params: Record<string, unk
 
   switch (method) {
     case "CheckPerformTransaction": {
-      const account = (params.account ?? {}) as PaymeAccount;
+      const account = (params['account'] ?? {}) as PaymeAccount;
       const payment = await loadPayment(account.order_id);
       if (!payment || payment.status === "canceled") return rpcError(id, ERRORS.ORDER_NOT_FOUND);
-      if (payment.amount * 100 !== Number(params.amount)) return rpcError(id, ERRORS.INVALID_AMOUNT);
+      if (payment.amount * 100 !== Number(params['amount'])) return rpcError(id, ERRORS.INVALID_AMOUNT);
       return rpcResult(id, { allow: true });
     }
 
     case "CreateTransaction": {
-      const account = (params.account ?? {}) as PaymeAccount;
+      const account = (params['account'] ?? {}) as PaymeAccount;
       const payment = await loadPayment(account.order_id);
       if (!payment || payment.status === "canceled") return rpcError(id, ERRORS.ORDER_NOT_FOUND);
-      if (payment.amount * 100 !== Number(params.amount)) return rpcError(id, ERRORS.INVALID_AMOUNT);
+      if (payment.amount * 100 !== Number(params['amount'])) return rpcError(id, ERRORS.INVALID_AMOUNT);
 
-      const paymeId = String(params.id);
+      const paymeId = String(params['id']);
       const existing = await loadTransaction(paymeId);
       if (existing) {
         if (existing.state < 0) return rpcError(id, ERRORS.CANNOT_PERFORM);
@@ -148,8 +148,8 @@ async function handleRpc(id: unknown, method: string, params: Record<string, unk
           payme_id: paymeId,
           payment_id: payment.id,
           state: 1,
-          amount_tiyin: Number(params.amount),
-          create_time: Number(params.time),
+          amount_tiyin: Number(params['amount']),
+          create_time: Number(params['time']),
         })
         .select("*")
         .single();
@@ -158,7 +158,7 @@ async function handleRpc(id: unknown, method: string, params: Record<string, unk
     }
 
     case "PerformTransaction": {
-      const tx = await loadTransaction(String(params.id));
+      const tx = await loadTransaction(String(params['id']));
       if (!tx) return rpcError(id, ERRORS.TRANSACTION_NOT_FOUND);
       if (tx.state === 2) return rpcResult(id, transactionView(tx));
       if (tx.state !== 1) return rpcError(id, ERRORS.CANNOT_PERFORM);
@@ -177,9 +177,9 @@ async function handleRpc(id: unknown, method: string, params: Record<string, unk
     }
 
     case "CancelTransaction": {
-      const tx = await loadTransaction(String(params.id));
+      const tx = await loadTransaction(String(params['id']));
       if (!tx) return rpcError(id, ERRORS.TRANSACTION_NOT_FOUND);
-      const reason = Number(params.reason) || null;
+      const reason = Number(params['reason']) || null;
 
       if (tx.state < 0) return rpcResult(id, transactionView(tx));
 
@@ -203,7 +203,7 @@ async function handleRpc(id: unknown, method: string, params: Record<string, unk
     }
 
     case "CheckTransaction": {
-      const tx = await loadTransaction(String(params.id));
+      const tx = await loadTransaction(String(params['id']));
       if (!tx) return rpcError(id, ERRORS.TRANSACTION_NOT_FOUND);
       return rpcResult(id, transactionView(tx));
     }
