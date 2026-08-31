@@ -27,6 +27,7 @@ import { Route as AdminKirishRouteImport } from './routes/admin.kirish'
 import { Route as ElonIdRouteImport } from './routes/elon.$id'
 import { Route as SuhbatlarIndexRouteImport } from './routes/suhbatlar.index'
 import { Route as SuhbatlarIdRouteImport } from './routes/suhbatlar.$id'
+import { Route as ApiPublicPaymeRouteImport } from './routes/api/public/payme'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -118,6 +119,11 @@ const SuhbatlarIdRoute = SuhbatlarIdRouteImport.update({
   path: '/suhbatlar/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicPaymeRoute = ApiPublicPaymeRouteImport.update({
+  id: '/api/public/payme',
+  path: '/api/public/payme',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -138,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/suhbatlar/$id': typeof SuhbatlarIdRoute
   '/admin/': typeof AdminIndexRoute
   '/suhbatlar/': typeof SuhbatlarIndexRoute
+  '/api/public/payme': typeof ApiPublicPaymeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -157,6 +164,7 @@ export interface FileRoutesByTo {
   '/suhbatlar/$id': typeof SuhbatlarIdRoute
   '/admin': typeof AdminIndexRoute
   '/suhbatlar': typeof SuhbatlarIndexRoute
+  '/api/public/payme': typeof ApiPublicPaymeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -178,6 +186,7 @@ export interface FileRoutesById {
   '/suhbatlar/$id': typeof SuhbatlarIdRoute
   '/admin/': typeof AdminIndexRoute
   '/suhbatlar/': typeof SuhbatlarIndexRoute
+  '/api/public/payme': typeof ApiPublicPaymeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -200,6 +209,7 @@ export interface FileRouteTypes {
     | '/suhbatlar/$id'
     | '/admin/'
     | '/suhbatlar/'
+    | '/api/public/payme'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -219,6 +229,7 @@ export interface FileRouteTypes {
     | '/suhbatlar/$id'
     | '/admin'
     | '/suhbatlar'
+    | '/api/public/payme'
   id:
     | '__root__'
     | '/'
@@ -239,6 +250,7 @@ export interface FileRouteTypes {
     | '/suhbatlar/$id'
     | '/admin/'
     | '/suhbatlar/'
+    | '/api/public/payme'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -258,6 +270,7 @@ export interface RootRouteChildren {
   ElonIdRoute: typeof ElonIdRoute
   SuhbatlarIdRoute: typeof SuhbatlarIdRoute
   SuhbatlarIndexRoute: typeof SuhbatlarIndexRoute
+  ApiPublicPaymeRoute: typeof ApiPublicPaymeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -388,6 +401,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SuhbatlarIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/payme': {
+      id: '/api/public/payme'
+      path: '/api/public/payme'
+      fullPath: '/api/public/payme'
+      preLoaderRoute: typeof ApiPublicPaymeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -420,6 +440,7 @@ const rootRouteChildren: RootRouteChildren = {
   ElonIdRoute: ElonIdRoute,
   SuhbatlarIdRoute: SuhbatlarIdRoute,
   SuhbatlarIndexRoute: SuhbatlarIndexRoute,
+  ApiPublicPaymeRoute: ApiPublicPaymeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

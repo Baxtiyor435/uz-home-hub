@@ -295,6 +295,53 @@ export type Database = {
         }
         Relationships: []
       }
+      payme_transactions: {
+        Row: {
+          amount_tiyin: number
+          cancel_time: number
+          create_time: number
+          created_at: string
+          id: string
+          payme_id: string
+          payment_id: string
+          perform_time: number
+          reason: number | null
+          state: number
+        }
+        Insert: {
+          amount_tiyin: number
+          cancel_time?: number
+          create_time: number
+          created_at?: string
+          id?: string
+          payme_id: string
+          payment_id: string
+          perform_time?: number
+          reason?: number | null
+          state?: number
+        }
+        Update: {
+          amount_tiyin?: number
+          cancel_time?: number
+          create_time?: number
+          created_at?: string
+          id?: string
+          payme_id?: string
+          payment_id?: string
+          perform_time?: number
+          reason?: number | null
+          state?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payme_transactions_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payments: {
         Row: {
           amount: number
