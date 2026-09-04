@@ -11,7 +11,7 @@ function checkoutUrl(paymentId: string, amountUzs: number) {
   const params = `m=${merchantId};ac.order_id=${paymentId};a=${amountUzs * 100};c=${encodeURIComponent(
     "https://ubu.uz",
   )}`;
-  return `https://checkout.paycom.uz/${Buffer.from(params).toString("base64")}`;
+  return `https://checkout.test.paycom.uz/${Buffer.from(params).toString("base64")}`;
 }
 
 const premiumSchema = z.object({ planId: z.enum(["monthly", "quarterly", "yearly"]) });
