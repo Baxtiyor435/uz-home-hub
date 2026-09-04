@@ -15,6 +15,7 @@ import {
   createPremiumOrder,
   listMyPremiumOrders,
 } from "@/lib/billing.functions";
+import { openPaymeCheckout } from "@/lib/payme-redirect";
 import { startPaymePremium } from "@/lib/payme.functions";
 import { formatDate, formatPrice } from "@/lib/format";
 
@@ -76,8 +77,8 @@ function SubscriptionPage() {
     mutationFn: (planId: "monthly" | "quarterly" | "yearly") =>
       startPaymePremium({ data: { planId } }),
     onSuccess: ({ url }) => {
-      toast.success("Payme sahifasiga yo'naltirilmoqda...");
-      window.location.href = url;
+      toast.success("Payme to'lov sahifasi ochilmoqda...");
+      openPaymeCheckout(url);
     },
     onError: (error: Error) => toast.error(error.message || "Payme to'lovini boshlab bo'lmadi"),
   });
