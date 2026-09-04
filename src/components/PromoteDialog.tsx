@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { formatPrice } from "@/lib/format";
 import { useLang } from "@/lib/i18n";
+import { startPaymePromotion } from "@/lib/payme.functions";
 import { TOP_PLANS, type TopPlanId } from "@/lib/promotion";
 import { promoteProperty } from "@/lib/promotion.functions";
 
@@ -30,6 +31,15 @@ export function PromoteDialog({ propertyId, userId }: { propertyId: string; user
       queryClient.invalidateQueries({ queryKey: ["my-properties", userId] });
       queryClient.invalidateQueries({ queryKey: ["properties"] });
       toast.success(t("top.success"));
+    },
+    onError: (error: Error) => toast.error(error.message || t("top.error")),
+  });
+
+  const payme = useMutation({
+    mutationFn: () => startPaymePromotion({ data: { propertyId, planId } }),
+    onSuccess: ({ url }) => {
+      toast.success("Payme sahifasiga yo'naltirilmoqda...");
+      window.location.href = url;
     },
     onError: (error: Error) => toast.error(error.message || t("top.error")),
   });
@@ -66,10 +76,21 @@ export function PromoteDialog({ propertyId, userId }: { propertyId: string; user
           ))}
         </div>
 
-        <Button className="w-full" disabled={promote.isPending} onClick={() => promote.mutate()}>
-          {promote.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {t("top.pay")}
-        </Button>
+        <div className="space-y-2">
+          <Button className="w-full" disabled={payme.isPending} onClick={() => payme.mutate()}>
+            {payme.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Payme orqali to'lash
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full"
+            disabled={promote.isPending}
+            onClick={() => promote.mutate()}
+          >
+            {promote.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {t("top.pay")}
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );
