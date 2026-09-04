@@ -15,6 +15,7 @@ import {
   createPremiumOrder,
   listMyPremiumOrders,
 } from "@/lib/billing.functions";
+import { startPaymePremium } from "@/lib/payme.functions";
 import { formatDate, formatPrice } from "@/lib/format";
 
 export const Route = createFileRoute("/obuna")({
@@ -69,6 +70,16 @@ function SubscriptionPage() {
       toast.success("Obunangiz faollashtirildi!");
     },
     onError: (error: Error) => toast.error(error.message || "Buyurtmani yaratib bo'lmadi"),
+  });
+
+  const payme = useMutation({
+    mutationFn: (planId: "monthly" | "quarterly" | "yearly") =>
+      startPaymePremium({ data: { planId } }),
+    onSuccess: ({ url }) => {
+      toast.success("Payme sahifasiga yo'naltirilmoqda...");
+      window.location.href = url;
+    },
+    onError: (error: Error) => toast.error(error.message || "Payme to'lovini boshlab bo'lmadi"),
   });
 
   return (
@@ -126,15 +137,25 @@ function SubscriptionPage() {
               <p className="text-muted-foreground mt-1 text-xs">
                 {plan.months} oy · oyiga {formatPrice(Math.round(plan.price / plan.months), "UZS")}
               </p>
-              <div className="mt-auto pt-5">
+              <div className="mt-auto space-y-2 pt-5">
                 {user ? (
-                  <Button
-                    className="w-full"
-                    disabled={order.isPending || hasPending}
-                    onClick={() => order.mutate(plan.id)}
-                  >
-                    {hasPending ? "Tekshiruvda" : "Obunani faollashtirish"}
-                  </Button>
+                  <>
+                    <Button
+                      className="w-full"
+                      disabled={payme.isPending}
+                      onClick={() => payme.mutate(plan.id)}
+                    >
+                      {payme.isPending ? "Yuklanmoqda..." : "Payme orqali to'lash"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      disabled={order.isPending || hasPending}
+                      onClick={() => order.mutate(plan.id)}
+                    >
+                      {hasPending ? "Tekshiruvda" : "Karta o'tkazmasi bilan"}
+                    </Button>
+                  </>
                 ) : (
                   <Button asChild className="w-full">
                     <Link to="/auth">Kirish</Link>
