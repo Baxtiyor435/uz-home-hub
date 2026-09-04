@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { formatPrice } from "@/lib/format";
 import { useLang } from "@/lib/i18n";
+import { openPaymeCheckout } from "@/lib/payme-redirect";
 import { startPaymePromotion } from "@/lib/payme.functions";
 import { TOP_PLANS, type TopPlanId } from "@/lib/promotion";
 import { promoteProperty } from "@/lib/promotion.functions";
@@ -38,8 +39,8 @@ export function PromoteDialog({ propertyId, userId }: { propertyId: string; user
   const payme = useMutation({
     mutationFn: () => startPaymePromotion({ data: { propertyId, planId } }),
     onSuccess: ({ url }) => {
-      toast.success("Payme sahifasiga yo'naltirilmoqda...");
-      window.location.href = url;
+      toast.success("Payme to'lov sahifasi ochilmoqda...");
+      openPaymeCheckout(url);
     },
     onError: (error: Error) => toast.error(error.message || t("top.error")),
   });
