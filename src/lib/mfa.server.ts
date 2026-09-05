@@ -111,7 +111,7 @@ export function hashBackupCode(value: string): string {
 /* Rate limiting                                                       */
 /* ------------------------------------------------------------------ */
 
-type AdminClient = Awaited<import("@/integrations/supabase/client.server").AdminClient>;
+type AdminClient = typeof import("@/integrations/supabase/client.server").supabaseAdmin;
 
 export type RateLimitResult = { allowed: boolean; retryAfterSeconds: number };
 
