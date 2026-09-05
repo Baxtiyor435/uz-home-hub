@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { signInWithPassword, signUpWithPassword } from "@/lib/auth.functions";
+import { verifyMfaChallenge } from "@/lib/mfa.functions";
 import { getDeviceId } from "@/lib/device";
 import { normalizePhone } from "@/lib/format";
 import { APP_SLOGAN } from "@/lib/uz";
@@ -33,6 +34,39 @@ function AuthPage() {
   const [phone, setPhone] = useState("");
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
+  const [challenge, setChallenge] = useState<{ challengeId: string; challengeToken: string } | null>(
+    null,
+  );
+  const [totpCode, setTotpCode] = useState("");
+
+  const applySession = async (accessToken: string, refreshToken: string) => {
+    const { error } = await supabase.auth.setSession({
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    });
+    if (error) {
+      toast.error("Sessiyani ochishda xatolik yuz berdi");
+      return;
+    }
+    toast.success("Xush kelibsiz!");
+    navigate({ to: "/", replace: true });
+  };
+
+  const mfaMutation = useMutation({
+    mutationFn: async () => {
+      if (!challenge) throw new Error("Sessiya muddati tugadi. Qaytadan kiring");
+      return verifyMfaChallenge({ data: { ...challenge, code: totpCode.trim() } });
+    },
+    onSuccess: async (result) => {
+      if (!result.ok) {
+        toast.error(result.message);
+        setTotpCode("");
+        return;
+      }
+      await applySession(result.accessToken, result.refreshToken);
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
 
   const authMutation = useMutation({
     mutationFn: async () => {
@@ -49,22 +83,75 @@ function AuthPage() {
     },
     onSuccess: async (result) => {
       if (!result.ok) {
+        if (result.mfaRequired) {
+          setPassword("");
+          setChallenge({ challengeId: result.challengeId, challengeToken: result.challengeToken });
+          return;
+        }
         toast.error(result.message);
         return;
       }
-      const { error } = await supabase.auth.setSession({
-        access_token: result.accessToken,
-        refresh_token: result.refreshToken,
-      });
-      if (error) {
-        toast.error("Sessiyani ochishda xatolik yuz berdi");
-        return;
-      }
-      toast.success("Xush kelibsiz!");
-      navigate({ to: "/", replace: true });
+      await applySession(result.accessToken, result.refreshToken);
     },
     onError: (error: Error) => toast.error(error.message),
   });
+
+  if (challenge) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center px-4 py-10">
+        <Logo className="mb-6" />
+        <div className="surface-card w-full max-w-sm p-6">
+          <form
+            className="space-y-4"
+            onSubmit={(event) => {
+              event.preventDefault();
+              mfaMutation.mutate();
+            }}
+          >
+            <div>
+              <h1 className="font-display text-xl font-bold">Ikki bosqichli tasdiqlash</h1>
+              <p className="text-muted-foreground mt-1 text-sm">
+                Authenticator ilovangizdagi 6 xonali kodni kiriting. Zaxira kodni ham ishlatishingiz
+                mumkin.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="totp">Tasdiqlash kodi</Label>
+              <Input
+                id="totp"
+                inputMode="text"
+                autoComplete="one-time-code"
+                autoFocus
+                placeholder="123456"
+                value={totpCode}
+                maxLength={20}
+                onChange={(event) => setTotpCode(event.target.value)}
+                className="text-center text-lg tracking-[0.4em]"
+                required
+              />
+            </div>
+
+            <Button type="submit" className="w-full" disabled={mfaMutation.isPending}>
+              {mfaMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Tasdiqlash
+            </Button>
+
+            <button
+              type="button"
+              className="text-muted-foreground w-full text-center text-sm"
+              onClick={() => {
+                setChallenge(null);
+                setTotpCode("");
+              }}
+            >
+              Orqaga qaytish
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-4 py-10">
