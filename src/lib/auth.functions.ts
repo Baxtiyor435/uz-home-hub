@@ -17,7 +17,8 @@ const signUpSchema = signInSchema.extend({
 
 export type AuthResult =
   | { ok: true; accessToken: string; refreshToken: string }
-  | { ok: false; message: string };
+  | { ok: false; mfaRequired: true; challengeId: string; challengeToken: string }
+  | { ok: false; mfaRequired?: false; message: string };
 
 const DEVICE_MISMATCH_MESSAGE =
   "Bu hisob boshqa qurilmaga bog'langan. Bitta hisob faqat bitta qurilmada ishlaydi. Administratorga murojaat qiling.";
