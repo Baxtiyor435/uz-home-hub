@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDate, formatPhone, formatPrice } from "@/lib/format";
+import { TwoFactorSettings } from "@/components/TwoFactorSettings";
 import { redeemStaffCode } from "@/lib/staff.functions";
 import { DEFAULT_PREMIUM_PRICE, ROLE_LABELS } from "@/lib/uz";
 
@@ -184,6 +185,8 @@ function ProfilePage() {
             </Button>
           </form>
         </section>
+
+        <TwoFactorSettings />
 
         <section className="surface-card p-5">
           <div className="flex items-start justify-between gap-3">

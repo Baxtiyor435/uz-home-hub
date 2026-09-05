@@ -1,3 +1,5 @@
+import { randomBytes } from "crypto";
+
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
@@ -15,7 +17,8 @@ const signUpSchema = signInSchema.extend({
 
 export type AuthResult =
   | { ok: true; accessToken: string; refreshToken: string }
-  | { ok: false; message: string };
+  | { ok: false; mfaRequired: true; challengeId: string; challengeToken: string }
+  | { ok: false; mfaRequired?: false; message: string };
 
 const DEVICE_MISMATCH_MESSAGE =
   "Bu hisob boshqa qurilmaga bog'langan. Bitta hisob faqat bitta qurilmada ishlaydi. Administratorga murojaat qiling.";
@@ -94,6 +97,18 @@ export const signInWithPassword = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { phoneToEmail } = await import("@/lib/otp.server");
     const { createAuthClient } = await import("@/lib/session.server");
+    const mfa = await import("@/lib/mfa.server");
+
+    // Brute-force himoyasi: bitta raqam bo'yicha 15 daqiqada 8 ta urinish.
+    const bucket = `phone:${phone}`;
+    const limit = await mfa.checkRateLimit(supabaseAdmin, bucket, "login", 8, 900);
+    if (!limit.allowed) {
+      return {
+        ok: false,
+        message: `Juda ko'p urinish. ${Math.ceil(limit.retryAfterSeconds / 60)} daqiqadan so'ng qayta urining`,
+      };
+    }
+    await mfa.recordAttempt(supabaseAdmin, bucket, "login");
 
     const { data: existingProfile } = await supabaseAdmin
       .from("profiles")
@@ -127,10 +142,43 @@ export const signInWithPassword = createServerFn({ method: "POST" })
         .eq("id", signIn.session.user.id);
     }
 
+    // 2FA yoqilgan bo'lsa — sessiya hali berilmaydi, faqat challenge qaytariladi.
+    const { data: mfaRow } = await supabaseAdmin
+      .from("user_mfa")
+      .select("enabled")
+      .eq("user_id", signIn.session.user.id)
+      .maybeSingle();
+
+    if (mfaRow?.enabled) {
+      const challengeToken = randomBytes(32).toString("hex");
+      const { data: challenge, error: challengeError } = await supabaseAdmin
+        .from("mfa_challenges")
+        .insert({
+          user_id: signIn.session.user.id,
+          token_hash: mfa.hashToken(challengeToken),
+          session_cipher: mfa.encryptSecret(
+            JSON.stringify({
+              access_token: signIn.session.access_token,
+              refresh_token: signIn.session.refresh_token,
+            }),
+          ),
+          expires_at: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
+        })
+        .select("id")
+        .single();
+
+      if (challengeError || !challenge) {
+        return { ok: false, message: "Tizimga kirishda xatolik yuz berdi" };
+      }
+
+      return { ok: false, mfaRequired: true, challengeId: challenge.id, challengeToken };
+    }
+
+    await mfa.clearAttempts(supabaseAdmin, bucket, "login");
+
     return {
       ok: true,
       accessToken: signIn.session.access_token,
       refreshToken: signIn.session.refresh_token,
     };
-
   });

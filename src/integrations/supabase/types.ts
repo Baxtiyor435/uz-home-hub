@@ -92,6 +92,27 @@ export type Database = {
         }
         Relationships: []
       }
+      auth_attempts: {
+        Row: {
+          action: string
+          bucket_key: string
+          created_at: string
+          id: string
+        }
+        Insert: {
+          action: string
+          bucket_key: string
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          action?: string
+          bucket_key?: string
+          created_at?: string
+          id?: string
+        }
+        Relationships: []
+      }
       bookings: {
         Row: {
           agent_id: string
@@ -234,6 +255,63 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      mfa_backup_codes: {
+        Row: {
+          code_hash: string
+          created_at: string
+          id: string
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          code_hash: string
+          created_at?: string
+          id?: string
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          code_hash?: string
+          created_at?: string
+          id?: string
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      mfa_challenges: {
+        Row: {
+          attempts: number
+          consumed_at: string | null
+          created_at: string
+          expires_at: string
+          id: string
+          session_cipher: string
+          token_hash: string
+          user_id: string
+        }
+        Insert: {
+          attempts?: number
+          consumed_at?: string | null
+          created_at?: string
+          expires_at: string
+          id?: string
+          session_cipher: string
+          token_hash: string
+          user_id: string
+        }
+        Update: {
+          attempts?: number
+          consumed_at?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          session_cipher?: string
+          token_hash?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       notifications: {
         Row: {
@@ -648,6 +726,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_mfa: {
+        Row: {
+          confirmed_at: string | null
+          created_at: string
+          enabled: boolean
+          last_used_counter: number | null
+          secret_cipher: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          confirmed_at?: string | null
+          created_at?: string
+          enabled?: boolean
+          last_used_counter?: number | null
+          secret_cipher: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          confirmed_at?: string | null
+          created_at?: string
+          enabled?: boolean
+          last_used_counter?: number | null
+          secret_cipher?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
