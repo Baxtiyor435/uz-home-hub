@@ -118,23 +118,13 @@ function SubscriptionPage() {
               </p>
               <div className="mt-auto space-y-2 pt-5">
                 {user ? (
-                  <>
-                    <Button
-                      className="w-full"
-                      disabled={payme.isPending}
-                      onClick={() => payme.mutate(plan.id)}
-                    >
-                      {payme.isPending ? "Yuklanmoqda..." : "Payme orqali to'lash"}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="w-full"
-                      disabled={order.isPending || hasPending}
-                      onClick={() => order.mutate(plan.id)}
-                    >
-                      {hasPending ? "Tekshiruvda" : "Karta o'tkazmasi bilan"}
-                    </Button>
-                  </>
+                  <Button
+                    className="w-full"
+                    disabled={payme.isPending}
+                    onClick={() => payme.mutate(plan.id)}
+                  >
+                    {payme.isPending ? "Yuklanmoqda..." : "Payme orqali to'lash"}
+                  </Button>
                 ) : (
                   <Button asChild className="w-full">
                     <Link to="/auth">Kirish</Link>
