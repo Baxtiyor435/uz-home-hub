@@ -49,9 +49,7 @@ const BENEFITS = [
 ];
 
 function SubscriptionPage() {
-  const { user, isPremium, profile, refresh } = useAuth();
-  const queryClient = useQueryClient();
-  const [note, setNote] = useState("");
+  const { user, isPremium, profile } = useAuth();
 
   const { data: orders } = useQuery({
     queryKey: ["premium-orders", user?.id],
@@ -59,19 +57,7 @@ function SubscriptionPage() {
     queryFn: () => listMyPremiumOrders({ data: undefined }),
   });
 
-  const hasPending = (orders ?? []).some((row) => row.status === "pending");
 
-  const order = useMutation({
-    mutationFn: (planId: "monthly" | "quarterly" | "yearly") =>
-      createPremiumOrder({ data: { planId, note: note.trim() || undefined } }),
-    onSuccess: () => {
-      setNote("");
-      queryClient.invalidateQueries({ queryKey: ["premium-orders", user?.id] });
-      refresh();
-      toast.success("Obunangiz faollashtirildi!");
-    },
-    onError: (error: Error) => toast.error(error.message || "Buyurtmani yaratib bo'lmadi"),
-  });
 
   const payme = useMutation({
     mutationFn: (planId: "monthly" | "quarterly" | "yearly") =>
