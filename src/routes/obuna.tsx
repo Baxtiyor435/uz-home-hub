@@ -1,20 +1,13 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Check, Crown } from "lucide-react";
-import { useState } from "react";
 import { toast } from "sonner";
 
 import { PageShell } from "@/components/PageShell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
-import {
-  PAYMENT_CARD,
-  PREMIUM_PLANS,
-  createPremiumOrder,
-  listMyPremiumOrders,
-} from "@/lib/billing.functions";
+import { PREMIUM_PLANS, listMyPremiumOrders } from "@/lib/billing.functions";
 import { openPaymeCheckout } from "@/lib/payme-redirect";
 import { startPaymePremium } from "@/lib/payme.functions";
 import { formatDate, formatPrice } from "@/lib/format";
@@ -49,9 +42,7 @@ const BENEFITS = [
 ];
 
 function SubscriptionPage() {
-  const { user, isPremium, profile, refresh } = useAuth();
-  const queryClient = useQueryClient();
-  const [note, setNote] = useState("");
+  const { user, isPremium, profile } = useAuth();
 
   const { data: orders } = useQuery({
     queryKey: ["premium-orders", user?.id],
@@ -59,19 +50,7 @@ function SubscriptionPage() {
     queryFn: () => listMyPremiumOrders({ data: undefined }),
   });
 
-  const hasPending = (orders ?? []).some((row) => row.status === "pending");
 
-  const order = useMutation({
-    mutationFn: (planId: "monthly" | "quarterly" | "yearly") =>
-      createPremiumOrder({ data: { planId, note: note.trim() || undefined } }),
-    onSuccess: () => {
-      setNote("");
-      queryClient.invalidateQueries({ queryKey: ["premium-orders", user?.id] });
-      refresh();
-      toast.success("Obunangiz faollashtirildi!");
-    },
-    onError: (error: Error) => toast.error(error.message || "Buyurtmani yaratib bo'lmadi"),
-  });
 
   const payme = useMutation({
     mutationFn: (planId: "monthly" | "quarterly" | "yearly") =>
@@ -107,28 +86,6 @@ function SubscriptionPage() {
           ))}
         </ul>
 
-        <section className="surface-card mt-6 p-6">
-          <h2 className="font-display text-lg font-semibold">To'lov tartibi</h2>
-          <ol className="text-muted-foreground mt-3 list-decimal space-y-1 pl-5 text-sm">
-            <li>
-              Quyidagi kartaga tarif summasini o'tkazing:{" "}
-              <span className="text-foreground font-semibold">{PAYMENT_CARD.number}</span> (
-              {PAYMENT_CARD.holder})
-            </li>
-            <li>To'lov chek raqami yoki to'lagan karta raqamingizni izohga yozing.</li>
-            <li>Tarifni tanlab "Obunani faollashtirish" tugmasini bosing.</li>
-            <li>Obunangiz darhol faollashadi.</li>
-          </ol>
-          {user && (
-            <Input
-              value={note}
-              onChange={(event) => setNote(event.target.value)}
-              placeholder="Chek raqami / to'lagan karta (ixtiyoriy)"
-              className="mt-4"
-              maxLength={300}
-            />
-          )}
-        </section>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-3">
           {PREMIUM_PLANS.map((plan) => (
@@ -140,23 +97,13 @@ function SubscriptionPage() {
               </p>
               <div className="mt-auto space-y-2 pt-5">
                 {user ? (
-                  <>
-                    <Button
-                      className="w-full"
-                      disabled={payme.isPending}
-                      onClick={() => payme.mutate(plan.id)}
-                    >
-                      {payme.isPending ? "Yuklanmoqda..." : "Payme orqali to'lash"}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="w-full"
-                      disabled={order.isPending || hasPending}
-                      onClick={() => order.mutate(plan.id)}
-                    >
-                      {hasPending ? "Tekshiruvda" : "Karta o'tkazmasi bilan"}
-                    </Button>
-                  </>
+                  <Button
+                    className="w-full"
+                    disabled={payme.isPending}
+                    onClick={() => payme.mutate(plan.id)}
+                  >
+                    {payme.isPending ? "Yuklanmoqda..." : "Payme orqali to'lash"}
+                  </Button>
                 ) : (
                   <Button asChild className="w-full">
                     <Link to="/auth">Kirish</Link>
@@ -167,11 +114,6 @@ function SubscriptionPage() {
           ))}
         </div>
 
-        {hasPending && (
-          <p className="text-muted-foreground mt-6 text-center text-xs">
-            To'lovingiz admin tekshiruvida. Tasdiqlangach bildirishnoma keladi va obuna faollashadi.
-          </p>
-        )}
 
         {(orders?.length ?? 0) > 0 && (
           <section className="mt-10">
