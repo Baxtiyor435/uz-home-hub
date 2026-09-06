@@ -145,11 +145,6 @@ function SubscriptionPage() {
           ))}
         </div>
 
-        {hasPending && (
-          <p className="text-muted-foreground mt-6 text-center text-xs">
-            To'lovingiz admin tekshiruvida. Tasdiqlangach bildirishnoma keladi va obuna faollashadi.
-          </p>
-        )}
 
         {(orders?.length ?? 0) > 0 && (
           <section className="mt-10">
