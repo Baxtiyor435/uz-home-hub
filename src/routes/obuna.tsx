@@ -107,28 +107,6 @@ function SubscriptionPage() {
           ))}
         </ul>
 
-        <section className="surface-card mt-6 p-6">
-          <h2 className="font-display text-lg font-semibold">To'lov tartibi</h2>
-          <ol className="text-muted-foreground mt-3 list-decimal space-y-1 pl-5 text-sm">
-            <li>
-              Quyidagi kartaga tarif summasini o'tkazing:{" "}
-              <span className="text-foreground font-semibold">{PAYMENT_CARD.number}</span> (
-              {PAYMENT_CARD.holder})
-            </li>
-            <li>To'lov chek raqami yoki to'lagan karta raqamingizni izohga yozing.</li>
-            <li>Tarifni tanlab "Obunani faollashtirish" tugmasini bosing.</li>
-            <li>Obunangiz darhol faollashadi.</li>
-          </ol>
-          {user && (
-            <Input
-              value={note}
-              onChange={(event) => setNote(event.target.value)}
-              placeholder="Chek raqami / to'lagan karta (ixtiyoriy)"
-              className="mt-4"
-              maxLength={300}
-            />
-          )}
-        </section>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-3">
           {PREMIUM_PLANS.map((plan) => (
