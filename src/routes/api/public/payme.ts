@@ -34,6 +34,14 @@ const ERRORS = {
       en: "Cannot perform operation",
     },
   },
+  ORDER_PROCESSING: {
+    code: -31099,
+    message: {
+      uz: "Buyurtma to'lovi hozirda amalga oshirilmoqda",
+      ru: "Платеж на этот заказ на данный момент обрабатывается",
+      en: "Order payment is already being processed",
+    },
+  },
   TRANSACTION_NOT_FOUND: {
     code: -31003,
     message: {
@@ -116,6 +124,7 @@ async function handleRpc(id: unknown, method: string, params: Record<string, unk
       const account = (params['account'] ?? {}) as PaymeAccount;
       const payment = await loadPayment(account.order_id);
       if (!payment || payment.status === "canceled") return rpcError(id, ERRORS.ORDER_NOT_FOUND);
+      if (payment.status !== "pending") return rpcError(id, ERRORS.ORDER_PROCESSING);
       if (payment.amount * 100 !== Number(params['amount'])) return rpcError(id, ERRORS.INVALID_AMOUNT);
       return rpcResult(id, { allow: true });
     }
@@ -124,6 +133,7 @@ async function handleRpc(id: unknown, method: string, params: Record<string, unk
       const account = (params['account'] ?? {}) as PaymeAccount;
       const payment = await loadPayment(account.order_id);
       if (!payment || payment.status === "canceled") return rpcError(id, ERRORS.ORDER_NOT_FOUND);
+      if (payment.status !== "pending") return rpcError(id, ERRORS.ORDER_PROCESSING);
       if (payment.amount * 100 !== Number(params['amount'])) return rpcError(id, ERRORS.INVALID_AMOUNT);
 
       const paymeId = String(params['id']);
@@ -140,7 +150,7 @@ async function handleRpc(id: unknown, method: string, params: Record<string, unk
         .eq("payment_id", payment.id)
         .gt("state", 0)
         .maybeSingle();
-      if (active) return rpcError(id, ERRORS.CANNOT_PERFORM);
+      if (active) return rpcError(id, ERRORS.ORDER_PROCESSING);
 
       const { data: tx, error } = await supabaseAdmin
         .from("payme_transactions")
