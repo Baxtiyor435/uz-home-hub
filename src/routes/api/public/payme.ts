@@ -57,7 +57,13 @@ const ERRORS = {
 type RpcErrorDef = (typeof ERRORS)[keyof typeof ERRORS];
 
 function rpcError(id: unknown, error: RpcErrorDef) {
-  return Response.json({ jsonrpc: "2.0", id: id ?? null, error });
+  // Payme sandbox renders `error.message` directly, so send a plain string
+  // (spec-compatible) and keep localized texts in `data`.
+  return Response.json({
+    jsonrpc: "2.0",
+    id: id ?? null,
+    error: { code: error.code, message: error.message.ru, data: error.message },
+  });
 }
 
 function rpcResult(id: unknown, result: Record<string, unknown>) {
