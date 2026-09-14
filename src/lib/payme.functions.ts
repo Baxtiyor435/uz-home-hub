@@ -8,9 +8,10 @@ import { TOP_PLANS } from "@/lib/promotion";
 /** Builds the hosted Payme checkout URL for a pending payment. */
 function checkoutUrl(paymentId: string, amountUzs: number) {
   const merchantId = process.env["PAYME_MERCHANT_ID"]!;
-  const params = `m=${merchantId};ac.order_id=${paymentId};a=${amountUzs * 100};c=${encodeURIComponent(
-    "https://ubu.uz",
-  )}`;
+  const returnUrl =
+    process.env["PAYME_RETURN_URL"] ??
+    "https://project--826e13d9-45d2-4b68-a4cd-11a19e514c67.lovable.app/obuna";
+  const params = `m=${merchantId};ac.order_id=${paymentId};a=${amountUzs * 100};c=${encodeURIComponent(returnUrl)}`;
   const host = process.env["PAYME_CHECKOUT_HOST"] ?? "checkout.paycom.uz";
   return `https://${host}/${Buffer.from(params).toString("base64")}`;
 }
