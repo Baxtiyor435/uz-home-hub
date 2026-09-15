@@ -234,10 +234,7 @@ export const Route = createFileRoute("/api/public/payme")({
     handlers: {
       POST: async ({ request }) => {
         if (!isAuthorized(request)) {
-          return new Response(JSON.stringify({ jsonrpc: "2.0", id: null, error: ERRORS.UNAUTHORIZED }), {
-            status: 200,
-            headers: { "Content-Type": "application/json" },
-          });
+          return rpcError(null, ERRORS.UNAUTHORIZED);
         }
 
         let body: { id?: unknown; method?: string; params?: Record<string, unknown> };
