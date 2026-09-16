@@ -224,6 +224,40 @@ async function handleRpc(id: unknown, method: string, params: Record<string, unk
       return rpcResult(id, transactionView(tx));
     }
 
+    case "GetStatement": {
+      const from = Number(params['from']);
+      const to = Number(params['to']);
+      if (!Number.isFinite(from) || !Number.isFinite(to) || from > to) {
+        return rpcError(id, ERRORS.CANNOT_PERFORM);
+      }
+
+      const { data: txs } = await supabaseAdmin
+        .from("payme_transactions")
+        .select("*, payments!inner(amount)")
+        .gte("create_time", from)
+        .lte("create_time", to)
+        .order("create_time", { ascending: true });
+
+      const transactions = (txs ?? []).map((tx) => {
+        const payment = Array.isArray(tx.payments) ? tx.payments[0] : tx.payments;
+        return {
+          id: tx.payme_id,
+          time: Number(tx.create_time),
+          amount: payment?.amount ? Number(payment.amount) * 100 : Number(tx.amount_tiyin),
+          account: { order_id: tx.payment_id },
+          create_time: Number(tx.create_time),
+          perform_time: Number(tx.perform_time),
+          cancel_time: Number(tx.cancel_time),
+          transaction: tx.payme_id,
+          state: tx.state,
+          reason: tx.reason,
+          receivers: null,
+        };
+      });
+
+      return rpcResult(id, { transactions });
+    }
+
     default:
       return rpcError(id, ERRORS.METHOD_NOT_FOUND);
   }
