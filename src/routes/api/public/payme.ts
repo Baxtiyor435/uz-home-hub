@@ -88,10 +88,34 @@ async function loadPayment(orderId: string | undefined) {
   if (!orderId) return null;
   const { data } = await supabaseAdmin
     .from("payments")
-    .select("id, amount, status")
+    .select("id, amount, status, purpose, months")
     .eq("id", orderId)
     .maybeSingle();
   return data;
+}
+
+/** Fiscal data (IKPU/MXIK) required by Payme receipts. */
+const IKPU_CODE = "10501003001000000";
+const PACKAGE_CODE = "1504838";
+
+function fiscalDetail(payment: { amount: number; purpose: string | null; months: number | null }) {
+  const title =
+    payment.purpose === "promotion"
+      ? `UBU Real Estate — e'lonni TOP'ga ko'tarish (${payment.months || 7} kun)`
+      : `UBU Real Estate — Premium obuna (${payment.months || 1} oy)`;
+  return {
+    receipt_type: 0, // 0 = debet (100% to'lov)
+    items: [
+      {
+        title,
+        price: payment.amount * 100,
+        count: 1,
+        code: IKPU_CODE,
+        package_code: PACKAGE_CODE,
+        vat_percent: 0,
+      },
+    ],
+  };
 }
 
 async function loadTransaction(paymeId: string) {
@@ -132,7 +156,7 @@ async function handleRpc(id: unknown, method: string, params: Record<string, unk
       if (!payment || payment.status === "canceled") return rpcError(id, ERRORS.ORDER_NOT_FOUND);
       if (payment.status !== "pending") return rpcError(id, ERRORS.ORDER_PROCESSING);
       if (payment.amount * 100 !== Number(params['amount'])) return rpcError(id, ERRORS.INVALID_AMOUNT);
-      return rpcResult(id, { allow: true });
+      return rpcResult(id, { allow: true, detail: fiscalDetail(payment) });
     }
 
     case "CreateTransaction": {
