@@ -56,13 +56,17 @@ const ERRORS = {
 
 type RpcErrorDef = (typeof ERRORS)[keyof typeof ERRORS];
 
-function rpcError(id: unknown, error: RpcErrorDef) {
-  // Payme sandbox renders `error.message` directly, so send a plain string
-  // (spec-compatible) and keep localized texts in `data`.
+function rpcError(id: unknown, error: RpcErrorDef, data?: string) {
+  // Payme's tester renders both message and data as text. Never put a
+  // localized object in either field, otherwise the UI prints [object Object].
   return Response.json({
     jsonrpc: "2.0",
     id: id ?? null,
-    error: { code: error.code, message: error.message.ru, data: error.message },
+    error: {
+      code: error.code,
+      message: error.message.ru,
+      ...(data ? { data } : {}),
+    },
   });
 }
 
@@ -153,18 +157,18 @@ async function handleRpc(id: unknown, method: string, params: Record<string, unk
     case "CheckPerformTransaction": {
       const account = (params['account'] ?? {}) as PaymeAccount;
       const payment = await loadPayment(account.order_id);
-      if (!payment || payment.status === "canceled") return rpcError(id, ERRORS.ORDER_NOT_FOUND);
+      if (!payment || payment.status === "canceled") return rpcError(id, ERRORS.ORDER_NOT_FOUND, "order_id");
       if (payment.status !== "pending") return rpcError(id, ERRORS.ORDER_PROCESSING);
-      if (payment.amount * 100 !== Number(params['amount'])) return rpcError(id, ERRORS.INVALID_AMOUNT);
+      if (payment.amount * 100 !== Number(params['amount'])) return rpcError(id, ERRORS.INVALID_AMOUNT, "amount");
       return rpcResult(id, { allow: true, detail: fiscalDetail(payment) });
     }
 
     case "CreateTransaction": {
       const account = (params['account'] ?? {}) as PaymeAccount;
       const payment = await loadPayment(account.order_id);
-      if (!payment || payment.status === "canceled") return rpcError(id, ERRORS.ORDER_NOT_FOUND);
+      if (!payment || payment.status === "canceled") return rpcError(id, ERRORS.ORDER_NOT_FOUND, "order_id");
       if (payment.status !== "pending") return rpcError(id, ERRORS.ORDER_PROCESSING);
-      if (payment.amount * 100 !== Number(params['amount'])) return rpcError(id, ERRORS.INVALID_AMOUNT);
+      if (payment.amount * 100 !== Number(params['amount'])) return rpcError(id, ERRORS.INVALID_AMOUNT, "amount");
 
       const paymeId = String(params['id']);
       const existing = await loadTransaction(paymeId);
