@@ -156,7 +156,7 @@ async function handleRpc(id: unknown, method: string, params: Record<string, unk
       if (!payment || payment.status === "canceled") return rpcError(id, ERRORS.ORDER_NOT_FOUND);
       if (payment.status !== "pending") return rpcError(id, ERRORS.ORDER_PROCESSING);
       if (payment.amount * 100 !== Number(params['amount'])) return rpcError(id, ERRORS.INVALID_AMOUNT);
-      return rpcResult(id, { allow: true });
+      return rpcResult(id, { allow: true, detail: fiscalDetail(payment) });
     }
 
     case "CreateTransaction": {
