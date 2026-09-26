@@ -6,11 +6,13 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useTr } from "@/lib/i18n";
 import { confirmMfaSetup, disableMfa, getMfaStatus, startMfaSetup } from "@/lib/mfa.functions";
 
 type Stage = "idle" | "password" | "scan" | "codes" | "disable";
 
 export function TwoFactorSettings() {
+  const tr = useTr();
   const queryClient = useQueryClient();
   const [stage, setStage] = useState<Stage>("idle");
   const [password, setPassword] = useState("");
@@ -41,7 +43,7 @@ export function TwoFactorSettings() {
       setPassword("");
       setStage("scan");
     },
-    onError: () => toast.error("Xatolik yuz berdi"),
+    onError: () => toast.error(tr("Xatolik yuz berdi", "Произошла ошибка")),
   });
 
   const confirm = useMutation({
@@ -55,24 +57,24 @@ export function TwoFactorSettings() {
       setSetup(null);
       setCode("");
       setStage("codes");
-      toast.success("2FA muvaffaqiyatli yoqildi");
+      toast.success(tr("2FA muvaffaqiyatli yoqildi", "2FA успешно включена"));
       void queryClient.invalidateQueries({ queryKey: ["mfa-status"] });
     },
-    onError: () => toast.error("Kod noto'g'ri"),
+    onError: () => toast.error(tr("Kod noto'g'ri", "Неверный код")),
   });
 
   const turnOff = useMutation({
     mutationFn: () => disableMfa({ data: { password, code: code.trim() } }),
     onSuccess: (result) => {
       if (!result.ok) {
-        toast.error(result.message ?? "Xatolik");
+        toast.error(result.message ?? tr("Xatolik", "Ошибка"));
         return;
       }
-      toast.success("2FA o'chirildi");
+      toast.success(tr("2FA o'chirildi", "2FA отключена"));
       reset();
       void queryClient.invalidateQueries({ queryKey: ["mfa-status"] });
     },
-    onError: () => toast.error("Xatolik yuz berdi"),
+    onError: () => toast.error(tr("Xatolik yuz berdi", "Произошла ошибка")),
   });
 
   return (
@@ -81,16 +83,15 @@ export function TwoFactorSettings() {
         <div>
           <h2 className="font-display flex items-center gap-2 text-base font-semibold">
             <ShieldCheck className="text-primary h-4 w-4" />
-            Ikki bosqichli himoya (2FA)
+            {tr("Ikki bosqichli himoya (2FA)", "Двухфакторная защита (2FA)")}
           </h2>
           <p className="text-muted-foreground mt-1 text-sm">
-            Google Authenticator, Microsoft Authenticator yoki Aegis ilovasi orqali hisobingizni
-            himoyalang.
+            {tr("Google Authenticator, Microsoft Authenticator yoki Aegis ilovasi orqali hisobingizni himoyalang.", "Защитите свой аккаунт с помощью Google Authenticator, Microsoft Authenticator или Aegis.")}
           </p>
         </div>
         {status?.enabled && (
           <span className="bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-medium">
-            Yoqilgan
+            {tr("Yoqilgan", "Включено")}
           </span>
         )}
       </div>
@@ -98,7 +99,7 @@ export function TwoFactorSettings() {
       {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
 
       {!isLoading && !status?.enabled && stage === "idle" && (
-        <Button onClick={() => setStage("password")}>2FA ni yoqish</Button>
+        <Button onClick={() => setStage("password")}>{tr("2FA ni yoqish", "Включить 2FA")}</Button>
       )}
 
       {!status?.enabled && stage === "password" && (
@@ -110,7 +111,7 @@ export function TwoFactorSettings() {
           }}
         >
           <div className="space-y-2">
-            <Label htmlFor="mfa-password">Parolingizni tasdiqlang</Label>
+            <Label htmlFor="mfa-password">{tr("Parolingizni tasdiqlang", "Подтвердите ваш пароль")}</Label>
             <Input
               id="mfa-password"
               type="password"
@@ -124,10 +125,10 @@ export function TwoFactorSettings() {
           <div className="flex gap-2">
             <Button type="submit" disabled={start.isPending}>
               {start.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Davom etish
+              {tr("Davom etish", "Продолжить")}
             </Button>
             <Button type="button" variant="ghost" onClick={reset}>
-              Bekor qilish
+              {tr("Bekor qilish", "Отмена")}
             </Button>
           </div>
         </form>
@@ -141,16 +142,16 @@ export function TwoFactorSettings() {
             confirm.mutate();
           }}
         >
-          <p className="text-sm font-medium">QR kodni Authenticator ilovangiz bilan skaner qiling</p>
+          <p className="text-sm font-medium">{tr("QR kodni Authenticator ilovangiz bilan skaner qiling", "Отсканируйте QR-код в приложении Authenticator")}</p>
           <img
             src={setup.qrDataUrl}
-            alt="2FA uchun QR kod"
+            alt={tr("2FA uchun QR kod", "QR-код для 2FA")}
             className="bg-background mx-auto rounded-lg border p-2"
             width={220}
             height={220}
           />
           <div className="space-y-1">
-            <Label>Qo'lda kiritish uchun kalit</Label>
+            <Label>{tr("Qo'lda kiritish uchun kalit", "Ключ для ручного ввода")}</Label>
             <div className="flex items-center gap-2">
               <code className="bg-muted flex-1 break-all rounded-md px-3 py-2 text-xs">
                 {setup.manualKey}
@@ -161,7 +162,7 @@ export function TwoFactorSettings() {
                 size="icon"
                 onClick={() => {
                   void navigator.clipboard.writeText(setup.manualKey);
-                  toast.success("Nusxalandi");
+                  toast.success(tr("Nusxalandi", "Скопировано"));
                 }}
               >
                 <Copy className="h-4 w-4" />
@@ -169,7 +170,7 @@ export function TwoFactorSettings() {
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="mfa-code">Ilovadagi 6 xonali kod</Label>
+            <Label htmlFor="mfa-code">{tr("Ilovadagi 6 xonali kod", "6-значный код из приложения")}</Label>
             <Input
               id="mfa-code"
               inputMode="numeric"
@@ -185,10 +186,10 @@ export function TwoFactorSettings() {
           <div className="flex gap-2">
             <Button type="submit" disabled={confirm.isPending}>
               {confirm.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Tasdiqlash va yoqish
+              {tr("Tasdiqlash va yoqish", "Подтвердить и включить")}
             </Button>
             <Button type="button" variant="ghost" onClick={reset}>
-              Bekor qilish
+              {tr("Bekor qilish", "Отмена")}
             </Button>
           </div>
         </form>
@@ -196,10 +197,9 @@ export function TwoFactorSettings() {
 
       {stage === "codes" && backupCodes.length > 0 && (
         <div className="space-y-3">
-          <p className="text-sm font-medium">2FA muvaffaqiyatli yoqildi</p>
+          <p className="text-sm font-medium">{tr("2FA muvaffaqiyatli yoqildi", "2FA успешно включена")}</p>
           <p className="text-muted-foreground text-sm">
-            Quyidagi zaxira kodlarni xavfsiz joyda saqlang. Har biri faqat bir marta ishlaydi va bu
-            kodlar boshqa ko'rsatilmaydi.
+            {tr("Quyidagi zaxira kodlarni xavfsiz joyda saqlang. Har biri faqat bir marta ishlaydi va bu kodlar boshqa ko'rsatilmaydi.", "Сохраните резервные коды в надёжном месте. Каждый работает только один раз, и повторно они не показываются.")}
           </p>
           <div className="bg-muted grid grid-cols-2 gap-2 rounded-lg p-3 font-mono text-sm">
             {backupCodes.map((backupCode) => (
@@ -211,11 +211,11 @@ export function TwoFactorSettings() {
               variant="outline"
               onClick={() => {
                 void navigator.clipboard.writeText(backupCodes.join("\n"));
-                toast.success("Zaxira kodlar nusxalandi");
+                toast.success(tr("Zaxira kodlar nusxalandi", "Резервные коды скопированы"));
               }}
             >
               <Copy className="mr-2 h-4 w-4" />
-              Nusxalash
+              {tr("Nusxalash", "Копировать")}
             </Button>
             <Button
               onClick={() => {
@@ -223,7 +223,7 @@ export function TwoFactorSettings() {
                 reset();
               }}
             >
-              Saqladim
+              {tr("Saqladim", "Сохранил(а)")}
             </Button>
           </div>
         </div>
@@ -232,11 +232,11 @@ export function TwoFactorSettings() {
       {status?.enabled && stage === "idle" && (
         <div className="space-y-2">
           <p className="text-muted-foreground text-sm">
-            Qolgan zaxira kodlar: {status.backupCodesLeft}
+            {tr("Qolgan zaxira kodlar:", "Осталось резервных кодов:")} {status.backupCodesLeft}
           </p>
           <Button variant="outline" onClick={() => setStage("disable")}>
             <ShieldOff className="mr-2 h-4 w-4" />
-            2FA ni o'chirish
+            {tr("2FA ni o'chirish", "Отключить 2FA")}
           </Button>
         </div>
       )}
@@ -250,7 +250,7 @@ export function TwoFactorSettings() {
           }}
         >
           <div className="space-y-2">
-            <Label htmlFor="off-password">Parol</Label>
+            <Label htmlFor="off-password">{tr("Parol", "Пароль")}</Label>
             <Input
               id="off-password"
               type="password"
@@ -262,7 +262,7 @@ export function TwoFactorSettings() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="off-code">Authenticator kodi</Label>
+            <Label htmlFor="off-code">{tr("Authenticator kodi", "Код Authenticator")}</Label>
             <Input
               id="off-code"
               inputMode="numeric"
@@ -276,10 +276,10 @@ export function TwoFactorSettings() {
           <div className="flex gap-2">
             <Button type="submit" variant="destructive" disabled={turnOff.isPending}>
               {turnOff.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              O'chirish
+              {tr("O'chirish", "Отключить")}
             </Button>
             <Button type="button" variant="ghost" onClick={reset}>
-              Bekor qilish
+              {tr("Bekor qilish", "Отмена")}
             </Button>
           </div>
         </form>

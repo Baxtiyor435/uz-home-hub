@@ -3,9 +3,11 @@ import type { ReactNode } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { BottomNav } from "@/components/BottomNav";
 import { Logo } from "@/components/Logo";
+import { useTr } from "@/lib/i18n";
 import { APP_SLOGAN } from "@/lib/uz";
 
 export function PageShell({ children }: { children: ReactNode }) {
+  const tr = useTr();
   return (
     <div className="flex min-h-screen flex-col">
       <AppHeader />
@@ -15,7 +17,7 @@ export function PageShell({ children }: { children: ReactNode }) {
           <Logo />
           <p>{APP_SLOGAN}</p>
           <p className="text-xs">
-            © {new Date().getFullYear()} UBU Real Estate. Barcha huquqlar himoyalangan.
+            © {new Date().getFullYear()} UBU Real Estate. {tr("Barcha huquqlar himoyalangan.", "Все права защищены.")}
           </p>
         </div>
       </footer>

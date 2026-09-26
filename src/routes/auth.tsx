@@ -13,6 +13,7 @@ import { signInWithPassword, signUpWithPassword } from "@/lib/auth.functions";
 import { verifyMfaChallenge } from "@/lib/mfa.functions";
 import { getDeviceId } from "@/lib/device";
 import { normalizePhone } from "@/lib/format";
+import { useTr } from "@/lib/i18n";
 import { APP_SLOGAN } from "@/lib/uz";
 
 export const Route = createFileRoute("/auth")({
@@ -30,6 +31,7 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
+  const tr = useTr();
   const [mode, setMode] = useState<"login" | "register">("login");
   const [phone, setPhone] = useState("");
   const [fullName, setFullName] = useState("");
@@ -45,16 +47,16 @@ function AuthPage() {
       refresh_token: refreshToken,
     });
     if (error) {
-      toast.error("Sessiyani ochishda xatolik yuz berdi");
+      toast.error(tr("Sessiyani ochishda xatolik yuz berdi", "Ошибка при открытии сессии"));
       return;
     }
-    toast.success("Xush kelibsiz!");
+    toast.success(tr("Xush kelibsiz!", "Добро пожаловать!"));
     navigate({ to: "/", replace: true });
   };
 
   const mfaMutation = useMutation({
     mutationFn: async () => {
-      if (!challenge) throw new Error("Sessiya muddati tugadi. Qaytadan kiring");
+      if (!challenge) throw new Error(tr("Sessiya muddati tugadi. Qaytadan kiring", "Сессия истекла. Войдите снова"));
       return verifyMfaChallenge({ data: { ...challenge, code: totpCode.trim() } });
     },
     onSuccess: async (result) => {
@@ -71,10 +73,10 @@ function AuthPage() {
   const authMutation = useMutation({
     mutationFn: async () => {
       const normalized = normalizePhone(phone);
-      if (!normalized) throw new Error("Telefon raqamini to'liq kiriting");
-      if (password.length < 6) throw new Error("Parol kamida 6 belgidan iborat bo'lsin");
+      if (!normalized) throw new Error(tr("Telefon raqamini to'liq kiriting", "Введите номер телефона полностью"));
+      if (password.length < 6) throw new Error(tr("Parol kamida 6 belgidan iborat bo'lsin", "Пароль должен содержать не менее 6 символов"));
       const deviceId = getDeviceId();
-      if (!deviceId) throw new Error("Qurilmani aniqlab bo'lmadi. Brauzer sozlamalarini tekshiring");
+      if (!deviceId) throw new Error(tr("Qurilmani aniqlab bo'lmadi. Brauzer sozlamalarini tekshiring", "Не удалось определить устройство. Проверьте настройки браузера"));
       return mode === "login"
         ? signInWithPassword({ data: { phone: normalized, password, deviceId } })
         : signUpWithPassword({
@@ -109,15 +111,14 @@ function AuthPage() {
             }}
           >
             <div>
-              <h1 className="font-display text-xl font-bold">Ikki bosqichli tasdiqlash</h1>
+              <h1 className="font-display text-xl font-bold">{tr("Ikki bosqichli tasdiqlash", "Двухфакторная аутентификация")}</h1>
               <p className="text-muted-foreground mt-1 text-sm">
-                Authenticator ilovangizdagi 6 xonali kodni kiriting. Zaxira kodni ham ishlatishingiz
-                mumkin.
+                {tr("Authenticator ilovangizdagi 6 xonali kodni kiriting. Zaxira kodni ham ishlatishingiz mumkin.", "Введите 6-значный код из приложения Authenticator. Также можно использовать резервный код.")}
               </p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="totp">Tasdiqlash kodi</Label>
+              <Label htmlFor="totp">{tr("Tasdiqlash kodi", "Код подтверждения")}</Label>
               <Input
                 id="totp"
                 inputMode="text"
@@ -134,7 +135,7 @@ function AuthPage() {
 
             <Button type="submit" className="w-full" disabled={mfaMutation.isPending}>
               {mfaMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Tasdiqlash
+              {tr("Tasdiqlash", "Подтвердить")}
             </Button>
 
             <button
@@ -145,7 +146,7 @@ function AuthPage() {
                 setTotpCode("");
               }}
             >
-              Orqaga qaytish
+              {tr("Orqaga qaytish", "Назад")}
             </button>
           </form>
         </div>
@@ -167,17 +168,17 @@ function AuthPage() {
         >
           <div>
             <h1 className="font-display text-xl font-bold">
-              {mode === "login" ? "Tizimga kirish" : "Ro'yxatdan o'tish"}
+              {mode === "login" ? tr("Tizimga kirish", "Вход в аккаунт") : tr("Ro'yxatdan o'tish", "Регистрация")}
             </h1>
             <p className="text-muted-foreground mt-1 text-sm">
               {mode === "login"
-                ? "Telefon raqamingiz va parolingizni kiriting."
-                : "Telefon raqamingiz va yangi parol bilan hisob yarating."}
+                ? tr("Telefon raqamingiz va parolingizni kiriting.", "Введите номер телефона и пароль.")
+                : tr("Telefon raqamingiz va yangi parol bilan hisob yarating.", "Создайте аккаунт с номером телефона и новым паролем.")}
             </p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="phone">Telefon raqam</Label>
+            <Label htmlFor="phone">{tr("Telefon raqam", "Номер телефона")}</Label>
             <Input
               id="phone"
               inputMode="tel"
@@ -192,7 +193,7 @@ function AuthPage() {
 
           {mode === "register" && (
             <div className="space-y-2">
-              <Label htmlFor="fullName">Ism familiya (ixtiyoriy)</Label>
+              <Label htmlFor="fullName">{tr("Ism familiya (ixtiyoriy)", "Имя и фамилия (необязательно)")}</Label>
               <Input
                 id="fullName"
                 value={fullName}
@@ -204,7 +205,7 @@ function AuthPage() {
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="password">Parol</Label>
+            <Label htmlFor="password">{tr("Parol", "Пароль")}</Label>
             <Input
               id="password"
               type="password"
@@ -212,19 +213,18 @@ function AuthPage() {
               value={password}
               maxLength={72}
               onChange={(event) => setPassword(event.target.value)}
-              placeholder="Kamida 6 ta belgi"
+              placeholder={tr("Kamida 6 ta belgi", "Минимум 6 символов")}
               required
             />
           </div>
 
           <p className="text-muted-foreground rounded-md border border-dashed p-2 text-xs">
-            Diqqat: bitta hisob faqat bitta qurilmaga bog'lanadi. Boshqa telefon yoki kompyuterdan
-            kirish uchun administratorga murojaat qiling.
+            {tr("Diqqat: bitta hisob faqat bitta qurilmaga bog'lanadi. Boshqa telefon yoki kompyuterdan kirish uchun administratorga murojaat qiling.", "Внимание: один аккаунт привязывается только к одному устройству. Для входа с другого телефона или компьютера обратитесь к администратору.")}
           </p>
 
           <Button type="submit" className="w-full" disabled={authMutation.isPending}>
             {authMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {mode === "login" ? "Kirish" : "Ro'yxatdan o'tish"}
+            {mode === "login" ? tr("Kirish", "Войти") : tr("Ro'yxatdan o'tish", "Регистрация")}
           </Button>
 
           <button
@@ -234,12 +234,12 @@ function AuthPage() {
           >
             {mode === "login" ? (
               <>
-                Hisobingiz yo'qmi?{" "}
-                <span className="text-primary font-medium">Ro'yxatdan o'ting</span>
+                {tr("Hisobingiz yo'qmi?", "Нет аккаунта?")}{" "}
+                <span className="text-primary font-medium">{tr("Ro'yxatdan o'ting", "Зарегистрироваться")}</span>
               </>
             ) : (
               <>
-                Hisobingiz bormi? <span className="text-primary font-medium">Kirish</span>
+                {tr("Hisobingiz bormi?", "Уже есть аккаунт?")} <span className="text-primary font-medium">{tr("Kirish", "Войти")}</span>
               </>
             )}
           </button>
@@ -247,7 +247,7 @@ function AuthPage() {
       </div>
 
       <Link to="/" className="text-muted-foreground mt-6 text-sm hover:underline">
-        Bosh sahifaga qaytish
+        {tr("Bosh sahifaga qaytish", "Вернуться на главную")}
       </Link>
     </div>
   );

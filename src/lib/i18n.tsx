@@ -68,6 +68,9 @@ const DICT = {
   "top.success": { uz: "E'lon TOP ga chiqarildi", ru: "Объявление поднято в ТОП" },
   "top.error": { uz: "TOP ga chiqarib bo'lmadi", ru: "Не удалось поднять в ТОП" },
   "top.until": { uz: "gacha TOP da", ru: "в ТОПе до" },
+
+  "promote.opening": { uz: "Payme to'lov sahifasi ochilmoqda...", ru: "Открывается страница оплаты Payme..." },
+  "promote.payWithPayme": { uz: "Payme orqali to'lash", ru: "Оплатить через Payme" },
 } as const;
 
 export type TranslationKey = keyof typeof DICT;

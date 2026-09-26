@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
+import { useTr } from "@/lib/i18n";
 import { grantAdminWithCode } from "@/lib/admin-code.functions";
 
 export const Route = createFileRoute("/admin/kirish")({
@@ -22,6 +23,7 @@ export const Route = createFileRoute("/admin/kirish")({
 
 function AdminLoginPage() {
   const { user, isStaff, loading, refresh } = useAuth();
+  const tr = useTr();
   const router = useRouter();
   const [code, setCode] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -44,12 +46,12 @@ function AdminLoginPage() {
     try {
       const result = await grantAdminWithCode({ data: { code: code.trim() } });
       if (result.ok) {
-        toast.success("Admin huquqi faollashdi. Iltimos, kuting...");
+        toast.success(tr("Admin huquqi faollashdi. Iltimos, kuting...", "Права администратора активированы. Пожалуйста, подождите..."));
         refresh();
         // The useEffect watching isStaff will redirect to /admin once the role refetches.
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Kod noto'g'ri");
+      toast.error(err instanceof Error ? err.message : tr("Kod noto'g'ri", "Неверный код"));
     } finally {
       setIsSubmitting(false);
     }
@@ -60,12 +62,12 @@ function AdminLoginPage() {
     return (
       <PageShell>
         <div className="mx-auto max-w-md px-4 py-16 text-center">
-          <h1 className="text-xl font-semibold">Admin panel</h1>
+          <h1 className="text-xl font-semibold">{tr("Admin panel", "Админ панель")}</h1>
           <p className="text-muted-foreground mt-2 text-sm">
-            Admin huquqlarini olish uchun avval tizimga kiring.
+            {tr("Admin huquqlarini olish uchun avval tizimga kiring.", "Сначала войдите в аккаунт, чтобы получить права администратора.")}
           </p>
           <Button asChild className="mt-6">
-            <Link to="/auth">Kirish</Link>
+            <Link to="/auth">{tr("Kirish", "Войти")}</Link>
           </Button>
         </div>
       </PageShell>
@@ -75,13 +77,13 @@ function AdminLoginPage() {
   return (
     <PageShell>
       <div className="mx-auto max-w-md px-4 py-16">
-        <h1 className="text-center text-2xl font-bold">Admin paneliga kirish</h1>
+        <h1 className="text-center text-2xl font-bold">{tr("Admin paneliga kirish", "Вход в админ панель")}</h1>
         <p className="text-muted-foreground mt-2 text-center text-sm">
-          Sizga berilgan maxsus kodni kiriting.
+          {tr("Sizga berilgan maxsus kodni kiriting.", "Введите выданный вам специальный код.")}
         </p>
         <form onSubmit={onSubmit} className="mt-6 space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="admin-code">Kirish kodi</Label>
+            <Label htmlFor="admin-code">{tr("Kirish kodi", "Код доступа")}</Label>
             <Input
               id="admin-code"
               type="password"
@@ -93,12 +95,12 @@ function AdminLoginPage() {
             />
           </div>
           <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "Tekshirilmoqda..." : "Kirish"}
+            {isSubmitting ? tr("Tekshirilmoqda...", "Проверка...") : tr("Kirish", "Войти")}
           </Button>
         </form>
         <div className="mt-4 text-center">
           <Button variant="link" asChild>
-            <Link to="/">Bosh sahifa</Link>
+            <Link to="/">{tr("Bosh sahifa", "Главная")}</Link>
           </Button>
         </div>
       </div>
