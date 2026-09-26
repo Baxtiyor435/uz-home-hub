@@ -48,7 +48,7 @@ function HomePage() {
           <h1 className="font-display mt-3 text-3xl leading-tight font-extrabold sm:text-5xl">
             {tr("Ishonchli uy-joyni ", "Найдите надёжное жильё ")}
             <br className="hidden sm:block" /> <span className="text-gold">UBU</span>{" "}
-            {tr("orqali toping", "через UBU")}
+            {tr("orqali toping", "")}
           </h1>
           <p className="text-foreground/70 mx-auto mt-4 max-w-xl text-sm sm:text-base">
             {tr(
