@@ -6,7 +6,7 @@ export function formatPrice(amount: number | string, currency = "UZS"): string {
   const formatted = new Intl.NumberFormat("uz-UZ", {
     maximumFractionDigits: 0,
   }).format(value);
-  return `${formatted} ${currency === "UZS" ? "so'm" : currency}`;
+  return `${formatted} ${currency === "UZS" ? "so'm / сум" : currency}`;
 }
 
 export function formatArea(area: number | string): string {
