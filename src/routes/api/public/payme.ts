@@ -76,13 +76,14 @@ function rpcResult(id: unknown, result: Record<string, unknown>) {
 
 /** Verifies Payme's HTTP Basic auth (login "Paycom", password = merchant key). */
 function isAuthorized(request: Request): boolean {
-  const key = process.env["PAYME_API_KEY"];
-  if (!key) return false;
-  const header = request.headers.get("authorization") ?? "";
-  const expected = `Basic ${Buffer.from(`Paycom:${key}`).toString("base64")}`;
-  const a = Buffer.from(header);
-  const b = Buffer.from(expected);
-  return a.length === b.length && timingSafeEqual(a, b);
+  const keys = [process.env["PAYME_PROD_KEY"], process.env["PAYME_API_KEY"]].filter(
+    (k): k is string => !!k && k.trim().length > 0,
+  );
+  const a = Buffer.from(request.headers.get("authorization") ?? "");
+  return keys.some((key) => {
+    const b = Buffer.from(`Basic ${Buffer.from(`Paycom:${key.trim()}`).toString("base64")}`);
+    return a.length === b.length && timingSafeEqual(a, b);
+  });
 }
 
 type PaymeAccount = { order_id?: string };
