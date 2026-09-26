@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { PropertyListPage } from "@/components/PropertyListPage";
 import { PageShell } from "@/components/PageShell";
+import { useTr } from "@/lib/i18n";
 
 export const Route = createFileRoute("/sotuv")({
   head: () => ({
@@ -23,12 +24,16 @@ export const Route = createFileRoute("/sotuv")({
 });
 
 function SalePage() {
+  const tr = useTr();
   return (
     <PageShell>
       <PropertyListPage
         dealType="sale"
-        title="Sotuvdagi obyektlar"
-        subtitle="Sotuv e'lonlarini faqat tasdiqlangan agentlar joylashtiradi."
+        title={tr("Sotuvdagi obyektlar", "Объекты на продажу")}
+        subtitle={tr(
+          "Sotuv e'lonlarini faqat tasdiqlangan agentlar joylashtiradi.",
+          "Объявления о продаже размещают только проверенные агенты.",
+        )}
       />
     </PageShell>
   );

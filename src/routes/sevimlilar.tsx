@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import type { PropertyRow } from "@/lib/properties";
+import { useLang, useTr } from "@/lib/i18n";
 
 export const Route = createFileRoute("/sevimlilar")({
   head: () => ({
@@ -24,6 +25,8 @@ export const Route = createFileRoute("/sevimlilar")({
 
 function FavoritesPage() {
   const { user, loading } = useAuth();
+  const { t } = useLang();
+  const tr = useTr();
 
   const { data, isLoading } = useQuery({
     queryKey: ["favorites", user?.id],
@@ -44,24 +47,30 @@ function FavoritesPage() {
   return (
     <PageShell>
       <div className="mx-auto max-w-6xl px-4 py-8">
-        <h1 className="font-display mb-6 text-2xl font-bold sm:text-3xl">Sevimlilar</h1>
+        <h1 className="font-display mb-6 text-2xl font-bold sm:text-3xl">{t("nav.favorites")}</h1>
 
         {loading || (user && isLoading) ? (
           <CardSkeletonGrid count={3} />
         ) : !user ? (
           <EmptyState
-            title="Tizimga kiring"
-            description="Sevimli e'lonlarni ko'rish uchun hisobingizga kiring."
+            title={tr("Tizimga kiring", "Войдите в систему")}
+            description={tr(
+              "Sevimli e'lonlarni ko'rish uchun hisobingizga kiring.",
+              "Войдите в аккаунт, чтобы увидеть избранные объявления.",
+            )}
             action={
               <Button asChild size="sm">
-                <Link to="/auth">Kirish</Link>
+                <Link to="/auth">{tr("Kirish", "Войти")}</Link>
               </Button>
             }
           />
         ) : (data?.length ?? 0) === 0 ? (
           <EmptyState
-            title="Sevimlilar bo'sh"
-            description="E'lon sahifasidagi yurakcha tugmasi orqali saqlab qo'ying."
+            title={tr("Sevimlilar bo'sh", "В избранном пусто")}
+            description={tr(
+              "E'lon sahifasidagi yurakcha tugmasi orqali saqlab qo'ying.",
+              "Сохраняйте объявления кнопкой-сердечком на странице объявления.",
+            )}
           />
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

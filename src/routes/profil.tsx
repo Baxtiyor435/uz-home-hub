@@ -16,6 +16,7 @@ import { formatDate, formatPhone, formatPrice } from "@/lib/format";
 import { TwoFactorSettings } from "@/components/TwoFactorSettings";
 import { redeemStaffCode } from "@/lib/staff.functions";
 import { DEFAULT_PREMIUM_PRICE, ROLE_LABELS } from "@/lib/uz";
+import { useTr } from "@/lib/i18n";
 
 
 export const Route = createFileRoute("/profil")({
@@ -36,6 +37,7 @@ function ProfilePage() {
     useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const tr = useTr();
   const [adminCode, setAdminCode] = useState("");
   const [superCode, setSuperCode] = useState("");
 
@@ -46,11 +48,13 @@ function ProfilePage() {
       setAdminCode("");
       setSuperCode("");
       toast.success(
-        result.role === "super_admin" ? "Super admin huquqi berildi" : "Admin huquqi berildi",
+        result.role === "super_admin"
+          ? tr("Super admin huquqi berildi", "Права супер-администратора предоставлены")
+          : tr("Admin huquqi berildi", "Права администратора предоставлены"),
       );
       navigate({ to: result.role === "super_admin" ? "/super-admin" : "/admin" });
     },
-    onError: () => toast.error("Kod noto'g'ri"),
+    onError: () => toast.error(tr("Kod noto'g'ri", "Неверный код")),
   });
 
 
@@ -83,9 +87,9 @@ function ProfilePage() {
     },
     onSuccess: () => {
       refresh();
-      toast.success("Profil saqlandi");
+      toast.success(tr("Profil saqlandi", "Профиль сохранён"));
     },
-    onError: () => toast.error("Profilni saqlab bo'lmadi"),
+    onError: () => toast.error(tr("Profilni saqlab bo'lmadi", "Не удалось сохранить профиль")),
   });
 
   const applyAgent = useMutation({
@@ -103,9 +107,9 @@ function ProfilePage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["agent-application", user?.id] });
-      toast.success("Ariza yuborildi. Administrator ko'rib chiqadi");
+      toast.success(tr("Ariza yuborildi. Administrator ko'rib chiqadi", "Заявка отправлена. Администратор рассмотрит её"));
     },
-    onError: () => toast.error("Arizani yuborib bo'lmadi"),
+    onError: () => toast.error(tr("Arizani yuborib bo'lmadi", "Не удалось отправить заявку")),
   });
 
   async function handleSignOut() {
@@ -119,9 +123,9 @@ function ProfilePage() {
     return (
       <PageShell>
         <div className="mx-auto max-w-md px-4 py-16 text-center">
-          <h1 className="font-display text-xl font-bold">Profilni ko'rish uchun tizimga kiring</h1>
+          <h1 className="font-display text-xl font-bold">{tr("Profilni ko'rish uchun tizimga kiring", "Войдите, чтобы посмотреть профиль")}</h1>
           <Button asChild className="mt-4">
-            <Link to="/auth">Kirish</Link>
+            <Link to="/auth">{tr("Kirish", "Войти")}</Link>
           </Button>
         </div>
       </PageShell>
@@ -134,7 +138,7 @@ function ProfilePage() {
         <header className="surface-card flex flex-wrap items-center justify-between gap-4 p-5">
           <div>
             <h1 className="font-display text-2xl font-bold">
-              {profile?.full_name || "Foydalanuvchi"}
+              {profile?.full_name || tr("Foydalanuvchi", "Пользователь")}
             </h1>
             <p className="text-muted-foreground text-sm">{formatPhone(profile?.phone)}</p>
             <div className="mt-2 flex flex-wrap gap-2">
@@ -154,12 +158,12 @@ function ProfilePage() {
           </div>
           <Button variant="outline" onClick={handleSignOut}>
             <LogOut className="mr-2 h-4 w-4" />
-            Chiqish
+            {tr("Chiqish", "Выйти")}
           </Button>
         </header>
 
         <section className="surface-card p-5">
-          <h2 className="font-display mb-4 text-lg font-semibold">Profil ma'lumotlari</h2>
+          <h2 className="font-display mb-4 text-lg font-semibold">{tr("Profil ma'lumotlari", "Данные профиля")}</h2>
           <form
             className="space-y-4"
             onSubmit={(event) => {
@@ -168,7 +172,7 @@ function ProfilePage() {
             }}
           >
             <div className="space-y-2">
-              <Label htmlFor="full_name">Ism familiya</Label>
+              <Label htmlFor="full_name">{tr("Ism familiya", "Имя и фамилия")}</Label>
               <Input
                 id="full_name"
                 name="full_name"
@@ -177,11 +181,11 @@ function ProfilePage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="bio">O'zingiz haqingizda</Label>
+              <Label htmlFor="bio">{tr("O'zingiz haqingizda", "О себе")}</Label>
               <Textarea id="bio" name="bio" rows={3} maxLength={500} defaultValue={profile?.bio ?? ""} />
             </div>
             <Button type="submit" disabled={saveProfile.isPending}>
-              Saqlash
+              {tr("Saqlash", "Сохранить")}
             </Button>
           </form>
         </section>
@@ -193,28 +197,34 @@ function ProfilePage() {
             <div>
               <h2 className="font-display flex items-center gap-2 text-lg font-semibold">
                 <Crown className="text-primary h-5 w-5" aria-hidden="true" />
-                Premium obuna
+                {tr("Premium obuna", "Premium подписка")}
               </h2>
               <p className="text-muted-foreground mt-1 text-sm">
                 {isPremium && profile?.premium_until
-                  ? `Obunangiz ${formatDate(profile.premium_until)} gacha faol.`
-                  : `Oyiga ${formatPrice(DEFAULT_PREMIUM_PRICE, "UZS")} — kontaktlar cheksiz, e'lonlar yuqorida.`}
+                  ? tr(
+                      `Obunangiz ${formatDate(profile.premium_until)} gacha faol.`,
+                      `Ваша подписка активна до ${formatDate(profile.premium_until)}.`,
+                    )
+                  : tr(
+                      `Oyiga ${formatPrice(DEFAULT_PREMIUM_PRICE, "UZS")} — kontaktlar cheksiz, e'lonlar yuqorida.`,
+                      `${formatPrice(DEFAULT_PREMIUM_PRICE, "UZS")} в месяц — контакты без ограничений, объявления выше в списке.`,
+                    )}
               </p>
             </div>
           </div>
           <Button asChild className="mt-4">
-            <Link to="/obuna">{isPremium ? "Obunani boshqarish" : "Obuna sotib olish"}</Link>
+            <Link to="/obuna">{isPremium ? tr("Obunani boshqarish", "Управление подпиской") : tr("Obuna sotib olish", "Купить подписку")}</Link>
           </Button>
         </section>
 
         <section className="surface-card p-5">
           <h2 className="font-display flex items-center gap-2 text-lg font-semibold">
             <ShieldCheck className="text-primary h-5 w-5" aria-hidden="true" />
-            Admin panelga o'tish
+            {tr("Admin panelga o'tish", "Перейти в панель администратора")}
           </h2>
           {isStaff ? (
             <Button asChild className="mt-4">
-              <Link to="/admin">Admin panelni ochish</Link>
+              <Link to="/admin">{tr("Admin panelni ochish", "Открыть панель администратора")}</Link>
             </Button>
           ) : (
             <form
@@ -225,14 +235,14 @@ function ProfilePage() {
               }}
             >
               <Input
-                aria-label="Admin kirish kodi"
-                placeholder="Admin kodi"
+                aria-label={tr("Admin kirish kodi", "Код входа администратора")}
+                placeholder={tr("Admin kodi", "Код администратора")}
                 className="max-w-xs"
                 value={adminCode}
                 onChange={(event) => setAdminCode(event.target.value)}
               />
               <Button type="submit" disabled={redeem.isPending || !adminCode.trim()}>
-                Kirish
+                {tr("Kirish", "Войти")}
               </Button>
             </form>
           )}
@@ -240,11 +250,11 @@ function ProfilePage() {
           <div className="border-border/60 mt-6 border-t pt-5">
             <h3 className="font-display flex items-center gap-2 text-base font-semibold">
               <Crown className="text-primary h-4 w-4" aria-hidden="true" />
-              Super admin panelga o'tish
+              {tr("Super admin panelga o'tish", "Перейти в панель супер-администратора")}
             </h3>
             {isSuperAdmin ? (
               <Button asChild variant="outline" className="mt-4">
-                <Link to="/super-admin">Super admin panelni ochish</Link>
+                <Link to="/super-admin">{tr("Super admin panelni ochish", "Открыть панель супер-администратора")}</Link>
               </Button>
             ) : (
               <form
@@ -255,8 +265,8 @@ function ProfilePage() {
                 }}
               >
                 <Input
-                  aria-label="Super admin kirish kodi"
-                  placeholder="Super admin kodi"
+                  aria-label={tr("Super admin kirish kodi", "Код входа супер-администратора")}
+                  placeholder={tr("Super admin kodi", "Код супер-администратора")}
                   className="max-w-xs"
                   value={superCode}
                   onChange={(event) => setSuperCode(event.target.value)}
@@ -266,7 +276,7 @@ function ProfilePage() {
                   variant="outline"
                   disabled={redeem.isPending || !superCode.trim()}
                 >
-                  Kirish
+                  {tr("Kirish", "Войти")}
                 </Button>
               </form>
             )}
@@ -275,20 +285,26 @@ function ProfilePage() {
 
 
         <section className="surface-card p-5">
-          <h2 className="font-display mb-2 text-lg font-semibold">Agentlik maqomi</h2>
+          <h2 className="font-display mb-2 text-lg font-semibold">{tr("Agentlik maqomi", "Статус агента")}</h2>
           {isAgent ? (
             <p className="text-muted-foreground text-sm">
-              Siz tasdiqlangan agentsiz va sotuv e'lonlarini joylashtira olasiz.
+              {tr(
+                "Siz tasdiqlangan agentsiz va sotuv e'lonlarini joylashtira olasiz.",
+                "Вы проверенный агент и можете размещать объявления о продаже.",
+              )}
             </p>
           ) : application?.status === "pending" ? (
             <p className="text-muted-foreground text-sm">
-              Arizangiz {formatDate(application.created_at)} sanasida yuborilgan va ko'rib chiqilmoqda.
+              {tr(
+                `Arizangiz ${formatDate(application.created_at)} sanasida yuborilgan va ko'rib chiqilmoqda.`,
+                `Ваша заявка отправлена ${formatDate(application.created_at)} и рассматривается.`,
+              )}
             </p>
           ) : (
             <>
               {application?.status === "rejected" && (
                 <p className="text-destructive mb-3 text-sm">
-                  Oldingi ariza rad etilgan: {application.reject_reason || "sabab ko'rsatilmagan"}
+                  {tr("Oldingi ariza rad etilgan", "Предыдущая заявка отклонена")}: {application.reject_reason || tr("sabab ko'rsatilmagan", "причина не указана")}
                 </p>
               )}
               <form
@@ -300,7 +316,7 @@ function ProfilePage() {
               >
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="app_full_name">To'liq ism</Label>
+                    <Label htmlFor="app_full_name">{tr("To'liq ism", "Полное имя")}</Label>
                     <Input
                       id="app_full_name"
                       name="app_full_name"
@@ -310,11 +326,11 @@ function ProfilePage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="agency_name">Agentlik nomi</Label>
+                    <Label htmlFor="agency_name">{tr("Agentlik nomi", "Название агентства")}</Label>
                     <Input id="agency_name" name="agency_name" required maxLength={100} />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="experience_years">Tajriba (yil)</Label>
+                    <Label htmlFor="experience_years">{tr("Tajriba (yil)", "Опыт (лет)")}</Label>
                     <Input
                       id="experience_years"
                       name="experience_years"
@@ -326,11 +342,11 @@ function ProfilePage() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="message">Qo'shimcha ma'lumot</Label>
+                  <Label htmlFor="message">{tr("Qo'shimcha ma'lumot", "Дополнительная информация")}</Label>
                   <Textarea id="message" name="message" rows={3} maxLength={1000} />
                 </div>
                 <Button type="submit" disabled={applyAgent.isPending}>
-                  Ariza yuborish
+                  {tr("Ariza yuborish", "Отправить заявку")}
                 </Button>
               </form>
             </>

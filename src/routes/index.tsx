@@ -3,6 +3,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { BadgeCheck, Building2, KeyRound, Search, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 
+import { useTr } from "@/lib/i18n";
+
 import { CardSkeletonGrid, EmptyState } from "@/components/EmptyState";
 import { PageShell } from "@/components/PageShell";
 import { PropertyCard } from "@/components/PropertyCard";
@@ -28,6 +30,7 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
+  const tr = useTr();
   const [search, setSearch] = useState("");
 
   const { data, isLoading } = useQuery({
@@ -43,11 +46,15 @@ function HomePage() {
         <div className="mx-auto max-w-6xl px-4 py-16 text-center sm:py-24">
           <p className="text-foreground/70 text-sm font-medium">{APP_SLOGAN}</p>
           <h1 className="font-display mt-3 text-3xl leading-tight font-extrabold sm:text-5xl">
-            Ishonchli uy-joyni <br className="hidden sm:block" /> <span className="text-gold">UBU</span> orqali toping
+            {tr("Ishonchli uy-joyni ", "Найдите надёжное жильё ")}
+            <br className="hidden sm:block" /> <span className="text-gold">UBU</span>{" "}
+            {tr("orqali toping", "через UBU")}
           </h1>
           <p className="text-foreground/70 mx-auto mt-4 max-w-xl text-sm sm:text-base">
-            Barcha e'lonlar administrator tomonidan tekshiriladi. Sotuv e'lonlarini faqat
-            tasdiqlangan agentlar joylashtiradi.
+            {tr(
+              "Barcha e'lonlar administrator tomonidan tekshiriladi. Sotuv e'lonlarini faqat tasdiqlangan agentlar joylashtiradi.",
+              "Все объявления проверяются администратором. Объявления о продаже размещают только проверенные агенты.",
+            )}
           </p>
 
           <form
@@ -58,15 +65,15 @@ function HomePage() {
             <Input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Tuman yoki kalit so'z"
+              placeholder={tr("Tuman yoki kalit so'z", "Район или ключевое слово")}
               maxLength={80}
-              aria-label="Qidiruv"
+              aria-label={tr("Qidiruv", "Поиск")}
               className="bg-input text-foreground"
             />
             <Button asChild variant="secondary" type="button">
               <Link to="/sotuv">
                 <Search className="mr-1 h-4 w-4" />
-                Qidirish
+                {tr("Qidirish", "Искать")}
               </Link>
             </Button>
           </form>
@@ -75,13 +82,13 @@ function HomePage() {
             <Button asChild size="lg">
               <Link to="/sotuv">
                 <Building2 className="mr-2 h-4 w-4" />
-                Sotuvdagilar
+                {tr("Sotuvdagilar", "Продажа")}
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline">
               <Link to="/ijara">
                 <KeyRound className="mr-2 h-4 w-4" />
-                Ijaradagilar
+                {tr("Ijaradagilar", "Аренда")}
               </Link>
             </Button>
           </div>
@@ -92,18 +99,27 @@ function HomePage() {
         {[
           {
             icon: ShieldCheck,
-            title: "Tasdiqlangan e'lonlar",
-            text: "Har bir e'lon moderatordan o'tadi, soxta e'lonlar bloklanadi.",
+            title: tr("Tasdiqlangan e'lonlar", "Проверенные объявления"),
+            text: tr(
+              "Har bir e'lon moderatordan o'tadi, soxta e'lonlar bloklanadi.",
+              "Каждое объявление проходит модерацию, фейковые объявления блокируются.",
+            ),
           },
           {
             icon: BadgeCheck,
-            title: "Tekshirilgan agentlar",
-            text: "Agent maqomi hujjatlar asosida beriladi va reyting bilan baholanadi.",
+            title: tr("Tekshirilgan agentlar", "Проверенные агенты"),
+            text: tr(
+              "Agent maqomi hujjatlar asosida beriladi va reyting bilan baholanadi.",
+              "Статус агента присваивается на основании документов и оценивается по рейтингу.",
+            ),
           },
           {
             icon: KeyRound,
-            title: "Xavfsiz aloqa",
-            text: "Egasi bilan platforma ichida yozishing, kontakt himoyalangan.",
+            title: tr("Xavfsiz aloqa", "Безопасное общение"),
+            text: tr(
+              "Egasi bilan platforma ichida yozishing, kontakt himoyalangan.",
+              "Переписывайтесь с владельцем внутри платформы, контакты защищены.",
+            ),
           },
         ].map((item) => (
           <article key={item.title} className="surface-card p-5">
@@ -118,9 +134,9 @@ function HomePage() {
 
       <section className="mx-auto max-w-6xl px-4 pb-10">
         <div className="mb-4 flex items-end justify-between">
-          <h2 className="font-display text-xl font-bold sm:text-2xl">So'nggi e'lonlar</h2>
+          <h2 className="font-display text-xl font-bold sm:text-2xl">{tr("So'nggi e'lonlar", "Последние объявления")}</h2>
           <Button asChild variant="ghost" size="sm">
-            <Link to="/sotuv">Barchasi</Link>
+            <Link to="/sotuv">{tr("Barchasi", "Все")}</Link>
           </Button>
         </div>
 
@@ -128,11 +144,14 @@ function HomePage() {
           <CardSkeletonGrid />
         ) : latest.length === 0 ? (
           <EmptyState
-            title="Hozircha e'lonlar yo'q"
-            description="Birinchi bo'lib e'lon joylashtiring — moderatsiyadan so'ng u shu yerda ko'rinadi."
+            title={tr("Hozircha e'lonlar yo'q", "Пока нет объявлений")}
+            description={tr(
+              "Birinchi bo'lib e'lon joylashtiring — moderatsiyadan so'ng u shu yerda ko'rinadi.",
+              "Разместите первое объявление — после модерации оно появится здесь.",
+            )}
             action={
               <Button asChild size="sm">
-                <Link to="/joylash">E'lon joylash</Link>
+                <Link to="/joylash">{tr("E'lon joylash", "Разместить объявление")}</Link>
               </Button>
             }
           />

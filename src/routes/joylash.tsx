@@ -29,6 +29,7 @@ import {
   type DealType,
   type PropertyKind,
 } from "@/lib/uz";
+import { useTr } from "@/lib/i18n";
 
 export const Route = createFileRoute("/joylash")({
   head: () => ({
@@ -43,19 +44,22 @@ export const Route = createFileRoute("/joylash")({
   component: CreateListingPage,
 });
 
-const formSchema = z.object({
-  title: z.string().trim().min(10, "Sarlavha kamida 10 belgidan iborat bo'lsin").max(120),
-  description: z.string().trim().min(20, "Tavsif kamida 20 belgidan iborat bo'lsin").max(3000),
-  price: z.number().positive("Narxni kiriting").max(1_000_000_000_000),
-  region: z.string().min(1, "Hududni tanlang"),
-  district: z.string().trim().min(2, "Tumanni kiriting").max(80),
-  address: z.string().trim().min(3, "Manzilni kiriting").max(160),
-  rooms: z.number().int().min(1).max(30),
-  area: z.number().positive("Maydonni kiriting").max(100000),
-});
+function buildFormSchema(tr: (uz: string, ru: string) => string) {
+  return z.object({
+    title: z.string().trim().min(10, tr("Sarlavha kamida 10 belgidan iborat bo'lsin", "Заголовок должен содержать минимум 10 символов")).max(120),
+    description: z.string().trim().min(20, tr("Tavsif kamida 20 belgidan iborat bo'lsin", "Описание должно содержать минимум 20 символов")).max(3000),
+    price: z.number().positive(tr("Narxni kiriting", "Укажите цену")).max(1_000_000_000_000),
+    region: z.string().min(1, tr("Hududni tanlang", "Выберите регион")),
+    district: z.string().trim().min(2, tr("Tumanni kiriting", "Укажите район")).max(80),
+    address: z.string().trim().min(3, tr("Manzilni kiriting", "Укажите адрес")).max(160),
+    rooms: z.number().int().min(1).max(30),
+    area: z.number().positive(tr("Maydonni kiriting", "Укажите площадь")).max(100000),
+  });
+}
 
 function CreateListingPage() {
   const { user, isAgent, loading } = useAuth();
+  const tr = useTr();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -84,7 +88,7 @@ function CreateListingPage() {
       if (dealType === "sale" && !isAgent) throw new Error("AGENT_ONLY");
       if (files.length === 0) throw new Error("NO_IMAGES");
 
-      const parsed = formSchema.parse({
+      const parsed = buildFormSchema(tr).parse({
         title: String(formData.get("title") ?? ""),
         description: String(formData.get("description") ?? ""),
         price: Number(formData.get("price")),
@@ -130,28 +134,28 @@ function CreateListingPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["my-properties", user?.id] });
-      toast.success("E'lon e'lon qilindi");
+      toast.success(tr("E'lon e'lon qilindi", "Объявление опубликовано"));
       navigate({ to: "/mening-elonlarim" });
     },
     onError: (error: Error) => {
       if (error.message === "AUTH") {
-        toast.error("Avval tizimga kiring");
+        toast.error(tr("Avval tizimga kiring", "Сначала войдите в систему"));
         navigate({ to: "/auth" });
         return;
       }
       if (error.message === "AGENT_ONLY") {
-        toast.error("Sotuv e'lonini faqat tasdiqlangan agentlar joylashtira oladi");
+        toast.error(tr("Sotuv e'lonini faqat tasdiqlangan agentlar joylashtira oladi", "Объявление о продаже могут размещать только проверенные агенты"));
         return;
       }
       if (error.message === "NO_IMAGES") {
-        toast.error("Kamida bitta rasm yuklang");
+        toast.error(tr("Kamida bitta rasm yuklang", "Загрузите хотя бы одно фото"));
         return;
       }
       if (error instanceof z.ZodError) {
-        toast.error(error.issues[0]?.message ?? "Ma'lumotlarni tekshiring");
+        toast.error(error.issues[0]?.message ?? tr("Ma'lumotlarni tekshiring", "Проверьте введённые данные"));
         return;
       }
-      toast.error("E'lonni saqlab bo'lmadi");
+      toast.error(tr("E'lonni saqlab bo'lmadi", "Не удалось сохранить объявление"));
     },
   });
 
@@ -159,9 +163,9 @@ function CreateListingPage() {
     return (
       <PageShell>
         <div className="mx-auto max-w-md px-4 py-16 text-center">
-          <h1 className="font-display text-xl font-bold">E'lon joylash uchun tizimga kiring</h1>
+          <h1 className="font-display text-xl font-bold">{tr("E'lon joylash uchun tizimga kiring", "Войдите, чтобы разместить объявление")}</h1>
           <Button asChild className="mt-4">
-            <Link to="/auth">Kirish</Link>
+            <Link to="/auth">{tr("Kirish", "Войти")}</Link>
           </Button>
         </div>
       </PageShell>
@@ -171,9 +175,12 @@ function CreateListingPage() {
   return (
     <PageShell>
       <div className="mx-auto max-w-3xl px-4 py-8">
-        <h1 className="font-display text-2xl font-bold sm:text-3xl">Yangi e'lon</h1>
+        <h1 className="font-display text-2xl font-bold sm:text-3xl">{tr("Yangi e'lon", "Новое объявление")}</h1>
         <p className="text-muted-foreground mt-1 text-sm">
-          E'lon administrator tasdig'idan so'ng saytda ko'rinadi.
+          {tr(
+            "E'lon administrator tasdig'idan so'ng saytda ko'rinadi.",
+            "Объявление появится на сайте после подтверждения администратором.",
+          )}
         </p>
 
         <form
@@ -186,7 +193,7 @@ function CreateListingPage() {
           <section className="surface-card space-y-4 p-5">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label>E'lon turi</Label>
+                <Label>{tr("E'lon turi", "Тип объявления")}</Label>
                 <Select value={dealType} onValueChange={(value) => setDealType(value as DealType)}>
                   <SelectTrigger>
                     <SelectValue />
@@ -201,13 +208,16 @@ function CreateListingPage() {
                 </Select>
                 {dealType === "sale" && !isAgent && (
                   <p className="text-destructive text-xs">
-                    Sotuv e'lonini faqat tasdiqlangan agentlar joylashtira oladi.
+                    {tr(
+                      "Sotuv e'lonini faqat tasdiqlangan agentlar joylashtira oladi.",
+                      "Объявление о продаже могут размещать только проверенные агенты.",
+                    )}
                   </p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label>Obyekt turi</Label>
+                <Label>{tr("Obyekt turi", "Тип объекта")}</Label>
                 <Select value={kind} onValueChange={(value) => setKind(value as PropertyKind)}>
                   <SelectTrigger>
                     <SelectValue />
@@ -224,23 +234,23 @@ function CreateListingPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="title">Sarlavha</Label>
-              <Input id="title" name="title" maxLength={120} required placeholder="Chilonzorda 3 xonali yorug' kvartira" />
+              <Label htmlFor="title">{tr("Sarlavha", "Заголовок")}</Label>
+              <Input id="title" name="title" maxLength={120} required placeholder={tr("Chilonzorda 3 xonali yorug' kvartira", "Светлая 3-комнатная квартира в Чиланзаре")} />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Tavsif</Label>
+              <Label htmlFor="description">{tr("Tavsif", "Описание")}</Label>
               <Textarea id="description" name="description" rows={5} maxLength={3000} required />
             </div>
           </section>
 
           <section className="surface-card grid gap-4 p-5 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="price">Narx (so'm)</Label>
+              <Label htmlFor="price">{tr("Narx (so'm)", "Цена (сум)")}</Label>
               <Input id="price" name="price" type="number" min={1} required inputMode="numeric" />
             </div>
             <div className="space-y-2">
-              <Label>Hudud</Label>
+              <Label>{tr("Hudud", "Регион")}</Label>
               <Select value={region} onValueChange={setRegion}>
                 <SelectTrigger>
                   <SelectValue />
@@ -255,33 +265,33 @@ function CreateListingPage() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="district">Tuman</Label>
+              <Label htmlFor="district">{tr("Tuman", "Район")}</Label>
               <Input id="district" name="district" maxLength={80} required />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="address">Manzil</Label>
+              <Label htmlFor="address">{tr("Manzil", "Адрес")}</Label>
               <Input id="address" name="address" maxLength={160} required />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="rooms">Xonalar soni</Label>
+              <Label htmlFor="rooms">{tr("Xonalar soni", "Количество комнат")}</Label>
               <Input id="rooms" name="rooms" type="number" min={1} max={30} defaultValue={1} required />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="area">Maydon (m²)</Label>
+              <Label htmlFor="area">{tr("Maydon (m²)", "Площадь (м²)")}</Label>
               <Input id="area" name="area" type="number" min={1} step="0.1" required />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="floor">Qavat</Label>
+              <Label htmlFor="floor">{tr("Qavat", "Этаж")}</Label>
               <Input id="floor" name="floor" type="number" min={0} max={200} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="total_floors">Umumiy qavatlar</Label>
+              <Label htmlFor="total_floors">{tr("Umumiy qavatlar", "Всего этажей")}</Label>
               <Input id="total_floors" name="total_floors" type="number" min={0} max={200} />
             </div>
           </section>
 
           <section className="surface-card p-5">
-            <Label className="mb-3 block">Qulayliklar</Label>
+            <Label className="mb-3 block">{tr("Qulayliklar", "Удобства")}</Label>
             <div className="grid gap-3 sm:grid-cols-2">
               {FEATURE_OPTIONS.map((feature) => (
                 <label key={feature} className="flex items-center gap-2 text-sm">
@@ -301,7 +311,7 @@ function CreateListingPage() {
 
           <section className="surface-card p-5">
             <Label htmlFor="images" className="mb-2 block">
-              Rasmlar (maksimal {maxImages} ta)
+              {tr(`Rasmlar (maksimal ${maxImages} ta)`, `Фото (максимум ${maxImages})`)}
             </Label>
             <Input
               id="images"
@@ -318,7 +328,7 @@ function CreateListingPage() {
                     <span className="truncate">{file.name}</span>
                     <button
                       type="button"
-                      aria-label="O'chirish"
+                      aria-label={tr("O'chirish", "Удалить")}
                       onClick={() => setFiles((prev) => prev.filter((_, i) => i !== index))}
                     >
                       <X className="h-3.5 w-3.5" />
@@ -331,7 +341,7 @@ function CreateListingPage() {
 
           <Button type="submit" size="lg" className="w-full" disabled={submit.isPending}>
             {submit.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Moderatsiyaga yuborish
+            {tr("Moderatsiyaga yuborish", "Отправить на модерацию")}
           </Button>
         </form>
       </div>

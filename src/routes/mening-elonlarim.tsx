@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { formatDate, formatPrice } from "@/lib/format";
-import { useLang } from "@/lib/i18n";
+import { useLang, useTr } from "@/lib/i18n";
 import { fetchMyProperties, isPromoted } from "@/lib/properties";
 import { PROPERTY_BUCKET } from "@/lib/storage";
 import { DEAL_TYPE_LABELS, LISTING_STATUS_LABELS } from "@/lib/uz";
@@ -30,6 +30,7 @@ export const Route = createFileRoute("/mening-elonlarim")({
 function MyListingsPage() {
   const { user, loading } = useAuth();
   const { t } = useLang();
+  const tr = useTr();
 
   const { data, isLoading } = useQuery({
     queryKey: ["my-properties", user?.id],
@@ -41,9 +42,9 @@ function MyListingsPage() {
     <PageShell>
       <div className="mx-auto max-w-4xl px-4 py-8">
         <div className="mb-6 flex items-center justify-between gap-3">
-          <h1 className="font-display text-2xl font-bold sm:text-3xl">Mening e'lonlarim</h1>
+          <h1 className="font-display text-2xl font-bold sm:text-3xl">{tr("Mening e'lonlarim", "Мои объявления")}</h1>
           <Button asChild size="sm">
-            <Link to="/joylash">Yangi e'lon</Link>
+            <Link to="/joylash">{tr("Yangi e'lon", "Новое объявление")}</Link>
           </Button>
         </div>
 
@@ -51,21 +52,27 @@ function MyListingsPage() {
           <CardSkeletonGrid count={3} />
         ) : !user ? (
           <EmptyState
-            title="Tizimga kiring"
-            description="E'lonlaringizni ko'rish uchun hisobingizga kiring."
+            title={tr("Tizimga kiring", "Войдите в систему")}
+            description={tr(
+              "E'lonlaringizni ko'rish uchun hisobingizga kiring.",
+              "Войдите в аккаунт, чтобы увидеть свои объявления.",
+            )}
             action={
               <Button asChild size="sm">
-                <Link to="/auth">Kirish</Link>
+                <Link to="/auth">{tr("Kirish", "Войти")}</Link>
               </Button>
             }
           />
         ) : (data?.length ?? 0) === 0 ? (
           <EmptyState
-            title="Hali e'lon joylashtirmagansiz"
-            description="Birinchi e'loningizni joylashtiring — u moderatsiyadan so'ng chop etiladi."
+            title={tr("Hali e'lon joylashtirmagansiz", "Вы ещё не разместили объявлений")}
+            description={tr(
+              "Birinchi e'loningizni joylashtiring — u moderatsiyadan so'ng chop etiladi.",
+              "Разместите первое объявление — оно будет опубликовано после модерации.",
+            )}
             action={
               <Button asChild size="sm">
-                <Link to="/joylash">E'lon joylash</Link>
+                <Link to="/joylash">{tr("E'lon joylash", "Разместить объявление")}</Link>
               </Button>
             }
           />
@@ -94,7 +101,7 @@ function MyListingsPage() {
                     {formatPrice(property.price, property.currency)}
                   </p>
                   <p className="text-muted-foreground text-xs">
-                    {formatDate(property.created_at)} · {property.views_count} ko'rish
+                    {formatDate(property.created_at)} · {property.views_count} {tr("ko'rish", "просмотров")}
                   </p>
                   <div className="mt-2 flex flex-wrap items-center gap-2">
                     {property.status === "approved" && (
@@ -107,7 +114,7 @@ function MyListingsPage() {
                       params={{ id: property.id }}
                       className="text-primary mt-1 inline-block text-xs hover:underline"
                     >
-                      E'lonni ochish
+                      {tr("E'lonni ochish", "Открыть объявление")}
                     </Link>
                   )}
                 </div>
