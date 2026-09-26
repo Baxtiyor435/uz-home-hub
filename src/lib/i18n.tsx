@@ -24,6 +24,7 @@ const DICT = {
   "header.chats": { uz: "Suhbatlar", ru: "Сообщения" },
   "header.admin": { uz: "Admin panel", ru: "Админ панель" },
   "header.signOut": { uz: "Chiqish", ru: "Выйти" },
+  "header.signIn": { uz: "Kirish", ru: "Войти" },
   "header.language": { uz: "Til", ru: "Язык" },
 
   "list.search": { uz: "Qidiruv: sarlavha yoki tuman", ru: "Поиск: заголовок или район" },

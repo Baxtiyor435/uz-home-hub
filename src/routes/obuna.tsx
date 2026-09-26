@@ -97,7 +97,13 @@ function SubscriptionPage() {
         <div className="mt-8 grid gap-4 sm:grid-cols-3">
           {PREMIUM_PLANS.map((plan) => (
             <article key={plan.id} className="surface-card flex flex-col p-6 text-center">
-              <h2 className="font-display text-lg font-semibold">{plan.label}</h2>
+              <h2 className="font-display text-lg font-semibold">
+                {plan.id === "monthly"
+                  ? tr("1 oylik", "1 месяц")
+                  : plan.id === "quarterly"
+                    ? tr("3 oylik", "3 месяца")
+                    : tr("1 yillik", "1 год")}
+              </h2>
               <p className="text-primary mt-2 text-xl font-bold">{formatPrice(plan.price, "UZS")}</p>
               <p className="text-muted-foreground mt-1 text-xs">
                 {plan.months} {tr("oy", "мес.")} · {tr("oyiga", "в месяц")} {formatPrice(Math.round(plan.price / plan.months), "UZS")}

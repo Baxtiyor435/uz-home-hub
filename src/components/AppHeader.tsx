@@ -132,7 +132,7 @@ export function AppHeader() {
             </DropdownMenu>
           ) : (
             <Button asChild variant="outline" size="sm">
-              <Link to="/auth">Kirish</Link>
+              <Link to="/auth">{t("header.signIn")}</Link>
             </Button>
           )}
         </div>

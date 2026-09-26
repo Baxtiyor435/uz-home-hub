@@ -44,7 +44,7 @@ function HomePage() {
     <PageShell>
       <section className="luxe-gradient border-b border-gold/20 text-foreground">
         <div className="mx-auto max-w-6xl px-4 py-16 text-center sm:py-24">
-          <p className="text-foreground/70 text-sm font-medium">{APP_SLOGAN}</p>
+          <p className="text-foreground/70 text-sm font-medium">{tr(APP_SLOGAN, "Каждое объявление проверено. Каждая сделка безопасна.")}</p>
           <h1 className="font-display mt-3 text-3xl leading-tight font-extrabold sm:text-5xl">
             {tr("Ishonchli uy-joyni ", "Найдите надёжное жильё ")}
             <br className="hidden sm:block" /> <span className="text-gold">UBU</span>{" "}
