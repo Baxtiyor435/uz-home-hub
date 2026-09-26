@@ -109,6 +109,12 @@ export function useLang() {
   return useContext(LanguageContext);
 }
 
+/** Inline bilingual helper: tr("O'zbek matn", "Русский текст") picks by current lang. */
+export function useTr() {
+  const { lang } = useLang();
+  return useCallback((uz: string, ru: string) => (lang === "ru" ? ru : uz), [lang]);
+}
+
 /** Translates a deal type / property kind label pair without a provider lookup table. */
 export const DEAL_TYPE_I18N: Record<"sale" | "rent", Record<Lang, string>> = {
   sale: { uz: "Sotuv", ru: "Продажа" },
