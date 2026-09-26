@@ -24,6 +24,7 @@ import { formatArea, formatDate, formatPhone, formatPrice } from "@/lib/format";
 import { fetchPropertyById } from "@/lib/properties";
 import { PROPERTY_BUCKET } from "@/lib/storage";
 import { CHAT_INTRO_MESSAGE, DEAL_TYPE_LABELS, PROPERTY_KIND_LABELS } from "@/lib/uz";
+import { useTr } from "@/lib/i18n";
 
 export const Route = createFileRoute("/elon/$id")({
   head: () => ({
@@ -39,6 +40,7 @@ export const Route = createFileRoute("/elon/$id")({
 
 function PropertyDetailPage() {
   const { id } = Route.useParams();
+  const tr = useTr();
   const { user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -91,15 +93,15 @@ function PropertyDetailPage() {
     onSuccess: (added) => {
       queryClient.invalidateQueries({ queryKey: ["favorite", id, user?.id] });
       queryClient.invalidateQueries({ queryKey: ["favorites", user?.id] });
-      toast.success(added ? "Sevimlilarga qo'shildi" : "Sevimlilardan olib tashlandi");
+      toast.success(added ? tr("Sevimlilarga qo'shildi", "Добавлено в избранное") : tr("Sevimlilardan olib tashlandi", "Удалено из избранного"));
     },
     onError: (error: Error) => {
       if (error.message === "AUTH") {
-        toast.error("Avval tizimga kiring");
+        toast.error(tr("Avval tizimga kiring", "Сначала войдите в систему"));
         navigate({ to: "/auth" });
         return;
       }
-      toast.error("Amalni bajarib bo'lmadi");
+      toast.error(tr("Amalni bajarib bo'lmadi", "Не удалось выполнить действие"));
     },
   });
 
@@ -134,15 +136,15 @@ function PropertyDetailPage() {
     onSuccess: (conversationId) => navigate({ to: "/suhbatlar/$id", params: { id: conversationId } }),
     onError: (error: Error) => {
       if (error.message === "AUTH") {
-        toast.error("Avval tizimga kiring");
+        toast.error(tr("Avval tizimga kiring", "Сначала войдите в систему"));
         navigate({ to: "/auth" });
         return;
       }
       if (error.message === "SELF") {
-        toast.error("Bu sizning e'loningiz");
+        toast.error(tr("Bu sizning e'loningiz", "Это ваше объявление"));
         return;
       }
-      toast.error("Suhbatni ochib bo'lmadi");
+      toast.error(tr("Suhbatni ochib bo'lmadi", "Не удалось открыть чат"));
     },
   });
 
@@ -161,11 +163,14 @@ function PropertyDetailPage() {
       <PageShell>
         <div className="mx-auto max-w-3xl px-4 py-16">
           <EmptyState
-            title="E'lon topilmadi"
-            description="E'lon o'chirilgan yoki hali tasdiqlanmagan bo'lishi mumkin."
+            title={tr("E'lon topilmadi", "Объявление не найдено")}
+            description={tr(
+              "E'lon o'chirilgan yoki hali tasdiqlanmagan bo'lishi mumkin.",
+              "Возможно, объявление удалено или ещё не одобрено.",
+            )}
             action={
               <Button asChild size="sm">
-                <Link to="/">Bosh sahifa</Link>
+                <Link to="/">{tr("Bosh sahifa", "Главная")}</Link>
               </Button>
             }
           />
@@ -212,32 +217,32 @@ function PropertyDetailPage() {
               <p className="font-display text-primary mt-3 text-2xl font-bold">
                 {formatPrice(property.price, property.currency)}
                 {property.deal_type === "rent" && (
-                  <span className="text-muted-foreground text-base font-medium"> / oyiga</span>
+                  <span className="text-muted-foreground text-base font-medium"> {tr("/ oyiga", "/ в месяц")}</span>
                 )}
               </p>
             </div>
 
             <dl className="surface-card grid grid-cols-2 gap-4 p-4 sm:grid-cols-4">
-              <Stat icon={BedDouble} label="Xonalar" value={`${property.rooms} ta`} />
-              <Stat icon={Ruler} label="Maydon" value={formatArea(property.area)} />
+              <Stat icon={BedDouble} label={tr("Xonalar", "Комнаты")} value={tr(`${property.rooms} ta`, `${property.rooms}`)} />
+              <Stat icon={Ruler} label={tr("Maydon", "Площадь")} value={formatArea(property.area)} />
               <Stat
                 icon={Layers}
-                label="Qavat"
+                label={tr("Qavat", "Этаж")}
                 value={property.floor ? `${property.floor}/${property.total_floors ?? "-"}` : "-"}
               />
-              <Stat icon={Eye} label="Ko'rishlar" value={`${property.views_count}`} />
+              <Stat icon={Eye} label={tr("Ko'rishlar", "Просмотры")} value={`${property.views_count}`} />
             </dl>
 
             <section className="surface-card p-5">
-              <h2 className="font-display mb-2 text-lg font-semibold">Tavsif</h2>
+              <h2 className="font-display mb-2 text-lg font-semibold">{tr("Tavsif", "Описание")}</h2>
               <p className="text-muted-foreground text-sm leading-relaxed whitespace-pre-line">
-                {property.description || "Tavsif kiritilmagan."}
+                {property.description || tr("Tavsif kiritilmagan.", "Описание не указано.")}
               </p>
             </section>
 
             {property.features.length > 0 && (
               <section className="surface-card p-5">
-                <h2 className="font-display mb-3 text-lg font-semibold">Qulayliklar</h2>
+                <h2 className="font-display mb-3 text-lg font-semibold">{tr("Qulayliklar", "Удобства")}</h2>
                 <ul className="flex flex-wrap gap-2">
                   {property.features.map((feature) => (
                     <li key={feature}>
@@ -251,25 +256,25 @@ function PropertyDetailPage() {
 
           <aside className="space-y-4">
             <div className="surface-card p-5">
-              <h2 className="font-display mb-3 text-base font-semibold">E'lon egasi</h2>
+              <h2 className="font-display mb-3 text-base font-semibold">{tr("E'lon egasi", "Владелец объявления")}</h2>
               <div className="flex items-center gap-3">
                 <span className="bg-accent text-accent-foreground flex h-11 w-11 items-center justify-center rounded-full">
                   <Building2 className="h-5 w-5" aria-hidden="true" />
                 </span>
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold">
-                    {owner?.full_name || "Foydalanuvchi"}
+                    {owner?.full_name || tr("Foydalanuvchi", "Пользователь")}
                   </p>
                   <p className="text-muted-foreground truncate text-xs">
                     {owner?.is_verified_agent
-                      ? `Tasdiqlangan agent${owner.agency_name ? ` · ${owner.agency_name}` : ""}`
-                      : "Xususiy e'lon beruvchi"}
+                      ? `${tr("Tasdiqlangan agent", "Проверенный агент")}${owner.agency_name ? ` · ${owner.agency_name}` : ""}`
+                      : tr("Xususiy e'lon beruvchi", "Частное лицо")}
                   </p>
                 </div>
               </div>
 
               <p className="text-muted-foreground mt-4 text-xs">
-                Telefon: {user ? formatPhone(owner?.phone) : "Ko'rish uchun tizimga kiring"}
+                {tr("Telefon", "Телефон")}: {user ? formatPhone(owner?.phone) : tr("Ko'rish uchun tizimga kiring", "Войдите, чтобы увидеть")}
               </p>
 
               <div className="mt-4 space-y-2">
@@ -283,7 +288,7 @@ function PropertyDetailPage() {
                   ) : (
                     <MessageSquare className="mr-2 h-4 w-4" />
                   )}
-                  Yozish
+                  {tr("Yozish", "Написать")}
                 </Button>
                 <Button
                   variant="outline"
@@ -292,14 +297,16 @@ function PropertyDetailPage() {
                   disabled={toggleFavorite.isPending}
                 >
                   <Heart className={favorite ? "mr-2 h-4 w-4 fill-current" : "mr-2 h-4 w-4"} />
-                  {favorite ? "Sevimlilarda" : "Sevimlilarga"}
+                  {favorite ? tr("Sevimlilarda", "В избранном") : tr("Sevimlilarga", "В избранное")}
                 </Button>
               </div>
             </div>
 
             <p className="text-muted-foreground text-xs">
-              E'lon {formatDate(property.created_at)} sanasida joylashtirilgan va moderatsiyadan
-              o'tgan.
+              {tr(
+                `E'lon ${formatDate(property.created_at)} sanasida joylashtirilgan va moderatsiyadan o'tgan.`,
+                `Объявление размещено ${formatDate(property.created_at)} и прошло модерацию.`,
+              )}
             </p>
           </aside>
         </div>

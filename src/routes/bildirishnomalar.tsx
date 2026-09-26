@@ -5,6 +5,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { PageShell } from "@/components/PageShell";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { useTr } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { formatRelativeTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -24,6 +25,7 @@ export const Route = createFileRoute("/bildirishnomalar")({
 
 function NotificationsPage() {
   const { user, loading } = useAuth();
+  const tr = useTr();
   const queryClient = useQueryClient();
 
   const { data } = useQuery({
@@ -54,20 +56,20 @@ function NotificationsPage() {
   return (
     <PageShell>
       <div className="mx-auto max-w-2xl px-4 py-8">
-        <h1 className="font-display mb-6 text-2xl font-bold sm:text-3xl">Bildirishnomalar</h1>
+        <h1 className="font-display mb-6 text-2xl font-bold sm:text-3xl">{tr("Bildirishnomalar", "Уведомления")}</h1>
 
         {!loading && !user ? (
           <EmptyState
-            title="Tizimga kiring"
-            description="Bildirishnomalarni ko'rish uchun hisobingizga kiring."
+            title={tr("Tizimga kiring", "Войдите в аккаунт")}
+            description={tr("Bildirishnomalarni ko'rish uchun hisobingizga kiring.", "Войдите в аккаунт, чтобы видеть уведомления.")}
             action={
               <Button asChild size="sm">
-                <Link to="/auth">Kirish</Link>
+                <Link to="/auth">{tr("Kirish", "Войти")}</Link>
               </Button>
             }
           />
         ) : (data?.length ?? 0) === 0 ? (
-          <EmptyState title="Bildirishnomalar yo'q" description="Yangiliklar shu yerda ko'rinadi." />
+          <EmptyState title={tr("Bildirishnomalar yo'q", "Уведомлений пока нет")} description={tr("Yangiliklar shu yerda ko'rinadi.", "Здесь будут появляться новости.")} />
         ) : (
           <ul className="space-y-2">
             {data!.map((item) => (
@@ -85,7 +87,7 @@ function NotificationsPage() {
                   </div>
                   {!item.read_at && (
                     <Button variant="ghost" size="sm" onClick={() => markRead.mutate(item.id)}>
-                      O'qildi
+                      {tr("O'qildi", "Прочитано")}
                     </Button>
                   )}
                 </div>

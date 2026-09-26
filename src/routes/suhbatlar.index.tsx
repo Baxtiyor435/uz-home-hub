@@ -5,6 +5,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { PageShell } from "@/components/PageShell";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { useTr } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { formatRelativeTime } from "@/lib/format";
 
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/suhbatlar/")({
 
 function ConversationsPage() {
   const { user, loading } = useAuth();
+  const tr = useTr();
 
   const { data, isLoading } = useQuery({
     queryKey: ["conversations", user?.id],
@@ -40,7 +42,7 @@ function ConversationsPage() {
   return (
     <PageShell>
       <div className="mx-auto max-w-3xl px-4 py-8">
-        <h1 className="font-display mb-6 text-2xl font-bold sm:text-3xl">Suhbatlar</h1>
+        <h1 className="font-display mb-6 text-2xl font-bold sm:text-3xl">{tr("Suhbatlar", "Сообщения")}</h1>
 
         {loading || (user && isLoading) ? (
           <div className="space-y-2">
@@ -50,18 +52,18 @@ function ConversationsPage() {
           </div>
         ) : !user ? (
           <EmptyState
-            title="Tizimga kiring"
-            description="Yozishmalarni ko'rish uchun hisobingizga kiring."
+            title={tr("Tizimga kiring", "Войдите в аккаунт")}
+            description={tr("Yozishmalarni ko'rish uchun hisobingizga kiring.", "Войдите в аккаунт, чтобы просматривать переписку.")}
             action={
               <Button asChild size="sm">
-                <Link to="/auth">Kirish</Link>
+                <Link to="/auth">{tr("Kirish", "Войти")}</Link>
               </Button>
             }
           />
         ) : (data?.length ?? 0) === 0 ? (
           <EmptyState
-            title="Suhbatlar yo'q"
-            description="E'lon sahifasidagi «Yozish» tugmasi orqali suhbat boshlang."
+            title={tr("Suhbatlar yo'q", "Сообщений пока нет")}
+            description={tr("E'lon sahifasidagi «Yozish» tugmasi orqali suhbat boshlang.", "Начните переписку кнопкой «Написать» на странице объявления.")}
           />
         ) : (
           <ul className="space-y-2">
@@ -73,7 +75,7 @@ function ConversationsPage() {
                   className="surface-card hover:bg-accent flex items-center justify-between gap-3 p-4 transition-colors"
                 >
                   <span className="line-clamp-1 text-sm font-medium">
-                    {(conversation.properties as { title?: string } | null)?.title ?? "E'lon"}
+                    {(conversation.properties as { title?: string } | null)?.title ?? tr("E'lon", "Объявление")}
                   </span>
                   <span className="text-muted-foreground shrink-0 text-xs">
                     {formatRelativeTime(conversation.last_message_at)}

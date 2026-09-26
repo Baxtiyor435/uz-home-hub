@@ -39,7 +39,7 @@ export function PromoteDialog({ propertyId, userId }: { propertyId: string; user
   const payme = useMutation({
     mutationFn: () => startPaymePromotion({ data: { propertyId, planId } }),
     onSuccess: ({ url }) => {
-      toast.success("Payme to'lov sahifasi ochilmoqda...");
+      toast.success(t("promote.opening"));
       openPaymeCheckout(url);
     },
     onError: (error: Error) => toast.error(error.message || t("top.error")),
@@ -80,7 +80,7 @@ export function PromoteDialog({ propertyId, userId }: { propertyId: string; user
         <div className="space-y-2">
           <Button className="w-full" disabled={payme.isPending} onClick={() => payme.mutate()}>
             {payme.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Payme orqali to'lash
+            {t("promote.payWithPayme")}
           </Button>
           <Button
             variant="outline"

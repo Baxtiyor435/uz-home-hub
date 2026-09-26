@@ -9,6 +9,7 @@ import { PageShell } from "@/components/PageShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
+import { useTr } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { formatRelativeTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -37,6 +38,7 @@ type Message = {
 function ConversationPage() {
   const { id } = Route.useParams();
   const { user, loading } = useAuth();
+  const tr = useTr();
   const queryClient = useQueryClient();
   const [draft, setDraft] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -93,7 +95,7 @@ function ConversationPage() {
       queryClient.invalidateQueries({ queryKey: ["messages", id] });
     },
     onError: (error: Error) => {
-      if (error.message !== "EMPTY") toast.error("Xabar yuborilmadi");
+      if (error.message !== "EMPTY") toast.error(tr("Xabar yuborilmadi", "Не удалось отправить сообщение"));
     },
   });
 
@@ -102,11 +104,11 @@ function ConversationPage() {
       <PageShell>
         <div className="mx-auto max-w-md px-4 py-16">
           <EmptyState
-            title="Tizimga kiring"
-            description="Yozishmani ochish uchun hisobingizga kiring."
+            title={tr("Tizimga kiring", "Войдите в аккаунт")}
+            description={tr("Yozishmani ochish uchun hisobingizga kiring.", "Войдите в аккаунт, чтобы открыть переписку.")}
             action={
               <Button asChild size="sm">
-                <Link to="/auth">Kirish</Link>
+                <Link to="/auth">{tr("Kirish", "Войти")}</Link>
               </Button>
             }
           />
@@ -119,7 +121,7 @@ function ConversationPage() {
     <PageShell>
       <div className="mx-auto flex h-[calc(100vh-10rem)] max-w-2xl flex-col px-4 py-6">
         <Link to="/suhbatlar" className="text-muted-foreground mb-3 text-sm hover:underline">
-          ← Barcha suhbatlar
+          ← {tr("Barcha suhbatlar", "Все сообщения")}
         </Link>
 
         <ul className="flex-1 space-y-2 overflow-y-auto pr-1">
@@ -154,13 +156,13 @@ function ConversationPage() {
           <Input
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
-            placeholder="Xabar yozing..."
+            placeholder={tr("Xabar yozing...", "Напишите сообщение...")}
             maxLength={2000}
-            aria-label="Xabar matni"
+            aria-label={tr("Xabar matni", "Текст сообщения")}
           />
           <Button type="submit" size="icon" disabled={send.isPending || !draft.trim()}>
             <Send className="h-4 w-4" />
-            <span className="sr-only">Yuborish</span>
+            <span className="sr-only">{tr("Yuborish", "Отправить")}</span>
           </Button>
         </form>
       </div>

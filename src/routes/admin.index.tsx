@@ -19,6 +19,7 @@ import {
   reviewPremiumPayment,
 } from "@/lib/admin.functions";
 import { formatDate, formatPrice } from "@/lib/format";
+import { useTr } from "@/lib/i18n";
 import { PROPERTY_BUCKET } from "@/lib/storage";
 import { DEAL_TYPE_LABELS } from "@/lib/uz";
 
@@ -37,6 +38,7 @@ export const Route = createFileRoute("/admin/")({
 
 function AdminDashboardPage() {
   const { isStaff, loading } = useAuth();
+  const tr = useTr();
   const router = useRouter();
   const queryClient = useQueryClient();
   const [hydrated, setHydrated] = useState(false);
@@ -90,9 +92,9 @@ function AdminDashboardPage() {
       reviewPremiumPayment({ data: input }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "payments"] });
-      toast.success("To'lov holati yangilandi");
+      toast.success(tr("To'lov holati yangilandi", "Статус оплаты обновлён"));
     },
-    onError: () => toast.error("Amalni bajarib bo'lmadi"),
+    onError: () => toast.error(tr("Amalni bajarib bo'lmadi", "Не удалось выполнить действие")),
   });
 
 
@@ -101,9 +103,9 @@ function AdminDashboardPage() {
       moderateListing({ data: input }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "listings"] });
-      toast.success("E'lon holati yangilandi");
+      toast.success(tr("E'lon holati yangilandi", "Статус объявления обновлён"));
     },
-    onError: () => toast.error("Amalni bajarib bo'lmadi"),
+    onError: () => toast.error(tr("Amalni bajarib bo'lmadi", "Не удалось выполнить действие")),
   });
 
   const applicationAction = useMutation({
@@ -111,9 +113,9 @@ function AdminDashboardPage() {
       moderateAgentApplication({ data: input }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "applications"] });
-      toast.success("Ariza holati yangilandi");
+      toast.success(tr("Ariza holati yangilandi", "Статус заявки обновлён"));
     },
-    onError: () => toast.error("Amalni bajarib bo'lmadi"),
+    onError: () => toast.error(tr("Amalni bajarib bo'lmadi", "Не удалось выполнить действие")),
   });
 
   // During SSR and before auth state is resolved, render a loading shell to avoid
@@ -121,7 +123,7 @@ function AdminDashboardPage() {
   if (!hydrated || !isStaff) {
     return (
       <PageShell>
-        <div className="mx-auto max-w-4xl px-4 py-16 text-center">Yuklanmoqda...</div>
+        <div className="mx-auto max-w-4xl px-4 py-16 text-center">{tr("Yuklanmoqda...", "Загрузка...")}</div>
       </PageShell>
     );
   }
@@ -129,24 +131,24 @@ function AdminDashboardPage() {
   return (
     <PageShell>
       <div className="mx-auto max-w-4xl px-4 py-8">
-        <h1 className="font-display mb-6 text-2xl font-bold sm:text-3xl">Admin panel</h1>
+        <h1 className="font-display mb-6 text-2xl font-bold sm:text-3xl">{tr("Admin panel", "Админ панель")}</h1>
 
         <Tabs defaultValue="listings">
           <TabsList>
             <TabsTrigger value="listings">
-              E'lonlar ({pendingListings?.length ?? 0})
+              {tr("E'lonlar", "Объявления")} ({pendingListings?.length ?? 0})
             </TabsTrigger>
             <TabsTrigger value="applications">
-              Agent arizalari ({pendingApplications?.length ?? 0})
+              {tr("Agent arizalari", "Заявки агентов")} ({pendingApplications?.length ?? 0})
             </TabsTrigger>
             <TabsTrigger value="payments">
-              To'lovlar ({pendingPayments?.length ?? 0})
+              {tr("To'lovlar", "Платежи")} ({pendingPayments?.length ?? 0})
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="listings" className="mt-4 space-y-3">
             {(pendingListings?.length ?? 0) === 0 ? (
-              <EmptyState title="Tasdiqlash kutayotgan e'lon yo'q" />
+              <EmptyState title={tr("Tasdiqlash kutayotgan e'lon yo'q", "Нет объявлений, ожидающих подтверждения")} />
             ) : (
               pendingListings!.map((listing) => (
                 <article key={listing.id} className="surface-card flex gap-4 p-3">
@@ -174,14 +176,14 @@ function AdminDashboardPage() {
                         }
                       >
                         <Check className="mr-1 h-4 w-4" />
-                        Tasdiqlash
+                        {tr("Tasdiqlash", "Подтвердить")}
                       </Button>
                       <Button
                         size="sm"
                         variant="outline"
                         disabled={listingAction.isPending}
                         onClick={() => {
-                          const reason = window.prompt("Rad etish sababi:") ?? "";
+                          const reason = window.prompt(tr("Rad etish sababi:", "Причина отклонения:")) ?? "";
                           if (!reason.trim()) return;
                           listingAction.mutate({
                             propertyId: listing.id,
@@ -191,7 +193,7 @@ function AdminDashboardPage() {
                         }}
                       >
                         <X className="mr-1 h-4 w-4" />
-                        Rad etish
+                        {tr("Rad etish", "Отклонить")}
                       </Button>
                     </div>
                   </div>
@@ -202,13 +204,13 @@ function AdminDashboardPage() {
 
           <TabsContent value="applications" className="mt-4 space-y-3">
             {(pendingApplications?.length ?? 0) === 0 ? (
-              <EmptyState title="Yangi agentlik arizasi yo'q" />
+              <EmptyState title={tr("Yangi agentlik arizasi yo'q", "Нет новых заявок агентов")} />
             ) : (
               pendingApplications!.map((application) => (
                 <article key={application.id} className="surface-card p-4">
                   <h2 className="text-sm font-semibold">{application.full_name}</h2>
                   <p className="text-muted-foreground text-xs">
-                    {application.agency_name} · {application.experience_years} yil tajriba
+                    {application.agency_name} · {application.experience_years} {tr("yil tajriba", "лет опыта")}
                   </p>
                   {application.message && (
                     <p className="text-muted-foreground mt-2 text-sm">{application.message}</p>
@@ -222,14 +224,14 @@ function AdminDashboardPage() {
                       }
                     >
                       <Check className="mr-1 h-4 w-4" />
-                      Tasdiqlash
+                      {tr("Tasdiqlash", "Подтвердить")}
                     </Button>
                     <Button
                       size="sm"
                       variant="outline"
                       disabled={applicationAction.isPending}
                       onClick={() => {
-                        const reason = window.prompt("Rad etish sababi:") ?? "";
+                        const reason = window.prompt(tr("Rad etish sababi:", "Причина отклонения:")) ?? "";
                         if (!reason.trim()) return;
                         applicationAction.mutate({
                           applicationId: application.id,
@@ -239,7 +241,7 @@ function AdminDashboardPage() {
                       }}
                     >
                       <X className="mr-1 h-4 w-4" />
-                      Rad etish
+                      {tr("Rad etish", "Отклонить")}
                     </Button>
                   </div>
                 </article>
@@ -249,22 +251,22 @@ function AdminDashboardPage() {
 
           <TabsContent value="payments" className="mt-4 space-y-3">
             {(pendingPayments?.length ?? 0) === 0 ? (
-              <EmptyState title="Tekshirish kutayotgan to'lov yo'q" />
+              <EmptyState title={tr("Tekshirish kutayotgan to'lov yo'q", "Нет платежей, ожидающих проверки")} />
             ) : (
               pendingPayments!.map((payment) => (
                 <article key={payment.id} className="surface-card p-4">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <h2 className="text-sm font-semibold">
-                      {payment.full_name ?? "Foydalanuvchi"} · {payment.phone ?? "—"}
+                      {payment.full_name ?? tr("Foydalanuvchi", "Пользователь")} · {payment.phone ?? "—"}
                     </h2>
-                    <Badge variant="outline">{payment.months} oy</Badge>
+                    <Badge variant="outline">{payment.months} {tr("oy", "мес.")}</Badge>
                   </div>
                   <p className="text-primary mt-1 text-sm font-semibold">
                     {formatPrice(payment.amount, payment.currency)}
                   </p>
                   <p className="text-muted-foreground text-xs">{formatDate(payment.created_at)}</p>
                   {payment.payer_note && (
-                    <p className="text-muted-foreground mt-2 text-sm">Izoh: {payment.payer_note}</p>
+                    <p className="text-muted-foreground mt-2 text-sm">{tr("Izoh:", "Комментарий:")} {payment.payer_note}</p>
                   )}
                   <div className="mt-3 flex gap-2">
                     <Button
@@ -273,14 +275,14 @@ function AdminDashboardPage() {
                       onClick={() => paymentAction.mutate({ paymentId: payment.id, approve: true })}
                     >
                       <Check className="mr-1 h-4 w-4" />
-                      Tasdiqlash
+                      {tr("Tasdiqlash", "Подтвердить")}
                     </Button>
                     <Button
                       size="sm"
                       variant="outline"
                       disabled={paymentAction.isPending}
                       onClick={() => {
-                        const reason = window.prompt("Rad etish sababi:") ?? "";
+                        const reason = window.prompt(tr("Rad etish sababi:", "Причина отклонения:")) ?? "";
                         if (!reason.trim()) return;
                         paymentAction.mutate({
                           paymentId: payment.id,
@@ -290,7 +292,7 @@ function AdminDashboardPage() {
                       }}
                     >
                       <X className="mr-1 h-4 w-4" />
-                      Rad etish
+                      {tr("Rad etish", "Отклонить")}
                     </Button>
                   </div>
                 </article>

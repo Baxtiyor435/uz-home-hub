@@ -5,12 +5,14 @@ import type { ReactNode } from "react";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { useTr } from "@/lib/i18n";
 
 /** Sahifalar: obuna bo'lmasa ham ochiq qoladi. */
 const ALLOWED_PATHS = ["/auth", "/obuna", "/profil"];
 
 export function SubscriptionGate({ children }: { children: ReactNode }) {
   const { user, loading, isPremium, isStaff } = useAuth();
+  const tr = useTr();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
 
   const allowed =
@@ -27,20 +29,19 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
       <Logo />
       <div className="surface-card w-full max-w-md p-8">
         <Lock className="text-primary mx-auto h-8 w-8" aria-hidden="true" />
-        <h1 className="font-display mt-4 text-2xl font-bold">Obuna talab qilinadi</h1>
+        <h1 className="font-display mt-4 text-2xl font-bold">{tr("Obuna talab qilinadi", "Требуется подписка")}</h1>
         <p className="text-muted-foreground mt-2 text-sm">
-          Platformadan foydalanish uchun Premium obunani rasmiylashtiring. To'lov admin tomonidan
-          tasdiqlangach barcha bo'limlar ochiladi.
+          {tr("Platformadan foydalanish uchun Premium obunani rasmiylashtiring. To'lov admin tomonidan tasdiqlangach barcha bo'limlar ochiladi.", "Оформите Premium подписку, чтобы пользоваться платформой. После подтверждения оплаты администратором все разделы откроются.")}
         </p>
         <div className="mt-6 flex flex-col gap-2">
           <Button asChild className="w-full">
             <Link to="/obuna">
               <Crown className="mr-2 h-4 w-4" aria-hidden="true" />
-              Obuna sotib olish
+              {tr("Obuna sotib olish", "Купить подписку")}
             </Link>
           </Button>
           <Button asChild variant="outline" className="w-full">
-            <Link to="/profil">Profilim</Link>
+            <Link to="/profil">{tr("Profilim", "Мой профиль")}</Link>
           </Button>
         </div>
       </div>

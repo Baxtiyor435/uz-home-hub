@@ -7,6 +7,7 @@ import { PageShell } from "@/components/PageShell";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPhone } from "@/lib/format";
+import { useTr } from "@/lib/i18n";
 
 export const Route = createFileRoute("/agentlar")({
   head: () => ({
@@ -24,6 +25,7 @@ export const Route = createFileRoute("/agentlar")({
 });
 
 function AgentsPage() {
+  const tr = useTr();
   const { data, isLoading } = useQuery({
     queryKey: ["agents"],
     queryFn: async () => {
@@ -42,9 +44,12 @@ function AgentsPage() {
     <PageShell>
       <div className="mx-auto max-w-6xl px-4 py-8">
         <header className="mb-6">
-          <h1 className="font-display text-2xl font-bold sm:text-3xl">Tasdiqlangan agentlar</h1>
+          <h1 className="font-display text-2xl font-bold sm:text-3xl">{tr("Tasdiqlangan agentlar", "Проверенные агенты")}</h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            Agent maqomi administrator tomonidan hujjatlar asosida beriladi.
+            {tr(
+              "Agent maqomi administrator tomonidan hujjatlar asosida beriladi.",
+              "Статус агента присваивается администратором на основании документов.",
+            )}
           </p>
         </header>
 
@@ -56,8 +61,11 @@ function AgentsPage() {
           </div>
         ) : (data?.length ?? 0) === 0 ? (
           <EmptyState
-            title="Hozircha tasdiqlangan agentlar yo'q"
-            description="Agent bo'lishni istasangiz, profilingizdan ariza qoldiring."
+            title={tr("Hozircha tasdiqlangan agentlar yo'q", "Пока нет проверенных агентов")}
+            description={tr(
+              "Agent bo'lishni istasangiz, profilingizdan ariza qoldiring.",
+              "Если хотите стать агентом, оставьте заявку в своём профиле.",
+            )}
           />
         ) : (
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -65,14 +73,14 @@ function AgentsPage() {
               <li key={agent.id} className="surface-card p-5">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="truncate font-semibold">{agent.full_name || "Agent"}</p>
+                    <p className="truncate font-semibold">{agent.full_name || tr("Agent", "Агент")}</p>
                     <p className="text-muted-foreground truncate text-xs">
-                      {agent.agency_name || "Mustaqil agent"}
+                      {agent.agency_name || tr("Mustaqil agent", "Независимый агент")}
                     </p>
                   </div>
                   <Badge variant="secondary">
                     <BadgeCheck className="mr-1 h-3.5 w-3.5" />
-                    Tasdiqlangan
+                    {tr("Tasdiqlangan", "Проверен")}
                   </Badge>
                 </div>
 
@@ -85,7 +93,7 @@ function AgentsPage() {
                     <Star className="h-3.5 w-3.5 fill-current" aria-hidden="true" />
                     {Number(agent.rating).toFixed(1)} ({agent.reviews_count})
                   </span>
-                  <span>{agent.deals_count} bitim</span>
+                  <span>{agent.deals_count} {tr("bitim", "сделок")}</span>
                 </div>
                 <p className="text-muted-foreground mt-2 text-xs">{formatPhone(agent.phone)}</p>
               </li>
@@ -94,9 +102,9 @@ function AgentsPage() {
         )}
 
         <p className="text-muted-foreground mt-8 text-sm">
-          Agent bo'lish uchun{" "}
+          {tr("Agent bo'lish uchun", "Чтобы стать агентом,")}{" "}
           <Link to="/profil" className="text-primary hover:underline">
-            profilingizdan ariza yuboring
+            {tr("profilingizdan ariza yuboring", "отправьте заявку из профиля")}
           </Link>
           .
         </p>
