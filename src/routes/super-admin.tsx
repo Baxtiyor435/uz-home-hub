@@ -14,7 +14,7 @@ import {
   listPlatformUsers,
   resetUserDevice,
   setUserBlocked,
-  setUserRole,
+  setUserPrimaryRole,
 } from "@/lib/staff.functions";
 import { ROLE_LABELS, type AppRole } from "@/lib/uz";
 
@@ -31,7 +31,19 @@ export const Route = createFileRoute("/super-admin")({
   component: SuperAdminPage,
 });
 
-const MANAGED_ROLES: AppRole[] = ["agent", "admin", "super_admin"];
+const ALL_ROLES: AppRole[] = ["user", "agent", "admin", "super_admin"];
+const ROLE_LABELS_RU: Record<AppRole, string> = {
+  user: "Пользователь",
+  agent: "Агент",
+  admin: "Администратор",
+  super_admin: "Главный администратор",
+};
+function currentRole(roles: string[]): AppRole {
+  if (roles.includes("super_admin")) return "super_admin";
+  if (roles.includes("admin")) return "admin";
+  if (roles.includes("agent")) return "agent";
+  return "user";
+}
 
 function SuperAdminPage() {
   const { isSuperAdmin, loading, user } = useAuth();
