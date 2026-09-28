@@ -37,7 +37,7 @@ export const Route = createFileRoute("/admin/")({
 });
 
 function AdminDashboardPage() {
-  const { isStaff, loading } = useAuth();
+  const { isStaff, isSuperAdmin, loading } = useAuth();
   const tr = useTr();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -131,7 +131,14 @@ function AdminDashboardPage() {
   return (
     <PageShell>
       <div className="mx-auto max-w-4xl px-4 py-8">
-        <h1 className="font-display mb-6 text-2xl font-bold sm:text-3xl">{tr("Admin panel", "Админ панель")}</h1>
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <h1 className="font-display text-2xl font-bold sm:text-3xl">{tr("Admin panel", "Админ панель")}</h1>
+          {isSuperAdmin && (
+            <Link to="/super-admin" className="bg-primary text-primary-foreground rounded-md px-3 py-2 text-sm font-medium">
+              {tr("Foydalanuvchilar va rollar", "Пользователи и роли")}
+            </Link>
+          )}
+        </div>
 
         <Tabs defaultValue="listings">
           <TabsList>
