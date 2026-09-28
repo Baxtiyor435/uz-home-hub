@@ -105,6 +105,50 @@ export const setUserRole = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+const primaryRoleSchema = z.object({
+  userId: z.string().uuid(),
+  role: z.enum(["user", "agent", "admin", "super_admin"]),
+});
+
+/** Sets exactly one role for a user in a single action (super admin only). */
+export const setUserPrimaryRole = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => primaryRoleSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    await assertSuperAdmin(context.supabase, context.userId);
+    if (data.userId === context.userId && data.role !== "super_admin") {
+      throw new Error("O'zingizni pasaytira olmaysiz");
+    }
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    await supabaseAdmin
+      .from("user_roles")
+      .delete()
+      .eq("user_id", data.userId)
+      .in("role", ["agent", "admin", "super_admin"]);
+    await supabaseAdmin
+      .from("user_roles")
+      .upsert({ user_id: data.userId, role: "user" }, { onConflict: "user_id,role" });
+    if (data.role !== "user") {
+      await supabaseAdmin
+        .from("user_roles")
+        .upsert({ user_id: data.userId, role: data.role }, { onConflict: "user_id,role" });
+    }
+    await supabaseAdmin
+      .from("profiles")
+      .update({ is_verified_agent: data.role === "agent" })
+      .eq("id", data.userId);
+
+    await supabaseAdmin.from("audit_logs").insert({
+      actor_id: context.userId,
+      action: "role_set",
+      entity_type: "user_role",
+      entity_id: data.userId,
+      metadata: { role: data.role },
+    });
+    return { ok: true };
+  });
+
 const blockSchema = z.object({ userId: z.string().uuid(), blocked: z.boolean() });
 
 /** Blocks or unblocks a user (super admin only). */
