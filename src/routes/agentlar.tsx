@@ -12,12 +12,12 @@ import { useTr } from "@/lib/i18n";
 export const Route = createFileRoute("/agentlar")({
   head: () => ({
     meta: [
-      { title: "Tasdiqlangan agentlar — UBU Real Estate" },
+      { title: "Tasdiqlangan agentlar — UBU" },
       {
         name: "description",
         content: "Reyting va sharhlar asosida tanlangan tasdiqlangan ko'chmas mulk agentlari.",
       },
-      { property: "og:title", content: "Tasdiqlangan agentlar — UBU Real Estate" },
+      { property: "og:title", content: "Tasdiqlangan agentlar — UBU" },
       { property: "og:description", content: "Tekshirilgan agentlar ro'yxati va reytinglari." },
     ],
   }),

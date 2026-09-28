@@ -19,9 +19,9 @@ import { APP_SLOGAN } from "@/lib/uz";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Kirish — UBU Real Estate" },
-      { name: "description", content: "Telefon raqam va parol orqali UBU Real Estate hisobiga kiring." },
-      { property: "og:title", content: "Kirish — UBU Real Estate" },
+      { title: "Kirish — UBU" },
+      { name: "description", content: "Telefon raqam va parol orqali UBU hisobiga kiring." },
+      { property: "og:title", content: "Kirish — UBU" },
       { property: "og:description", content: APP_SLOGAN },
       { name: "robots", content: "noindex" },
     ],

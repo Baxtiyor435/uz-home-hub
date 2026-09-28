@@ -16,13 +16,13 @@ import { useTr } from "@/lib/i18n";
 export const Route = createFileRoute("/obuna")({
   head: () => ({
     meta: [
-      { title: "Premium obuna — UBU Real Estate" },
+      { title: "Premium obuna — UBU" },
       {
         name: "description",
         content:
-          "UBU Real Estate Premium obunasi: cheksiz kontaktlar, e'lonlar yuqorida va tasdiqlangan agent belgisi.",
+          "UBU Premium obunasi: cheksiz kontaktlar, e'lonlar yuqorida va tasdiqlangan agent belgisi.",
       },
-      { property: "og:title", content: "Premium obuna — UBU Real Estate" },
+      { property: "og:title", content: "Premium obuna — UBU" },
       {
         property: "og:description",
         content: "Premium obuna bilan e'lonlaringiz yuqorida turadi va kontaktlar cheksiz ochiladi.",

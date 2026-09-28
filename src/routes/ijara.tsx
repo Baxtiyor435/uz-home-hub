@@ -7,12 +7,12 @@ import { useTr } from "@/lib/i18n";
 export const Route = createFileRoute("/ijara")({
   head: () => ({
     meta: [
-      { title: "Ijaradagi uy-joylar — UBU Real Estate" },
+      { title: "Ijaradagi uy-joylar — UBU" },
       {
         name: "description",
         content: "Toshkent va boshqa hududlarda ijaraga beriladigan kvartira va uylar.",
       },
-      { property: "og:title", content: "Ijaradagi uy-joylar — UBU Real Estate" },
+      { property: "og:title", content: "Ijaradagi uy-joylar — UBU" },
       {
         property: "og:description",
         content: "Ijara e'lonlarini har bir foydalanuvchi joylashtira oladi.",

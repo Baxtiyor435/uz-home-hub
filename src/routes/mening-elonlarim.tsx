@@ -17,9 +17,9 @@ import { DEAL_TYPE_LABELS, LISTING_STATUS_LABELS } from "@/lib/uz";
 export const Route = createFileRoute("/mening-elonlarim")({
   head: () => ({
     meta: [
-      { title: "Mening e'lonlarim — UBU Real Estate" },
+      { title: "Mening e'lonlarim — UBU" },
       { name: "description", content: "Joylashtirgan e'lonlaringiz va ularning moderatsiya holati." },
-      { property: "og:title", content: "Mening e'lonlarim — UBU Real Estate" },
+      { property: "og:title", content: "Mening e'lonlarim — UBU" },
       { property: "og:description", content: "E'lonlaringiz holati." },
       { name: "robots", content: "noindex" },
     ],

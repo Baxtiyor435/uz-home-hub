@@ -12,9 +12,9 @@ import { formatRelativeTime } from "@/lib/format";
 export const Route = createFileRoute("/suhbatlar/")({
   head: () => ({
     meta: [
-      { title: "Suhbatlar — UBU Real Estate" },
+      { title: "Suhbatlar — UBU" },
       { name: "description", content: "E'lon egalari bilan yozishmalaringiz." },
-      { property: "og:title", content: "Suhbatlar — UBU Real Estate" },
+      { property: "og:title", content: "Suhbatlar — UBU" },
       { property: "og:description", content: "Yozishmalaringiz." },
       { name: "robots", content: "noindex" },
     ],

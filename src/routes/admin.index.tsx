@@ -26,9 +26,9 @@ import { DEAL_TYPE_LABELS } from "@/lib/uz";
 export const Route = createFileRoute("/admin/")({
   head: () => ({
     meta: [
-      { title: "Admin panel — UBU Real Estate" },
+      { title: "Admin panel — UBU" },
       { name: "description", content: "E'lonlar va agentlik arizalarini moderatsiya qilish paneli." },
-      { property: "og:title", content: "Admin panel — UBU Real Estate" },
+      { property: "og:title", content: "Admin panel — UBU" },
       { property: "og:description", content: "Moderatsiya paneli." },
       { name: "robots", content: "noindex" },
     ],

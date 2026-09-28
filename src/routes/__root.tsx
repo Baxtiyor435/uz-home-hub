@@ -82,7 +82,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "UBU Real Estate — ishonchli ko'chmas mulk platformasi" },
+      { title: "UBU — ishonchli ko'chmas mulk platformasi" },
       {
         name: "description",
         content: "Har bir e'lon tasdiqlangan. Har bir bitim xavfsiz.",

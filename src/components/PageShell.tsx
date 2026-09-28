@@ -17,7 +17,7 @@ export function PageShell({ children }: { children: ReactNode }) {
           <Logo />
           <p>{tr(APP_SLOGAN, "Каждое объявление проверено. Каждая сделка безопасна.")}</p>
           <p className="text-xs">
-            © {new Date().getFullYear()} UBU Real Estate. {tr("Barcha huquqlar himoyalangan.", "Все права защищены.")}
+            © {new Date().getFullYear()} UBU. {tr("Barcha huquqlar himoyalangan.", "Все права защищены.")}
           </p>
         </div>
       </footer>

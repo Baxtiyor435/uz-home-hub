@@ -3,7 +3,7 @@
  * All user-facing strings in the app live here or in the components.
  */
 
-export const APP_NAME = "UBU Real Estate";
+export const APP_NAME = "UBU";
 export const APP_SLOGAN = "Har bir e'lon tasdiqlangan. Har bir bitim xavfsiz.";
 
 export type DealType = "sale" | "rent";

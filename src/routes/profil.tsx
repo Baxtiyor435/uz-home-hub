@@ -22,9 +22,9 @@ import { useTr } from "@/lib/i18n";
 export const Route = createFileRoute("/profil")({
   head: () => ({
     meta: [
-      { title: "Profil — UBU Real Estate" },
+      { title: "Profil — UBU" },
       { name: "description", content: "Profil ma'lumotlaringiz, agentlik arizasi va hisob sozlamalari." },
-      { property: "og:title", content: "Profil — UBU Real Estate" },
+      { property: "og:title", content: "Profil — UBU" },
       { property: "og:description", content: "Hisob sozlamalari." },
       { name: "robots", content: "noindex" },
     ],

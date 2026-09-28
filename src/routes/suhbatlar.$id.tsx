@@ -17,9 +17,9 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/suhbatlar/$id")({
   head: () => ({
     meta: [
-      { title: "Suhbat — UBU Real Estate" },
+      { title: "Suhbat — UBU" },
       { name: "description", content: "E'lon egasi bilan real vaqtdagi yozishma." },
-      { property: "og:title", content: "Suhbat — UBU Real Estate" },
+      { property: "og:title", content: "Suhbat — UBU" },
       { property: "og:description", content: "Real vaqtdagi yozishma." },
       { name: "robots", content: "noindex" },
     ],
