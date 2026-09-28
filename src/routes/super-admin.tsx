@@ -47,8 +47,7 @@ function SuperAdminPage() {
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ["super-admin", "users"] });
 
   const roleAction = useMutation({
-    mutationFn: (input: { userId: string; role: "agent" | "admin" | "super_admin"; grant: boolean }) =>
-      setUserRole({ data: input }),
+    mutationFn: (input: { userId: string; role: AppRole }) => setUserPrimaryRole({ data: input }),
     onSuccess: () => {
       invalidate();
       toast.success(tr("Rol yangilandi", "Роль обновлена"));
@@ -158,24 +157,19 @@ function SuperAdminPage() {
                 </div>
 
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {MANAGED_ROLES.map((role) => {
-                    const has = row.roles.includes(role);
+                  {ALL_ROLES.map((role) => {
+                    const current = currentRole(row.roles);
+                    const active = current === role;
                     return (
                       <Button
                         key={role}
                         size="sm"
-                        variant={has ? "secondary" : "outline"}
-                        disabled={roleAction.isPending}
-                        onClick={() =>
-                          roleAction.mutate({
-                            userId: row.id,
-                            role: role as "agent" | "admin" | "super_admin",
-                            grant: !has,
-                          })
-                        }
+                        variant={active ? "default" : "outline"}
+                        disabled={roleAction.isPending || active || (row.id === user?.id && role !== "super_admin")}
+                        onClick={() => roleAction.mutate({ userId: row.id, role })}
                       >
                         <UserCog className="mr-1 h-4 w-4" />
-                        {has ? `${ROLE_LABELS[role]}${tr("ni olib tashlash", " — снять")}` : `${ROLE_LABELS[role]}${tr(" qilish", " — назначить")}`}
+                        {tr(ROLE_LABELS[role], ROLE_LABELS_RU[role])}
                       </Button>
                     );
                   })}
