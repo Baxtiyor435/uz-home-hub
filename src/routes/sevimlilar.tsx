@@ -13,9 +13,9 @@ import { useLang, useTr } from "@/lib/i18n";
 export const Route = createFileRoute("/sevimlilar")({
   head: () => ({
     meta: [
-      { title: "Sevimli e'lonlar — UBU Real Estate" },
+      { title: "Sevimli e'lonlar — UBU" },
       { name: "description", content: "Saqlab qo'ygan uy-joy e'lonlaringiz ro'yxati." },
-      { property: "og:title", content: "Sevimli e'lonlar — UBU Real Estate" },
+      { property: "og:title", content: "Sevimli e'lonlar — UBU" },
       { property: "og:description", content: "Saqlab qo'ygan e'lonlaringiz." },
       { name: "robots", content: "noindex" },
     ],

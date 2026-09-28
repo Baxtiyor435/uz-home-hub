@@ -34,9 +34,9 @@ import { useTr } from "@/lib/i18n";
 export const Route = createFileRoute("/joylash")({
   head: () => ({
     meta: [
-      { title: "E'lon joylash — UBU Real Estate" },
+      { title: "E'lon joylash — UBU" },
       { name: "description", content: "Uy-joyingiz uchun e'lon joylashtiring va moderatsiyaga yuboring." },
-      { property: "og:title", content: "E'lon joylash — UBU Real Estate" },
+      { property: "og:title", content: "E'lon joylash — UBU" },
       { property: "og:description", content: "E'lon joylashtirish sahifasi." },
       { name: "robots", content: "noindex" },
     ],

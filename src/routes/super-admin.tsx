@@ -21,9 +21,9 @@ import { ROLE_LABELS, type AppRole } from "@/lib/uz";
 export const Route = createFileRoute("/super-admin")({
   head: () => ({
     meta: [
-      { title: "Super admin — UBU Real Estate" },
+      { title: "Super admin — UBU" },
       { name: "description", content: "Foydalanuvchilar, rollar va bloklashni boshqarish paneli." },
-      { property: "og:title", content: "Super admin — UBU Real Estate" },
+      { property: "og:title", content: "Super admin — UBU" },
       { property: "og:description", content: "Foydalanuvchilar va rollarni boshqarish." },
       { name: "robots", content: "noindex" },
     ],

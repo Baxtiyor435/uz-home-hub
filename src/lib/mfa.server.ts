@@ -10,7 +10,7 @@
 import { createCipheriv, createDecipheriv, createHmac, randomBytes, timingSafeEqual } from "crypto";
 import * as OTPAuth from "otpauth";
 
-export const APP_ISSUER = "UBU Real Estate";
+export const APP_ISSUER = "UBU";
 const TOTP_PERIOD = 30;
 const TOTP_DIGITS = 6;
 const TOTP_WINDOW = 1; // ±30s clock drift (RFC 6238)

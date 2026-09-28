@@ -106,8 +106,8 @@ const PACKAGE_CODE = "1504838";
 function fiscalDetail(payment: { amount: number; purpose: string | null; months: number | null }) {
   const title =
     payment.purpose === "promotion"
-      ? `UBU Real Estate — e'lonni TOP'ga ko'tarish (${payment.months || 7} kun)`
-      : `UBU Real Estate — Premium obuna (${payment.months || 1} oy)`;
+      ? `UBU — e'lonni TOP'ga ko'tarish (${payment.months || 7} kun)`
+      : `UBU — Premium obuna (${payment.months || 1} oy)`;
   return {
     receipt_type: 0, // 0 = debet (100% to'lov)
     items: [

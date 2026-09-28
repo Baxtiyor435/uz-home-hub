@@ -13,7 +13,7 @@ import { grantAdminWithCode } from "@/lib/admin-code.functions";
 export const Route = createFileRoute("/admin/kirish")({
   head: () => ({
     meta: [
-      { title: "Admin kirish — UBU Real Estate" },
+      { title: "Admin kirish — UBU" },
       { name: "description", content: "Admin paneliga kirish kodi." },
       { name: "robots", content: "noindex" },
     ],

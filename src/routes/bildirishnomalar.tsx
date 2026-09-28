@@ -13,9 +13,9 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/bildirishnomalar")({
   head: () => ({
     meta: [
-      { title: "Bildirishnomalar — UBU Real Estate" },
+      { title: "Bildirishnomalar — UBU" },
       { name: "description", content: "E'lon holati va yangi xabarlar haqidagi bildirishnomalar." },
-      { property: "og:title", content: "Bildirishnomalar — UBU Real Estate" },
+      { property: "og:title", content: "Bildirishnomalar — UBU" },
       { property: "og:description", content: "Hisobingizga oid bildirishnomalar." },
       { name: "robots", content: "noindex" },
     ],

@@ -16,13 +16,13 @@ import { APP_SLOGAN } from "@/lib/uz";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "UBU Real Estate — tasdiqlangan ko'chmas mulk e'lonlari" },
+      { title: "UBU — tasdiqlangan ko'chmas mulk e'lonlari" },
       {
         name: "description",
         content:
           "O'zbekistonda uy sotib olish va ijaraga olish uchun ishonchli platforma. Har bir e'lon moderatsiyadan o'tadi.",
       },
-      { property: "og:title", content: "UBU Real Estate — tasdiqlangan e'lonlar" },
+      { property: "og:title", content: "UBU — tasdiqlangan e'lonlar" },
       { property: "og:description", content: APP_SLOGAN },
     ],
   }),

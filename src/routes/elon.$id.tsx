@@ -29,9 +29,9 @@ import { useTr } from "@/lib/i18n";
 export const Route = createFileRoute("/elon/$id")({
   head: () => ({
     meta: [
-      { title: "E'lon tafsilotlari — UBU Real Estate" },
+      { title: "E'lon tafsilotlari — UBU" },
       { name: "description", content: "Tasdiqlangan e'lon haqida to'liq ma'lumot va egasi bilan aloqa." },
-      { property: "og:title", content: "E'lon tafsilotlari — UBU Real Estate" },
+      { property: "og:title", content: "E'lon tafsilotlari — UBU" },
       { property: "og:description", content: "Tasdiqlangan e'lon haqida to'liq ma'lumot." },
     ],
   }),
