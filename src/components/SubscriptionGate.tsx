@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useTr } from "@/lib/i18n";
 
 /** Sahifalar: obuna bo'lmasa ham ochiq qoladi. */
-const ALLOWED_PATHS = ["/auth", "/obuna", "/profil", "/super-kirish", "/super-admin"];
+const ALLOWED_PATHS = ["/auth", "/obuna", "/profil", "/super-kirish", "/super-admin", "/nolga"];
 
 export function SubscriptionGate({ children }: { children: ReactNode }) {
   const { user, loading, isPremium, isStaff } = useAuth();

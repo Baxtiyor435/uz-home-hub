@@ -100,6 +100,11 @@ const SuperKirishRoute = SuperKirishRouteImport.update({
   path: '/super-kirish',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NolgaRoute = NolgaRouteImport.update({
+  id: '/nolga',
+  path: '/nolga',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -384,6 +389,13 @@ declare module '@tanstack/react-router' {
       path: '/super-kirish'
       fullPath: '/super-kirish'
       preLoaderRoute: typeof SuperKirishRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nolga': {
+      id: '/nolga'
+      path: '/nolga'
+      fullPath: '/nolga'
+      preLoaderRoute: typeof NolgaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {

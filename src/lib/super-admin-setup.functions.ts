@@ -134,3 +134,51 @@ export const changeSuperAdminPassword = createServerFn({ method: "POST" })
     await supabaseAdmin.auth.admin.signOut(context.userId, "global");
     return { ok: true };
   });
+
+
+const resetSchema = z.object({ confirm: z.literal("NOLGA") });
+
+/** Deletes listings, app data, and auth users. Owner must type NOLGA. */
+export const resetPlatformToZero = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => resetSchema.parse(input))
+  .handler(async () => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const tables = [
+      "messages",
+      "conversations",
+      "bookings",
+      "reviews",
+      "favorites",
+      "property_unlocks",
+      "payments",
+      "notifications",
+      "agent_applications",
+      "properties",
+      "audit_logs",
+      "otp_codes",
+      "user_roles",
+      "profiles",
+    ];
+    for (const table of tables) {
+      const { error } = await supabaseAdmin.from(table).delete().not("id", "is", null);
+      if (error) {
+        const retry = await supabaseAdmin.from(table).delete().not("user_id", "is", null);
+        if (retry.error) throw new Error(`${table} tozalanmadi`);
+      }
+    }
+    await supabaseAdmin.from("platform_settings").delete().eq("key", READY_KEY);
+
+    let page = 1;
+    for (;;) {
+      const { data, error } = await supabaseAdmin.auth.admin.listUsers({ page, perPage: 200 });
+      if (error) throw new Error("Foydalanuvchilarni o'chirib bo'lmadi");
+      const users = data.users ?? [];
+      if (users.length === 0) break;
+      for (const user of users) {
+        await supabaseAdmin.auth.admin.deleteUser(user.id);
+      }
+      if (users.length < 200) break;
+      page += 1;
+    }
+    return { ok: true };
+  });
