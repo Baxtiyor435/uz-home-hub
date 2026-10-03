@@ -186,6 +186,85 @@ export const resetUserDevice = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+const deleteUserSchema = z.object({ userId: z.string().uuid() });
+
+/** Permanently deletes a user account and all their data (super admin only, not self). */
+export const deleteUserAccount = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => deleteUserSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    await assertSuperAdmin(context.supabase, context.userId);
+    if (data.userId === context.userId) throw new Error("O'zingizni o'chira olmaysiz");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    await supabaseAdmin.from("audit_logs").insert({
+      actor_id: context.userId,
+      action: "user_deleted",
+      entity_type: "user",
+      entity_id: data.userId,
+      metadata: {},
+    });
+
+    const { error } = await supabaseAdmin.auth.admin.deleteUser(data.userId);
+    if (error) throw new Error("Foydalanuvchini o'chirib bo'lmadi");
+    return { ok: true };
+  });
+
+/** Lists every listing on the platform (super admin only). */
+export const listAllProperties = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertSuperAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data, error } = await supabaseAdmin
+      .from("properties")
+      .select("id, title, price, currency, deal_type, region, district, status, created_at, owner_id")
+      .order("created_at", { ascending: false })
+      .limit(300);
+    if (error) throw new Error("E'lonlarni olib bo'lmadi");
+    return data ?? [];
+  });
+
+const deletePropertySchema = z.object({ propertyId: z.string().uuid() });
+
+/** Permanently deletes any listing (super admin only). */
+export const deleteProperty = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => deletePropertySchema.parse(input))
+  .handler(async ({ data, context }) => {
+    await assertSuperAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: property } = await supabaseAdmin
+      .from("properties")
+      .select("owner_id, title")
+      .eq("id", data.propertyId)
+      .maybeSingle();
+
+    const { error } = await supabaseAdmin.from("properties").delete().eq("id", data.propertyId);
+    if (error) throw new Error("E'lonni o'chirib bo'lmadi");
+
+    if (property) {
+      await supabaseAdmin.from("notifications").insert({
+        user_id: property.owner_id,
+        title: "E'loningiz o'chirildi",
+        body: `"${property.title}" e'loni administrator tomonidan o'chirildi.`,
+        link: "/mening-elonlarim",
+      });
+    }
+
+    await supabaseAdmin.from("audit_logs").insert({
+      actor_id: context.userId,
+      action: "property_deleted",
+      entity_type: "property",
+      entity_id: data.propertyId,
+      metadata: { title: property?.title ?? null },
+    });
+
+    return { ok: true };
+  });
+
 const passwordSchema = z.object({
   userId: z.string().uuid(),
   password: z.string().min(6).max(72),
