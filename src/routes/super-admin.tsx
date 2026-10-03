@@ -238,6 +238,17 @@ function SuperAdminPage() {
                   >
                     {row.is_blocked ? tr("Blokdan chiqarish", "Разблокировать") : tr("Bloklash", "Заблокировать")}
                   </Button>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    disabled={deleteUserAction.isPending || row.id === user?.id}
+                    onClick={() => {
+                      if (!window.confirm(tr("Foydalanuvchi butunlay o'chirilsinmi?", "Удалить пользователя полностью?"))) return;
+                      deleteUserAction.mutate({ userId: row.id });
+                    }}
+                  >
+                    {tr("O'chirish", "Удалить")}
+                  </Button>
                   </div>
                 </div>
 
