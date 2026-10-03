@@ -134,6 +134,7 @@ export const listPendingPayments = createServerFn({ method: "POST" })
       .select("id, user_id, amount, currency, months, payer_note, created_at")
       .eq("purpose", "premium")
       .eq("status", "pending")
+      .eq("provider", "manual")
       .order("created_at", { ascending: true });
     if (error) throw new Error("To'lovlarni olib bo'lmadi");
 
