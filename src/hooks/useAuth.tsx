@@ -68,6 +68,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { data: profile } = useQuery({
     queryKey: ["profile", userId],
     enabled: !!userId,
+    refetchOnWindowFocus: true,
+    refetchInterval: (query) => {
+      const until = (query.state.data as Profile | null | undefined)?.premium_until;
+      return until && new Date(until).getTime() > Date.now() ? false : 10000;
+    },
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")

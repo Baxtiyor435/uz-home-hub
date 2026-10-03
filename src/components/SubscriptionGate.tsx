@@ -31,7 +31,7 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
         <Lock className="text-primary mx-auto h-8 w-8" aria-hidden="true" />
         <h1 className="font-display mt-4 text-2xl font-bold">{tr("Obuna talab qilinadi", "Требуется подписка")}</h1>
         <p className="text-muted-foreground mt-2 text-sm">
-          {tr("Platformadan foydalanish uchun Premium obunani rasmiylashtiring. To'lov admin tomonidan tasdiqlangach barcha bo'limlar ochiladi.", "Оформите Premium подписку, чтобы пользоваться платформой. После подтверждения оплаты администратором все разделы откроются.")}
+          {tr("Platformadan foydalanish uchun Premium obunani rasmiylashtiring. To'lov qilinishi bilan barcha bo'limlar avtomatik ochiladi.", "Оформите Premium подписку, чтобы пользоваться платформой. Сразу после оплаты все разделы откроются автоматически.")}
         </p>
         <div className="mt-6 flex flex-col gap-2">
           <Button asChild className="w-full">
