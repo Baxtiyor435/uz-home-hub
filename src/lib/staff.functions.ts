@@ -3,35 +3,14 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-/** Access codes are checked on the server only — never shipped to the browser. */
-const ACCESS_CODES: Record<string, "admin" | "super_admin"> = {
-  hello: "admin",
-  hello_super: "super_admin",
-};
-
 const redeemSchema = z.object({ code: z.string().trim().min(1).max(64) });
 
-/** Exchanges a staff access code for the matching role. */
+/** Staff access codes are disabled. Role changes happen only in the super admin panel. */
 export const redeemStaffCode = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => redeemSchema.parse(input))
-  .handler(async ({ data, context }) => {
-    const role = ACCESS_CODES[data.code.toLowerCase()];
-    if (!role) throw new Error("Kod noto'g'ri");
-
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await supabaseAdmin
-      .from("user_roles")
-      .upsert({ user_id: context.userId, role }, { onConflict: "user_id,role" });
-
-    await supabaseAdmin.from("audit_logs").insert({
-      actor_id: context.userId,
-      action: "staff_code_redeemed",
-      entity_type: "user_role",
-      metadata: { role },
-    });
-
-    return { role };
+  .handler(async () => {
+    throw new Error("Kirish kodi o'chirilgan");
   });
 
 type RoleCheckClient = {
