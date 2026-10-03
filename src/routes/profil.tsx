@@ -257,28 +257,9 @@ function ProfilePage() {
                 <Link to="/super-admin">{tr("Super admin panelni ochish", "Открыть панель супер-администратора")}</Link>
               </Button>
             ) : (
-              <form
-                className="mt-4 flex flex-wrap gap-2"
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  redeem.mutate(superCode.trim());
-                }}
-              >
-                <Input
-                  aria-label={tr("Super admin kirish kodi", "Код входа супер-администратора")}
-                  placeholder={tr("Super admin kodi", "Код супер-администратора")}
-                  className="max-w-xs"
-                  value={superCode}
-                  onChange={(event) => setSuperCode(event.target.value)}
-                />
-                <Button
-                  type="submit"
-                  variant="outline"
-                  disabled={redeem.isPending || !superCode.trim()}
-                >
-                  {tr("Kirish", "Войти")}
-                </Button>
-              </form>
+              <Button asChild variant="outline" className="mt-4">
+                <Link to="/super-kirish">{tr("Super admin sahifasini ochish", "Открыть страницу супер-админа")}</Link>
+              </Button>
             )}
           </div>
         </section>

@@ -1,7 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { Crown, ShieldCheck, UserCog } from "lucide-react";
 import { toast } from "sonner";
+
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { changeSuperAdminPassword } from "@/lib/super-admin-setup.functions";
 
 import { EmptyState } from "@/components/EmptyState";
 import { PageShell } from "@/components/PageShell";
@@ -53,6 +58,8 @@ function SuperAdminPage() {
   const { isSuperAdmin, loading, user } = useAuth();
   const tr = useTr();
   const queryClient = useQueryClient();
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
 
   const { data: users } = useQuery({
     queryKey: ["super-admin", "users"],
@@ -102,6 +109,16 @@ function SuperAdminPage() {
       toast.success(tr("Holat yangilandi", "Статус обновлён"));
     },
     onError: () => toast.error(tr("Amalni bajarib bo'lmadi", "Не удалось выполнить действие")),
+  });
+
+  const ownPasswordAction = useMutation({
+    mutationFn: (input: { currentPassword: string; newPassword: string }) => changeSuperAdminPassword({ data: input }),
+    onSuccess: () => {
+      setCurrentPassword("");
+      setNewPassword("");
+      toast.success(tr("Parol o'zgartirildi. Qayta kiring.", "Пароль изменён. Войдите снова."));
+    },
+    onError: (error: Error) => toast.error(error.message || tr("Parolni o'zgartirib bo'lmadi", "Не удалось изменить пароль")),
   });
 
   const passwordAction = useMutation({
@@ -163,6 +180,70 @@ function SuperAdminPage() {
             </Link>
           </Button>
         </div>
+
+        <article className="surface-card mb-6 p-4">
+          <h2 className="text-sm font-semibold">{tr("Sozlamalar: parolni o'zgartirish", "Настройки: смена пароля")}</h2>
+          <p className="text-muted-foreground mt-1 text-xs">
+            {tr("Ilova egasi parolni shu yerdan o'zgartiradi. Eski parol keyin ishlamaydi.", "Владелец меняет пароль здесь. Старый пароль после этого не работает.")}
+          </p>
+          <form
+            className="mt-3 grid gap-3 sm:grid-cols-2"
+            onSubmit={(event) => {
+              event.preventDefault();
+              if (newPassword.length < 6) {
+                toast.error(tr("Parol kamida 6 belgidan iborat bo'lsin", "Пароль должен содержать не менее 6 символов"));
+                return;
+              }
+              ownPasswordAction.mutate({ currentPassword, newPassword });
+            }}
+          >
+            <div className="space-y-1">
+              <Label htmlFor="current-password">{tr("Joriy parol", "Текущий пароль")}</Label>
+              <Input id="current-password" type="password" value={currentPassword} onChange={(event) => setCurrentPassword(event.target.value)} required />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="new-password">{tr("Yangi parol", "Новый пароль")}</Label>
+              <Input id="new-password" type="password" value={newPassword} onChange={(event) => setNewPassword(event.target.value)} required />
+            </div>
+            <Button type="submit" size="sm" disabled={ownPasswordAction.isPending}>{tr("Parolni saqlash", "Сохранить пароль")}</Button>
+          </form>
+        </article>
+
+        <section className="mb-6">
+          <h2 className="mb-3 text-sm font-semibold">{tr("E'lonlar", "Объявления")}</h2>
+          <div className="space-y-3">
+            {(properties?.length ?? 0) === 0 ? (
+              <EmptyState title={tr("E'lonlar topilmadi", "Объявления не найдены")} />
+            ) : (
+              properties!.map((property) => (
+                <article key={property.id} className="surface-card flex flex-wrap items-center justify-between gap-3 p-4">
+                  <div>
+                    <h3 className="text-sm font-semibold">{property.title}</h3>
+                    <p className="text-muted-foreground text-xs">
+                      {property.deal_type} · {property.region}{property.district ? `, ${property.district}` : ""} · {property.price} {property.currency} · {property.status}
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button asChild size="sm" variant="outline">
+                      <Link to="/elon/$id" params={{ id: property.id }}>{tr("Ko'rish", "Открыть")}</Link>
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      disabled={deletePropertyAction.isPending}
+                      onClick={() => {
+                        if (!window.confirm(tr("E'lon o'chirilsinmi?", "Удалить объявление?"))) return;
+                        deletePropertyAction.mutate({ propertyId: property.id });
+                      }}
+                    >
+                      {tr("O'chirish", "Удалить")}
+                    </Button>
+                  </div>
+                </article>
+              ))
+            )}
+          </div>
+        </section>
 
         <article className="surface-card mb-6 p-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
