@@ -106,7 +106,7 @@ function SuperAdminPage() {
 
   const passwordAction = useMutation({
     mutationFn: (input: { userId: string; password: string }) => setUserPassword({ data: input }),
-    onSuccess: () => toast.success(tr("Parol o'zgartirildi", "Пароль изменён")),
+    onSuccess: () => toast.success(tr("Parol o'zgartirildi. Endi faqat yangi parol ishlaydi, qayta kiring.", "Пароль изменён. Теперь работает только новый пароль, войдите снова.")),
     onError: () => toast.error(tr("Parolni o'zgartirib bo'lmadi", "Не удалось изменить пароль")),
   });
 

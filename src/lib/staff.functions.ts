@@ -277,10 +277,21 @@ export const setUserPassword = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertSuperAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { passwordStamp } = await import("@/lib/password-stamp");
+    const { data: current, error: readError } = await supabaseAdmin.auth.admin.getUserById(data.userId);
+    if (readError || !current.user) throw new Error("Parolni o'zgartirib bo'lmadi");
+
     const { error } = await supabaseAdmin.auth.admin.updateUserById(data.userId, {
       password: data.password,
+      app_metadata: {
+        ...(current.user.app_metadata ?? {}),
+        password_sha256: passwordStamp(data.password),
+      },
     });
     if (error) throw new Error("Parolni o'zgartirib bo'lmadi");
+
+    // Eski sessiyalar yangi paroldan keyin yopiladi.
+    await supabaseAdmin.auth.admin.signOut(data.userId, "global");
     await supabaseAdmin.from("audit_logs").insert({
       actor_id: context.userId,
       action: "password_set",
