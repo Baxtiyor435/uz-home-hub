@@ -11,6 +11,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { formatDate, formatPhone } from "@/lib/format";
 import { useTr } from "@/lib/i18n";
 import {
+  deleteProperty,
+  deleteUserAccount,
+  listAllProperties,
   listPlatformUsers,
   resetUserDevice,
   setUserBlocked,
@@ -58,6 +61,30 @@ function SuperAdminPage() {
   });
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ["super-admin", "users"] });
+
+  const { data: properties } = useQuery({
+    queryKey: ["super-admin", "properties"],
+    enabled: isSuperAdmin,
+    queryFn: () => listAllProperties({ data: undefined }),
+  });
+
+  const deletePropertyAction = useMutation({
+    mutationFn: (input: { propertyId: string }) => deleteProperty({ data: input }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["super-admin", "properties"] });
+      toast.success(tr("E'lon o'chirildi", "Объявление удалено"));
+    },
+    onError: () => toast.error(tr("E'lonni o'chirib bo'lmadi", "Не удалось удалить объявление")),
+  });
+
+  const deleteUserAction = useMutation({
+    mutationFn: (input: { userId: string }) => deleteUserAccount({ data: input }),
+    onSuccess: () => {
+      invalidate();
+      toast.success(tr("Foydalanuvchi o'chirildi", "Пользователь удалён"));
+    },
+    onError: () => toast.error(tr("Foydalanuvchini o'chirib bo'lmadi", "Не удалось удалить пользователя")),
+  });
 
   const roleAction = useMutation({
     mutationFn: (input: { userId: string; role: AppRole }) => setUserPrimaryRole({ data: input }),
@@ -210,6 +237,17 @@ function SuperAdminPage() {
                     onClick={() => blockAction.mutate({ userId: row.id, blocked: !row.is_blocked })}
                   >
                     {row.is_blocked ? tr("Blokdan chiqarish", "Разблокировать") : tr("Bloklash", "Заблокировать")}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    disabled={deleteUserAction.isPending || row.id === user?.id}
+                    onClick={() => {
+                      if (!window.confirm(tr("Foydalanuvchi butunlay o'chirilsinmi?", "Удалить пользователя полностью?"))) return;
+                      deleteUserAction.mutate({ userId: row.id });
+                    }}
+                  >
+                    {tr("O'chirish", "Удалить")}
                   </Button>
                   </div>
                 </div>
