@@ -137,6 +137,27 @@ function SuperAdminPage() {
           </Button>
         </div>
 
+        <article className="surface-card mb-6 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="text-sm font-semibold">{tr("Mening parolim", "Мой пароль")}</h2>
+              <p className="text-muted-foreground text-xs">
+                {tr(
+                  "Super admin hisobingiz parolini shu yerdan o'zgartirasiz.",
+                  "Здесь вы меняете пароль своего аккаунта супер-админа.",
+                )}
+              </p>
+            </div>
+            <Button
+              size="sm"
+              disabled={passwordAction.isPending || !user}
+              onClick={() => user && askPassword(user.id)}
+            >
+              {tr("Parolni o'zgartirish", "Сменить пароль")}
+            </Button>
+          </div>
+        </article>
+
         <div className="space-y-3">
           {(users?.length ?? 0) === 0 ? (
             <EmptyState title={tr("Foydalanuvchilar topilmadi", "Пользователи не найдены")} />
