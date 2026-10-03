@@ -14,6 +14,7 @@ import {
   listPlatformUsers,
   resetUserDevice,
   setUserBlocked,
+  setUserPassword,
   setUserPrimaryRole,
 } from "@/lib/staff.functions";
 import { ROLE_LABELS, type AppRole } from "@/lib/uz";
@@ -75,6 +76,22 @@ function SuperAdminPage() {
     },
     onError: () => toast.error(tr("Amalni bajarib bo'lmadi", "Не удалось выполнить действие")),
   });
+
+  const passwordAction = useMutation({
+    mutationFn: (input: { userId: string; password: string }) => setUserPassword({ data: input }),
+    onSuccess: () => toast.success(tr("Parol o'zgartirildi", "Пароль изменён")),
+    onError: () => toast.error(tr("Parolni o'zgartirib bo'lmadi", "Не удалось изменить пароль")),
+  });
+
+  const askPassword = (userId: string) => {
+    const password = window.prompt(tr("Yangi parol (kamida 6 belgi):", "Новый пароль (минимум 6 символов):"));
+    if (password == null) return;
+    if (password.length < 6 || password.length > 72) {
+      toast.error(tr("Parol kamida 6 belgidan iborat bo'lsin", "Пароль должен содержать не менее 6 символов"));
+      return;
+    }
+    passwordAction.mutate({ userId, password });
+  };
 
   const deviceAction = useMutation({
     mutationFn: (input: { userId: string }) => resetUserDevice({ data: input }),
@@ -149,6 +166,14 @@ function SuperAdminPage() {
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={passwordAction.isPending}
+                    onClick={() => askPassword(row.id)}
+                  >
+                    {tr("Parolni o'zgartirish", "Сменить пароль")}
+                  </Button>
                   <Button
                     size="sm"
                     variant="outline"

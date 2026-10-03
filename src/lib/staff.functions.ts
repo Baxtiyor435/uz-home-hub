@@ -185,3 +185,29 @@ export const resetUserDevice = createServerFn({ method: "POST" })
 
     return { ok: true };
   });
+
+const passwordSchema = z.object({
+  userId: z.string().uuid(),
+  password: z.string().min(6).max(72),
+});
+
+/** Sets a new password for any user, including self (super admin only). */
+export const setUserPassword = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => passwordSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    await assertSuperAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.auth.admin.updateUserById(data.userId, {
+      password: data.password,
+    });
+    if (error) throw new Error("Parolni o'zgartirib bo'lmadi");
+    await supabaseAdmin.from("audit_logs").insert({
+      actor_id: context.userId,
+      action: "password_set",
+      entity_type: "user",
+      entity_id: data.userId,
+      metadata: {},
+    });
+    return { ok: true };
+  });
