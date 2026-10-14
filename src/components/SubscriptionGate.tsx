@@ -7,20 +7,16 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useTr } from "@/lib/i18n";
 
-/** Sahifalar: obuna bo'lmasa ham ochiq qoladi. */
-const ALLOWED_PATHS = ["/auth", "/obuna", "/profil", "/super-kirish", "/super-admin", "/nolga"];
+/** Faqat suhbatlar bo'limi obuna talab qiladi; e'lonlarni ko'rish bepul. */
+const GATED_PATHS = ["/suhbatlar"];
 
 export function SubscriptionGate({ children }: { children: ReactNode }) {
   const { user, loading, isPremium, isStaff } = useAuth();
   const tr = useTr();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
 
-  const allowed =
-    loading ||
-    !user ||
-    isPremium ||
-    isStaff ||
-    ALLOWED_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
+  const gated = GATED_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
+  const allowed = loading || !user || isPremium || isStaff || !gated;
 
   if (allowed) return <>{children}</>;
 
