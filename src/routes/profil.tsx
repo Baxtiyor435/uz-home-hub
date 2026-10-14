@@ -43,16 +43,11 @@ function ProfilePage() {
 
   const redeem = useMutation({
     mutationFn: (code: string) => redeemStaffCode({ data: { code } }),
-    onSuccess: (result) => {
+    onSuccess: () => {
       refresh();
       setAdminCode("");
       setSuperCode("");
-      toast.success(
-        result.role === "super_admin"
-          ? tr("Super admin huquqi berildi", "Права супер-администратора предоставлены")
-          : tr("Admin huquqi berildi", "Права администратора предоставлены"),
-      );
-      navigate({ to: result.role === "super_admin" ? "/super-admin" : "/admin" });
+      toast.success(tr("Huquq berildi", "Права предоставлены"));
     },
     onError: () => toast.error(tr("Kod noto'g'ri", "Неверный код")),
   });

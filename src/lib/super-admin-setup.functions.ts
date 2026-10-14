@@ -158,7 +158,7 @@ export const resetPlatformToZero = createServerFn({ method: "POST" })
       "otp_codes",
       "user_roles",
       "profiles",
-    ];
+    ] as const;
     for (const table of tables) {
       const { error } = await supabaseAdmin.from(table).delete().not("id", "is", null);
       if (error) {
