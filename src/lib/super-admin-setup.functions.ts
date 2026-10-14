@@ -13,15 +13,8 @@ const setupSchema = z.object({
   deviceId: z.string().trim().min(6).max(100),
 });
 
-async function isOwnerReady(supabaseAdmin: {
-  from: (table: "platform_settings") => {
-    select: (columns: string) => {
-      eq: (column: string, value: string) => {
-        maybeSingle: () => PromiseLike<{ data: { value: { ready?: boolean } | null } | null }>;
-      };
-    };
-  };
-}) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function isOwnerReady(supabaseAdmin: any) {
   const { data } = await supabaseAdmin.from("platform_settings").select("value").eq("key", READY_KEY).maybeSingle();
   return data?.value?.ready === true;
 }
@@ -158,7 +151,7 @@ export const resetPlatformToZero = createServerFn({ method: "POST" })
       "otp_codes",
       "user_roles",
       "profiles",
-    ];
+    ] as const;
     for (const table of tables) {
       const { error } = await supabaseAdmin.from(table).delete().not("id", "is", null);
       if (error) {

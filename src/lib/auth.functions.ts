@@ -139,7 +139,7 @@ export const signInWithPassword = createServerFn({ method: "POST" })
     // Supabase ba'zan eski parolni ham qabul qiladi, shuning uchun belgi tekshiriladi.
     const { passwordStamp } = await import("@/lib/password-stamp");
     const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(signIn.session.user.id);
-    const stamp = authUser.user?.app_metadata?.password_sha256;
+    const stamp = authUser.user?.app_metadata?.["password_sha256"];
     if (typeof stamp === "string" && stamp.length > 0 && stamp !== passwordStamp(data.password)) {
       return { ok: false, message: "Telefon raqam yoki parol noto'g'ri" };
     }

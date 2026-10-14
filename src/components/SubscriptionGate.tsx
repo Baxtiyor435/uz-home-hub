@@ -7,20 +7,16 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useTr } from "@/lib/i18n";
 
-/** Sahifalar: obuna bo'lmasa ham ochiq qoladi. */
-const ALLOWED_PATHS = ["/auth", "/obuna", "/profil", "/super-kirish", "/super-admin", "/nolga"];
+/** Faqat suhbatlar bo'limi obuna talab qiladi; e'lonlarni ko'rish bepul. */
+const GATED_PATHS = ["/suhbatlar"];
 
 export function SubscriptionGate({ children }: { children: ReactNode }) {
   const { user, loading, isPremium, isStaff } = useAuth();
   const tr = useTr();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
 
-  const allowed =
-    loading ||
-    !user ||
-    isPremium ||
-    isStaff ||
-    ALLOWED_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
+  const gated = GATED_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
+  const allowed = loading || !user || isPremium || isStaff || !gated;
 
   if (allowed) return <>{children}</>;
 
@@ -31,7 +27,7 @@ export function SubscriptionGate({ children }: { children: ReactNode }) {
         <Lock className="text-primary mx-auto h-8 w-8" aria-hidden="true" />
         <h1 className="font-display mt-4 text-2xl font-bold">{tr("Obuna talab qilinadi", "Требуется подписка")}</h1>
         <p className="text-muted-foreground mt-2 text-sm">
-          {tr("Platformadan foydalanish uchun Premium obunani rasmiylashtiring. To'lov qilinishi bilan barcha bo'limlar avtomatik ochiladi.", "Оформите Premium подписку, чтобы пользоваться платформой. Сразу после оплаты все разделы откроются автоматически.")}
+          {tr("E'lon egasi bilan yozishish uchun Premium obunani rasmiylashtiring. To'lov qilinishi bilan suhbatlar avtomatik ochiladi.", "Оформите Premium подписку, чтобы переписываться с владельцами объявлений. Чаты откроются сразу после оплаты.")}
         </p>
         <div className="mt-6 flex flex-col gap-2">
           <Button asChild className="w-full">
