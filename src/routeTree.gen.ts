@@ -17,6 +17,7 @@ import { Route as BildirishnomalarRouteImport } from './routes/bildirishnomalar'
 import { Route as IjaraRouteImport } from './routes/ijara'
 import { Route as JoylashRouteImport } from './routes/joylash'
 import { Route as MeningElonlarimRouteImport } from './routes/mening-elonlarim'
+import { Route as NolgaRouteImport } from './routes/nolga'
 import { Route as ObunaRouteImport } from './routes/obuna'
 import { Route as ProfilRouteImport } from './routes/profil'
 import { Route as SevimlilarRouteImport } from './routes/sevimlilar'
@@ -70,6 +71,11 @@ const MeningElonlarimRoute = MeningElonlarimRouteImport.update({
   path: '/mening-elonlarim',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NolgaRoute = NolgaRouteImport.update({
+  id: '/nolga',
+  path: '/nolga',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ObunaRoute = ObunaRouteImport.update({
   id: '/obuna',
   path: '/obuna',
@@ -98,11 +104,6 @@ const SuperAdminRoute = SuperAdminRouteImport.update({
 const SuperKirishRoute = SuperKirishRouteImport.update({
   id: '/super-kirish',
   path: '/super-kirish',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NolgaRoute = NolgaRouteImport.update({
-  id: '/nolga',
-  path: '/nolga',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -145,6 +146,7 @@ export interface FileRoutesByFullPath {
   '/ijara': typeof IjaraRoute
   '/joylash': typeof JoylashRoute
   '/mening-elonlarim': typeof MeningElonlarimRoute
+  '/nolga': typeof NolgaRoute
   '/obuna': typeof ObunaRoute
   '/profil': typeof ProfilRoute
   '/sevimlilar': typeof SevimlilarRoute
@@ -166,6 +168,7 @@ export interface FileRoutesByTo {
   '/ijara': typeof IjaraRoute
   '/joylash': typeof JoylashRoute
   '/mening-elonlarim': typeof MeningElonlarimRoute
+  '/nolga': typeof NolgaRoute
   '/obuna': typeof ObunaRoute
   '/profil': typeof ProfilRoute
   '/sevimlilar': typeof SevimlilarRoute
@@ -189,6 +192,7 @@ export interface FileRoutesById {
   '/ijara': typeof IjaraRoute
   '/joylash': typeof JoylashRoute
   '/mening-elonlarim': typeof MeningElonlarimRoute
+  '/nolga': typeof NolgaRoute
   '/obuna': typeof ObunaRoute
   '/profil': typeof ProfilRoute
   '/sevimlilar': typeof SevimlilarRoute
@@ -213,6 +217,7 @@ export interface FileRouteTypes {
     | '/ijara'
     | '/joylash'
     | '/mening-elonlarim'
+    | '/nolga'
     | '/obuna'
     | '/profil'
     | '/sevimlilar'
@@ -234,6 +239,7 @@ export interface FileRouteTypes {
     | '/ijara'
     | '/joylash'
     | '/mening-elonlarim'
+    | '/nolga'
     | '/obuna'
     | '/profil'
     | '/sevimlilar'
@@ -256,6 +262,7 @@ export interface FileRouteTypes {
     | '/ijara'
     | '/joylash'
     | '/mening-elonlarim'
+    | '/nolga'
     | '/obuna'
     | '/profil'
     | '/sevimlilar'
@@ -279,6 +286,7 @@ export interface RootRouteChildren {
   IjaraRoute: typeof IjaraRoute
   JoylashRoute: typeof JoylashRoute
   MeningElonlarimRoute: typeof MeningElonlarimRoute
+  NolgaRoute: typeof NolgaRoute
   ObunaRoute: typeof ObunaRoute
   ProfilRoute: typeof ProfilRoute
   SevimlilarRoute: typeof SevimlilarRoute
@@ -349,6 +357,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MeningElonlarimRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/nolga': {
+      id: '/nolga'
+      path: '/nolga'
+      fullPath: '/nolga'
+      preLoaderRoute: typeof NolgaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/obuna': {
       id: '/obuna'
       path: '/obuna'
@@ -389,13 +404,6 @@ declare module '@tanstack/react-router' {
       path: '/super-kirish'
       fullPath: '/super-kirish'
       preLoaderRoute: typeof SuperKirishRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/nolga': {
-      id: '/nolga'
-      path: '/nolga'
-      fullPath: '/nolga'
-      preLoaderRoute: typeof NolgaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -464,6 +472,7 @@ const rootRouteChildren: RootRouteChildren = {
   IjaraRoute: IjaraRoute,
   JoylashRoute: JoylashRoute,
   MeningElonlarimRoute: MeningElonlarimRoute,
+  NolgaRoute: NolgaRoute,
   ObunaRoute: ObunaRoute,
   ProfilRoute: ProfilRoute,
   SevimlilarRoute: SevimlilarRoute,
