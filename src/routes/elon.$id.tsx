@@ -41,7 +41,8 @@ export const Route = createFileRoute("/elon/$id")({
 function PropertyDetailPage() {
   const { id } = Route.useParams();
   const tr = useTr();
-  const { user } = useAuth();
+  const { user, isPremium, isStaff } = useAuth();
+  const canContact = isPremium || isStaff;
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -110,6 +111,7 @@ function PropertyDetailPage() {
       if (!user) throw new Error("AUTH");
       if (!property) throw new Error("NO_PROPERTY");
       if (property.owner_id === user.id) throw new Error("SELF");
+      if (!canContact) throw new Error("PREMIUM");
 
       const { data: existing } = await supabase
         .from("conversations")
@@ -142,6 +144,11 @@ function PropertyDetailPage() {
       }
       if (error.message === "SELF") {
         toast.error(tr("Bu sizning e'loningiz", "Это ваше объявление"));
+        return;
+      }
+      if (error.message === "PREMIUM") {
+        toast.error(tr("Yozish uchun Premium obuna kerak", "Для переписки нужна Premium подписка"));
+        navigate({ to: "/obuna" });
         return;
       }
       toast.error(tr("Suhbatni ochib bo'lmadi", "Не удалось открыть чат"));
@@ -274,7 +281,12 @@ function PropertyDetailPage() {
               </div>
 
               <p className="text-muted-foreground mt-4 text-xs">
-                {tr("Telefon", "Телефон")}: {user ? formatPhone(owner?.phone) : tr("Ko'rish uchun tizimga kiring", "Войдите, чтобы увидеть")}
+                {tr("Telefon", "Телефон")}:{" "}
+                {!user
+                  ? tr("Ko'rish uchun tizimga kiring", "Войдите, чтобы увидеть")
+                  : canContact
+                    ? formatPhone(owner?.phone)
+                    : tr("Premium obuna kerak", "Нужна Premium подписка")}
               </p>
 
               <div className="mt-4 space-y-2">
